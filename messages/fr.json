@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "title": "AutoTag — Votre voiture peut recevoir des messages",
+    "description": "Un autocollant QR pour votre voiture. On vous prévient d'un problème sans jamais voir votre numéro."
+  },
+  "common": {
+    "brand": "AutoTag",
+    "tagline": "Scannez. Contactez. C'est fait.",
+    "languageSwitcherLabel": "Langue",
+    "languages": {
+      "fr": "Français",
+      "ar": "العربية",
+      "en": "English"
+    }
+  },
+  "home": {
+    "eyebrow": "Autocollant QR pour voiture",
+    "title": "Votre voiture peut recevoir des messages.",
+    "subtitle": "Phares restés allumés, sortie bloquée, vitre ouverte : la personne qui le remarque scanne l'autocollant et vous prévient. Votre numéro reste privé."
+  },
+  "scanner": {
+    "categories": {
+      "LIGHTS_ON": "Phares allumés",
+      "BLOCKING_ACCESS": "Accès bloqué",
+      "VEHICLE_PROBLEM": "Problème avec le véhicule",
+      "POSSIBLE_DAMAGE": "Dommage possible",
+      "URGENT": "Urgence",
+      "OTHER": "Autre"
+    }
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "backHome": "Retour à l'accueil"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "title": "AutoTag — Your car can receive messages",
+    "description": "A QR sticker for your car. People can warn you about a problem without ever seeing your number."
+  },
+  "common": {
+    "brand": "AutoTag",
+    "tagline": "Scan. Contact. Done.",
+    "languageSwitcherLabel": "Language",
+    "languages": {
+      "fr": "Français",
+      "ar": "العربية",
+      "en": "English"
+    }
+  },
+  "home": {
+    "eyebrow": "QR sticker for your car",
+    "title": "Your car can receive messages.",
+    "subtitle": "Lights left on, a blocked gate, a window open: whoever notices scans the sticker and lets you know. Your number stays private."
+  },
+  "scanner": {
+    "categories": {
+      "LIGHTS_ON": "Lights are on",
+      "BLOCKING_ACCESS": "Blocking access",
+      "VEHICLE_PROBLEM": "Vehicle problem",
+      "POSSIBLE_DAMAGE": "Possible damage",
+      "URGENT": "Urgent",
+      "OTHER": "Other"
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "backHome": "Back to home"
+  }
+}
