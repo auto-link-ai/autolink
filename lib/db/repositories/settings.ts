@@ -23,6 +23,7 @@ function toAppSettings(doc: Setting): AppSettings {
     rateLimitPerTagPerHour: doc.rateLimitPerTagPerHour,
     rateLimitPerIpPerHour: doc.rateLimitPerIpPerHour,
     captchaThreshold: doc.captchaThreshold,
+    rateLimitAdminLoginPerHour: doc.rateLimitAdminLoginPerHour,
     deliveryFees: doc.deliveryFees.map(({ wilayaCode, home, stopdesk }) => ({
       wilayaCode,
       home,
@@ -33,16 +34,20 @@ function toAppSettings(doc: Setting): AppSettings {
 }
 
 export const settingsRepository = {
-  /** Reads the singleton, creating it with schema defaults on first read. */
+  /**
+   * Reads the singleton, creating it with schema defaults on first read.
+   * Not `lean`: hydrating applies schema defaults to fields added after the
+   * document was created, so a new setting works without a migration.
+   */
   async getOrCreateGlobal(): Promise<AppSettings> {
     await connectToDatabase();
     const doc = await SettingModel.findOneAndUpdate(
       { key: 'global' },
       { $setOnInsert: { key: 'global' } },
-      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true, lean: true },
+      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true },
     );
     if (!doc) throw new Error('Settings document could not be created.');
-    return toAppSettings(doc);
+    return toAppSettings(doc.toObject());
   },
 
   /** Seed helper: writes delivery fees only if none are configured yet. */

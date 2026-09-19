@@ -25,7 +25,7 @@ export const wilayasRepository = {
     return docs.map(({ code, nameFr, nameAr, nameEn }) => ({ code, nameFr, nameAr, nameEn }));
   },
 
-  /** Idempotent upsert keyed by code. Returns the number of documents inserted or changed. */
+  /** Idempotent upsert keyed by code. Returns how many were newly inserted. */
   async upsertAll(wilayas: readonly WilayaDTO[]): Promise<number> {
     await connectToDatabase();
     const result = await WilayaModel.bulkWrite(
@@ -37,6 +37,6 @@ export const wilayasRepository = {
         },
       })),
     );
-    return result.upsertedCount + result.modifiedCount;
+    return result.upsertedCount;
   },
 };

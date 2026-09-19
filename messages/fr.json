@@ -31,5 +31,107 @@
   "notFound": {
     "title": "Page introuvable",
     "backHome": "Retour à l'accueil"
+  },
+  "admin": {
+    "metaTitle": "Administration AutoLink",
+    "badge": "Admin",
+    "nav": {
+      "label": "Navigation administration",
+      "tags": "Étiquettes",
+      "logout": "Se déconnecter"
+    },
+    "login": {
+      "title": "Connexion administrateur",
+      "subtitle": "Accès réservé à l'équipe AutoLink.",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "errors": {
+        "invalid": "E-mail ou mot de passe incorrect.",
+        "throttled": "Trop de tentatives. Réessayez dans une heure."
+      }
+    },
+    "tags": {
+      "title": "Étiquettes",
+      "generate": {
+        "title": "Générer un lot",
+        "intro": "Crée les étiquettes et télécharge un ZIP prêt à imprimer. Les codes d'activation n'existent que dans ce ZIP : conservez-le en lieu sûr.",
+        "label": "Nom du lot",
+        "labelHint": "Pour vous repérer, ex. « Impression septembre »",
+        "quantity": "Quantité",
+        "quantityHint": "De 1 à {max} étiquettes par lot",
+        "qrTarget": "Les QR codes pointeront vers",
+        "submit": "Générer et télécharger",
+        "working": "Génération en cours…",
+        "done": "Lot créé. Le téléchargement a démarré.",
+        "adminOnly": "Seuls les administrateurs peuvent générer des lots."
+      },
+      "batches": {
+        "title": "Lots",
+        "empty": "Aucun lot pour l'instant.",
+        "label": "Lot",
+        "quantity": "Qté",
+        "created": "Créé le",
+        "createdBy": "Par",
+        "statuses": "Statuts",
+        "reissue": "Réémettre les codes",
+        "reissuing": "Réémission…",
+        "reissueConfirm": "Les codes d'activation actuels des étiquettes non activées de ce lot cesseront de fonctionner, et un nouveau ZIP sera téléchargé. Continuer ?",
+        "reissueDone": "Nouveaux codes émis. Le téléchargement a démarré."
+      },
+      "list": {
+        "title": "Toutes les étiquettes",
+        "count": "{count, plural, =0 {Aucune étiquette} one {# étiquette} other {# étiquettes}}",
+        "filterLabel": "Filtrer par statut",
+        "filterAll": "Toutes",
+        "search": "Rechercher",
+        "searchLabel": "Identifiant d'étiquette",
+        "searchPlaceholder": "AUT-7K3M…",
+        "empty": "Aucune étiquette ne correspond.",
+        "tagId": "Étiquette",
+        "status": "Statut",
+        "batch": "Lot",
+        "activated": "Activée le",
+        "actions": "Actions",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "page": "Page {page} sur {pages}"
+      },
+      "results": {
+        "ok": "Statut mis à jour.",
+        "not_allowed": "Ce changement n'est pas possible depuis le statut actuel.",
+        "conflict": "L'étiquette a changé entre-temps. Réessayez.",
+        "not_found": "Étiquette introuvable."
+      },
+      "status": {
+        "UNASSIGNED": "Non attribuée",
+        "ACTIVE": "Active",
+        "DEACTIVATED": "Désactivée",
+        "SUSPENDED": "Suspendue",
+        "LOST": "Perdue"
+      },
+      "actions": {
+        "suspend": "Suspendre",
+        "deactivate": "Désactiver",
+        "reactivate": "Réactiver",
+        "markLost": "Marquer perdue"
+      },
+      "errors": {
+        "base_url_missing": "NEXT_PUBLIC_APP_URL n'est pas défini : impossible de savoir vers quelle adresse pointeront les QR codes.",
+        "base_url_invalid": "NEXT_PUBLIC_APP_URL doit être une origine seule, par exemple https://autolink.dz",
+        "base_url_not_https": "En production, les QR codes doivent pointer vers une adresse https.",
+        "base_url_local_host": "En production, les QR codes ne peuvent pas pointer vers localhost ou une adresse IP.",
+        "template_invalid": "Le gabarit d'impression est invalide : {detail}",
+        "invalid_input": "Vérifiez le nom du lot et la quantité.",
+        "conflict": "Conflit d'identifiants. Relancez la génération.",
+        "not_found": "Lot introuvable.",
+        "nothing_to_reissue": "Aucune étiquette non activée dans ce lot.",
+        "forbidden_role": "Réservé aux administrateurs.",
+        "unauthorized": "Session expirée. Reconnectez-vous.",
+        "forbidden": "Requête refusée.",
+        "server_error": "Une erreur est survenue. Réessayez.",
+        "network": "Connexion impossible. Vérifiez votre réseau et réessayez."
+      }
+    }
   }
 }

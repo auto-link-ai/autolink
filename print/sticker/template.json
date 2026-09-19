@@ -1,0 +1,8 @@
+{
+  "trimMm": 100,
+  "bleedMm": 3,
+  "safeMm": 4,
+  "qr": { "xMm": 18, "yMm": 18, "sizeMm": 64 },
+  "tagId": { "xMm": 50, "yMm": 91, "fontSizePt": 11, "align": "center", "color": "#000000" },
+  "artwork": null
+}

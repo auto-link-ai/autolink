@@ -42,8 +42,8 @@ async function main() {
   const indexed = await syncAllIndexes();
   console.log(`✓ indexes synced (${indexed.length} collections)`);
 
-  const changed = await wilayasRepository.upsertAll(WILAYAS);
-  console.log(`✓ wilayas: ${WILAYAS.length} present (${changed} inserted/updated)`);
+  const inserted = await wilayasRepository.upsertAll(WILAYAS);
+  console.log(`✓ wilayas: ${WILAYAS.length} present (${inserted} new)`);
 
   const settings = await settingsRepository.getOrCreateGlobal();
   console.log(

@@ -9,6 +9,13 @@ export type UserStatus = (typeof USER_STATUSES)[number];
 export const TAG_STATUSES = ['UNASSIGNED', 'ACTIVE', 'DEACTIVATED', 'SUSPENDED', 'LOST'] as const;
 export type TagStatus = (typeof TAG_STATUSES)[number];
 
+/** Admin actions on a tag's status (see lib/tags/transitions.ts for the rules). */
+export const TAG_ACTIONS = ['suspend', 'deactivate', 'reactivate', 'markLost'] as const;
+export type TagAction = (typeof TAG_ACTIONS)[number];
+
+/** Tag batch generation limits. Kept small so a batch (hashing + ZIP) fits one function call. */
+export const BATCH_LIMITS = { maxQuantity: 100, maxLabelLength: 60 } as const;
+
 export const MESSAGE_CATEGORIES = [
   'LIGHTS_ON',
   'BLOCKING_ACCESS',

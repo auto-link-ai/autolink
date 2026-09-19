@@ -24,6 +24,8 @@ export interface Setting {
   rateLimitPerIpPerHour: number;
   /** Messages from one session/IP before Turnstile is required. */
   captchaThreshold: number;
+  /** Admin login attempts per hour, counted per IP hash and per email. */
+  rateLimitAdminLoginPerHour: number;
   deliveryFees: DeliveryFee[];
   maxOrderQuantity: number;
   createdAt: Date;
@@ -49,6 +51,7 @@ const settingSchema = new Schema<Setting>(
     rateLimitPerTagPerHour: { type: Number, default: 5, min: 1 },
     rateLimitPerIpPerHour: { type: Number, default: 10, min: 1 },
     captchaThreshold: { type: Number, default: 3, min: 0 },
+    rateLimitAdminLoginPerHour: { type: Number, default: 10, min: 1 },
     deliveryFees: { type: [deliveryFeeSchema], default: [] },
     maxOrderQuantity: { type: Number, default: 10, min: 1 },
   },

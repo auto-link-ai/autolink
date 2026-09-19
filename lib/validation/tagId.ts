@@ -21,6 +21,11 @@ export function isValidTagIdShape(value: unknown): value is string {
 /** Crockford decoding: commonly misread letters map to the digit they resemble. */
 const CROCKFORD_ALIASES: Readonly<Record<string, string>> = { I: '1', L: '1', O: '0' };
 
+/** Replaces I/L with 1 and O with 0 in an uppercase string. */
+export function applyCrockfordAliases(upper: string): string {
+  return upper.replace(/[ILO]/g, (c) => CROCKFORD_ALIASES[c] ?? c);
+}
+
 /**
  * Lenient normalization for IDs a person types (e.g. on /activate): accepts
  * lowercase, spaces, missing hyphen or missing 'AUT-' prefix, and I/L/O typos.
@@ -38,7 +43,7 @@ export function normalizeTagIdInput(input: string): string | null {
     return null;
   }
 
-  body = body.replace(/[ILO]/g, (c) => CROCKFORD_ALIASES[c] ?? c);
+  body = applyCrockfordAliases(body);
   const candidate = `${TAG_ID_PREFIX}${body}`;
   return isValidTagIdShape(candidate) ? candidate : null;
 }

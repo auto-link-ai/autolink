@@ -39,5 +39,11 @@ const tagSchema = new Schema<Tag>(
   { timestamps: true, collection: 'tags' },
 );
 
+// Batch status counts and reissue lookups.
+tagSchema.index({ batchId: 1, status: 1 });
+// Admin list: newest first, optionally filtered by status.
+tagSchema.index({ status: 1, createdAt: -1 });
+tagSchema.index({ createdAt: -1 });
+
 export const TagModel: Model<Tag> =
   (models.Tag as Model<Tag> | undefined) ?? model<Tag>('Tag', tagSchema);
