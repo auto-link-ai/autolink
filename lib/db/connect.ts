@@ -12,10 +12,10 @@ type ConnectionCache = {
 };
 
 const globalForMongoose = globalThis as typeof globalThis & {
-  __autotagMongoose?: ConnectionCache;
+  __autolinkMongoose?: ConnectionCache;
 };
 
-const cache: ConnectionCache = (globalForMongoose.__autotagMongoose ??= {
+const cache: ConnectionCache = (globalForMongoose.__autolinkMongoose ??= {
   conn: null,
   promise: null,
 });
@@ -33,7 +33,7 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
 
   cache.promise ??= mongoose
     .connect(uri, {
-      dbName: process.env.MONGODB_DB_NAME || 'autotag',
+      dbName: process.env.MONGODB_DB_NAME || 'autolink',
       maxPoolSize: 10,
       bufferCommands: false,
       serverSelectionTimeoutMS: 10_000,

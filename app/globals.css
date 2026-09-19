@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   AutoTag design tokens
+   AutoLink design tokens
    - Brand palette: fixed by the spec (§2.3).
    - Structural scale (type scale, radii, elevation, hard offset shadow,
      eyebrow labels, 1200px container): taken from the design source file.

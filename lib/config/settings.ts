@@ -14,27 +14,27 @@ const CACHE_TTL_MS = 60_000;
 type CacheEntry = { value: Promise<AppSettings>; loadedAt: number };
 
 const globalForSettings = globalThis as typeof globalThis & {
-  __autotagSettingsCache?: CacheEntry | null;
+  __autolinkSettingsCache?: CacheEntry | null;
 };
 
 export async function getSettings(): Promise<AppSettings> {
-  const entry = globalForSettings.__autotagSettingsCache;
+  const entry = globalForSettings.__autolinkSettingsCache;
   if (entry && Date.now() - entry.loadedAt < CACHE_TTL_MS) {
     return entry.value;
   }
 
   // Cache the promise, not the value, so concurrent callers share one read.
   const value = settingsRepository.getOrCreateGlobal();
-  globalForSettings.__autotagSettingsCache = { value, loadedAt: Date.now() };
+  globalForSettings.__autolinkSettingsCache = { value, loadedAt: Date.now() };
 
   try {
     return await value;
   } catch (error) {
-    globalForSettings.__autotagSettingsCache = null;
+    globalForSettings.__autolinkSettingsCache = null;
     throw error;
   }
 }
 
 export function invalidateSettingsCache(): void {
-  globalForSettings.__autotagSettingsCache = null;
+  globalForSettings.__autolinkSettingsCache = null;
 }

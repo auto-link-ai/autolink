@@ -1,7 +1,7 @@
-# AutoTag — Working Agreement
+# AutoLink — Working Agreement
 
 ## What this project is
-AutoTag is ONE physical consumer product: a QR sticker on a car that lets a stranger
+AutoLink is ONE physical consumer product: a QR sticker on a car that lets a stranger
 message the owner without ever seeing the owner's phone number.
 
 Buy → activate → stick → forget → get contacted.
@@ -27,7 +27,7 @@ If no — do not build it.
 7. **Never** commit secrets. `.env.example` only.
 8. **Never** show raw database or stack errors to a user.
 9. **Never** reveal whether an unknown tag exists. Invalid, deleted, and never-existed tags
-   all render the identical "This AutoTag is not available" state.
+   all render the identical "This AutoLink is not available" state.
 
 ## Process rules
 - Inspect the existing tree before writing. Do not delete or rewrite files outside the

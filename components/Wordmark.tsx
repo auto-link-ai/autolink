@@ -1,5 +1,5 @@
 /**
- * AutoTag wordmark: a tag glyph plus the name. Always rendered left-to-right
+ * AutoLink wordmark: a tag glyph plus the name. Always rendered left-to-right
  * (it is a brand name), including on Arabic pages.
  */
 export function Wordmark({ className = '' }: { className?: string }) {
@@ -16,7 +16,7 @@ export function Wordmark({ className = '' }: { className?: string }) {
         <rect x="13" y="13" width="4.5" height="4.5" rx="1" fill="var(--blue)" />
       </svg>
       <span>
-        Auto<span className="text-accent">Tag</span>
+        Auto<span className="text-accent">Link</span>
       </span>
     </span>
   );

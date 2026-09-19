@@ -1,10 +1,10 @@
 {
   "meta": {
-    "title": "AutoTag — سيارتك يمكنها استقبال الرسائل",
+    "title": "AutoLink — سيارتك يمكنها استقبال الرسائل",
     "description": "ملصق QR لسيارتك. يمكن لأي شخص تنبيهك إلى مشكلة دون أن يرى رقم هاتفك أبدًا."
   },
   "common": {
-    "brand": "AutoTag",
+    "brand": "AutoLink",
     "tagline": "امسح. تواصل. تمّ.",
     "languageSwitcherLabel": "اللغة",
     "languages": {

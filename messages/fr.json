@@ -1,10 +1,10 @@
 {
   "meta": {
-    "title": "AutoTag — Votre voiture peut recevoir des messages",
+    "title": "AutoLink — Votre voiture peut recevoir des messages",
     "description": "Un autocollant QR pour votre voiture. On vous prévient d'un problème sans jamais voir votre numéro."
   },
   "common": {
-    "brand": "AutoTag",
+    "brand": "AutoLink",
     "tagline": "Scannez. Contactez. C'est fait.",
     "languageSwitcherLabel": "Langue",
     "languages": {

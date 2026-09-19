@@ -12,7 +12,7 @@ export default function RootNotFound() {
         <main className="container-page flex min-h-dvh flex-col items-start justify-center gap-4">
           <h1 className="text-h2">Page introuvable · Page not found · الصفحة غير موجودة</h1>
           <Link href="/" className="font-semibold text-accent underline underline-offset-4">
-            AutoTag
+            AutoLink
           </Link>
         </main>
       </body>
