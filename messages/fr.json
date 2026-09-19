@@ -13,11 +13,6 @@
       "en": "English"
     }
   },
-  "home": {
-    "eyebrow": "Autocollant QR pour voiture",
-    "title": "Votre voiture peut recevoir des messages.",
-    "subtitle": "Phares restés allumés, sortie bloquée, vitre ouverte : la personne qui le remarque scanne l'autocollant et vous prévient. Votre numéro reste privé."
-  },
   "scanner": {
     "categories": {
       "LIGHTS_ON": "Phares allumés",
@@ -30,6 +25,7 @@
   },
   "notFound": {
     "title": "Page introuvable",
+    "body": "Le lien est peut-être erroné ou la page a été déplacée.",
     "backHome": "Retour à l'accueil"
   },
   "admin": {
@@ -132,6 +128,476 @@
         "server_error": "Une erreur est survenue. Réessayez.",
         "network": "Connexion impossible. Vérifiez votre réseau et réessayez."
       }
+    }
+  },
+  "site": {
+    "nav": {
+      "label": "Navigation principale",
+      "home": "AutoLink, accueil",
+      "howItWorks": "Comment ça marche",
+      "pricing": "Tarif",
+      "faq": "Questions",
+      "contact": "Contact",
+      "order": "Commander",
+      "menu": "Ouvrir le menu",
+      "closeMenu": "Fermer le menu",
+      "skipToContent": "Aller au contenu"
+    },
+    "hero": {
+      "trust": {
+        "secure": "Sécurisé",
+        "private": "Numéro privé",
+        "noApp": "Sans application"
+      },
+      "title": "Votre voiture peut recevoir des messages.",
+      "subtitle": "On vous prévient en quelques secondes.",
+      "titleAccent": "Votre numéro reste invisible.",
+      "subtitleAccent": "Personne ne le voit, jamais.",
+      "body": "Phares restés allumés, sortie bloquée, vitre ouverte : la personne qui le remarque scanne l'autocollant et vous prévient. Sans application, sans compte, sans votre numéro.",
+      "cta": "Commander mon autocollant",
+      "secondary": "Voir comment ça marche",
+      "price": "{price} — paiement unique, à la livraison",
+      "chips": {
+        "scan": {
+          "title": "Quelqu'un vous bloque ?",
+          "body": "Il scanne l'autocollant et vous prévient."
+        },
+        "notify": {
+          "title": "Un souci sur la voiture ?",
+          "body": "Vous recevez l'alerte tout de suite."
+        }
+      },
+      "illustrationLabel": "Un autocollant AutoLink collé sur la vitre arrière d'une voiture."
+    },
+    "steps": {
+      "eyebrow": "En trois étapes",
+      "title": "Collez-le une fois, restez joignable toujours.",
+      "subtitle": "Rien à installer, rien à renouveler. L'autocollant fait le travail à votre place.",
+      "items": {
+        "stick": {
+          "title": "Collez l'autocollant",
+          "body": "Sur une vitre, bien visible de l'extérieur. Vous l'activez une seule fois avec le code privé fourni."
+        },
+        "scan": {
+          "title": "On le scanne",
+          "body": "La personne ouvre l'appareil photo de son téléphone, choisit la raison et écrit un mot si elle veut."
+        },
+        "notify": {
+          "title": "Vous êtes prévenu",
+          "body": "Le message arrive sur votre téléphone et par e-mail. Votre numéro n'a jamais été montré."
+        }
+      },
+      "more": "Tout le détail"
+    },
+    "scenarios": {
+      "title": "Un seul autocollant.",
+      "titleAccent": "Beaucoup de situations.",
+      "subtitle": "Des cas qui arrivent tous les jours sur un parking. La personne choisit la raison, vous recevez l'alerte.",
+      "items": {
+        "LIGHTS_ON": "Vos phares sont restés allumés depuis un moment.",
+        "BLOCKING_ACCESS": "Votre voiture bloque une sortie ou un garage.",
+        "VEHICLE_PROBLEM": "Un pneu à plat, une vitre ouverte, une fuite.",
+        "POSSIBLE_DAMAGE": "Quelqu'un a touché votre voiture en se garant.",
+        "URGENT": "Une situation qui ne peut pas attendre.",
+        "OTHER": "Tout le reste, en quelques mots."
+      }
+    },
+    "privacy": {
+      "eyebrow": "Confidentialité totale",
+      "title": "Votre numéro n'apparaît jamais.",
+      "subtitle": "Entre vous et la personne qui vous écrit, il y a AutoLink. Vos données restent protégées et l'alerte vous arrive en quelques secondes.",
+      "card": {
+        "label": "Numéro de téléphone",
+        "note": "Le message vous arrive, et personne ne voit votre numéro."
+      },
+      "columns": {
+        "scan": {
+          "title": "On scanne l'autocollant",
+          "body": "La page s'ouvre aussitôt dans le navigateur, sans installer quoi que ce soit."
+        },
+        "reason": {
+          "title": "On explique le problème",
+          "body": "La personne choisit la raison et peut ajouter un mot pour vous."
+        },
+        "notify": {
+          "title": "L'alerte vous arrive",
+          "body": "Notification et e-mail en quelques secondes, sans afficher votre numéro."
+        }
+      }
+    },
+    "demo": {
+      "title": "Ce que voit la personne qui scanne.",
+      "subtitle": "L'autocollant ouvre une page simple : la raison, un mot facultatif, envoyer. Rien à télécharger, aucun compte à créer.",
+      "points": {
+        "scan": "La page s'ouvre directement depuis l'appareil photo.",
+        "pick": "Six raisons claires, un message facultatif.",
+        "notify": "Envoi immédiat, sans aucune donnée personnelle affichée."
+      },
+      "screen": {
+        "heading": "Un problème avec cette voiture ?",
+        "subheading": "Prévenez le propriétaire, il reçoit l'alerte tout de suite.",
+        "vehicle": "Peugeot 208 · Bleu",
+        "question": "Que se passe-t-il ?",
+        "noteLabel": "Message (facultatif)",
+        "notePlaceholder": "Vos phares sont allumés depuis un moment.",
+        "send": "Envoyer l'alerte"
+      }
+    },
+    "pricing": {
+      "eyebrow": "Tarif",
+      "title": "Un seul paiement. Aucun abonnement.",
+      "subtitle": "Vous payez l'autocollant à la livraison. Ensuite, il fonctionne sans rien d'autre à payer.",
+      "product": "L'autocollant AutoLink",
+      "oneTime": "Paiement unique, par autocollant",
+      "includes": {
+        "sticker": "L'autocollant QR résistant, prêt à coller",
+        "code": "Le code d'activation privé, sur une fiche séparée",
+        "unlimited": "Messages illimités depuis votre autocollant",
+        "notify": "Notifications sur le téléphone et par e-mail",
+        "noSubscription": "Aucun abonnement, aucun frais caché"
+      },
+      "delivery": "Livraison dans les 58 wilayas. Les frais dépendent de votre wilaya et s'affichent avant de confirmer.",
+      "cta": "Commander maintenant",
+      "howTitle": "Comment se passe la commande",
+      "how": {
+        "order": {
+          "title": "Vous commandez",
+          "body": "Nom, téléphone, wilaya et adresse. Rien de plus."
+        },
+        "call": {
+          "title": "On vous appelle",
+          "body": "Un appel court pour confirmer la commande et l'adresse."
+        },
+        "deliver": {
+          "title": "On livre",
+          "body": "Le livreur vous remet l'autocollant et la fiche d'activation."
+        },
+        "pay": {
+          "title": "Vous payez à la livraison",
+          "body": "En espèces, au moment de recevoir le colis."
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "Questions fréquentes",
+      "title": "Ce qu'on nous demande le plus",
+      "all": "Voir toutes les questions",
+      "items": {
+        "app": {
+          "q": "Faut-il installer une application ?",
+          "a": "Non, ni pour vous ni pour la personne qui scanne. L'appareil photo du téléphone suffit, et vos messages s'ouvrent dans le navigateur."
+        },
+        "number": {
+          "q": "Mon numéro est-il visible ?",
+          "a": "Jamais. La personne qui scanne ne voit ni votre numéro, ni votre nom, ni votre e-mail, ni votre adresse, ni votre plaque."
+        },
+        "price": {
+          "q": "Combien ça coûte ?",
+          "a": "Un seul paiement de {price} par autocollant, plus les frais de livraison. Aucun abonnement."
+        },
+        "receive": {
+          "q": "Comment je reçois les messages ?",
+          "a": "Par notification sur votre téléphone et par e-mail. Ils restent aussi dans votre espace personnel."
+        },
+        "pay": {
+          "q": "Comment je paie ?",
+          "a": "À la livraison, en espèces. Nous livrons dans les 58 wilayas."
+        },
+        "activate": {
+          "q": "Comment j'active mon autocollant ?",
+          "a": "Avec le code privé imprimé sur une fiche séparée, jamais sur l'autocollant lui-même. Connaître l'adresse du QR ne suffit donc pas pour revendiquer une voiture."
+        },
+        "abuse": {
+          "q": "Et si quelqu'un en abuse ?",
+          "a": "Le nombre de messages par heure est limité, et vous pouvez désactiver votre autocollant à tout moment depuis votre espace."
+        },
+        "change": {
+          "q": "Et si je change de voiture ?",
+          "a": "Vous décollez l'autocollant ou vous le désactivez depuis votre espace, puis vous en activez un nouveau sur l'autre voiture."
+        },
+        "emergency": {
+          "q": "Est-ce un service d'urgence ?",
+          "a": "Non. AutoLink n'est pas un service d'urgence. En cas de danger immédiat, contactez les services d'urgence compétents."
+        },
+        "retention": {
+          "q": "Combien de temps gardez-vous les messages ?",
+          "a": "Les messages sont supprimés automatiquement {period}."
+        }
+      }
+    },
+    "ctaBand": {
+      "title": "Donnez à votre voiture un moyen de vous joindre.",
+      "body": "Commandez votre autocollant, payez à la livraison, collez-le et oubliez-le.",
+      "button": "Commander mon autocollant"
+    },
+    "price": {
+      "unknown": "Prix affiché à la commande",
+      "unknownInline": "le prix affiché à la commande",
+      "retentionDays": "après {days} jours",
+      "retentionUnknown": "après une durée limitée"
+    },
+    "footer": {
+      "tagline": "Un autocollant QR sur votre voiture : on vous prévient d'un problème sans jamais voir votre numéro.",
+      "product": "Produit",
+      "legal": "Informations",
+      "privacy": "Confidentialité",
+      "terms": "Conditions",
+      "rights": "© {year} {company}. Tous droits réservés."
+    },
+    "pages": {
+      "howItWorks": {
+        "metaTitle": "Comment ça marche — AutoLink",
+        "metaDescription": "De l'autocollant collé sur la vitre au message reçu sur votre téléphone, sans jamais montrer votre numéro.",
+        "eyebrow": "Comment ça marche",
+        "title": "De l'autocollant au message reçu.",
+        "subtitle": "Deux côtés : la personne qui scanne, et vous. Aucun des deux n'a besoin d'une application.",
+        "passerByTitle": "Pour la personne qui scanne",
+        "passerByIntro": "Trois gestes, moins d'une minute, sans compte.",
+        "passerBy": {
+          "scan": {
+            "title": "Elle scanne le QR",
+            "body": "Avec l'appareil photo du téléphone. La page s'ouvre dans le navigateur."
+          },
+          "reason": {
+            "title": "Elle choisit la raison",
+            "body": "Phares allumés, accès bloqué, problème avec le véhicule, dommage, urgence ou autre."
+          },
+          "send": {
+            "title": "Elle envoie",
+            "body": "Elle peut ajouter un mot et un moyen de la recontacter. Puis c'est terminé."
+          }
+        },
+        "ownerTitle": "Pour vous, propriétaire",
+        "ownerIntro": "Une seule mise en route, puis vous n'y pensez plus.",
+        "owner": {
+          "order": {
+            "title": "Vous commandez",
+            "body": "Paiement à la livraison. Vous recevez l'autocollant et une fiche avec le code d'activation."
+          },
+          "activate": {
+            "title": "Vous activez",
+            "body": "Vous saisissez l'identifiant de l'autocollant et le code privé de la fiche."
+          },
+          "stick": {
+            "title": "Vous le collez",
+            "body": "Sur une vitre, bien visible depuis l'extérieur, propre et sèche."
+          },
+          "notify": {
+            "title": "Vous activez les notifications",
+            "body": "Pour recevoir les messages sur votre téléphone dès qu'ils arrivent."
+          }
+        },
+        "iosNote": "Sur iPhone, ajoutez d'abord la page à l'écran d'accueil : iOS n'envoie les notifications web qu'aux sites installés de cette façon.",
+        "emergencyTitle": "AutoLink n'est pas un service d'urgence",
+        "emergency": "En cas de danger immédiat, contactez les services d'urgence compétents. Un message envoyé par AutoLink prévient le propriétaire, rien de plus."
+      },
+      "pricing": {
+        "metaTitle": "Tarif — AutoLink",
+        "metaDescription": "Un seul paiement, aucun abonnement, paiement à la livraison dans les 58 wilayas.",
+        "eyebrow": "Tarif",
+        "title": "Un prix, une fois.",
+        "subtitle": "L'autocollant se paie à la livraison. Ensuite, il fonctionne sans abonnement ni frais caché."
+      },
+      "faq": {
+        "metaTitle": "Questions fréquentes — AutoLink",
+        "metaDescription": "Application, numéro privé, prix, activation, livraison : les réponses aux questions les plus posées.",
+        "eyebrow": "Questions fréquentes",
+        "title": "Vos questions, nos réponses.",
+        "subtitle": "Si vous ne trouvez pas votre réponse ici, écrivez-nous."
+      },
+      "contact": {
+        "metaTitle": "Contact — AutoLink",
+        "metaDescription": "Écrivez-nous pour une commande, une livraison ou une question sur votre autocollant.",
+        "eyebrow": "Contact",
+        "title": "Parlons-en.",
+        "subtitle": "Pour une commande, une livraison ou une question sur votre autocollant.",
+        "email": "E-mail",
+        "phone": "Téléphone",
+        "whatsapp": "WhatsApp",
+        "hours": "Horaires",
+        "address": "Adresse",
+        "ownerNoticeTitle": "Vous voulez joindre le propriétaire d'une voiture ?",
+        "ownerNotice": "Scannez l'autocollant collé sur sa vitre : votre message lui arrive directement. Nous ne pouvons pas transmettre de message à sa place."
+      }
+    }
+  },
+  "legal": {
+    "eyebrow": "Informations légales",
+    "draftNotice": "Modèle à faire relire par un juriste avant la mise en ligne. Les mentions entre crochets doivent être remplacées.",
+    "updated": "Dernière mise à jour : à compléter avant la mise en ligne.",
+    "privacy": {
+      "metaDescription": "Quelles données AutoLink collecte, pourquoi, et combien de temps elles sont conservées.",
+      "title": "Politique de confidentialité",
+      "intro": "{company} exploite AutoLink. Cette page explique quelles données nous collectons, pourquoi, et combien de temps nous les gardons.",
+      "sections": [
+        {
+          "title": "Ce que nous collectons",
+          "body": [
+            "Pour le propriétaire : une adresse e-mail, un mot de passe chiffré, les détails du véhicule que vous saisissez et, si vous commandez, vos coordonnées de livraison.",
+            "Pour la personne qui scanne : la raison choisie, le message écrit, un moyen de recontact facultatif, et un identifiant de session aléatoire. Aucun compte n'est créé."
+          ]
+        },
+        {
+          "title": "Ce que nous ne montrons jamais",
+          "body": [
+            "Votre numéro de téléphone, votre nom, votre e-mail, votre adresse et votre plaque d'immatriculation ne sont jamais affichés à la personne qui scanne l'autocollant."
+          ]
+        },
+        {
+          "title": "Adresses IP",
+          "body": [
+            "Les adresses IP ne sont jamais enregistrées en clair. Elles sont transformées en empreinte irréversible, uniquement pour limiter les abus."
+          ]
+        },
+        {
+          "title": "Conservation",
+          "body": [
+            "Les messages sont supprimés automatiquement {period}. Les commandes sont conservées pour la comptabilité et le suivi de livraison."
+          ]
+        },
+        {
+          "title": "Traceurs",
+          "body": [
+            "Pas d'analytics tiers, pas de pixel publicitaire, pas de profilage. Un seul cookie technique est utilisé pour la session."
+          ]
+        },
+        {
+          "title": "Vos droits",
+          "body": [
+            "Pour accéder à vos données, les corriger ou les supprimer, écrivez à {email}. Adresse postale : {address}."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "metaDescription": "Conditions d'utilisation du service AutoLink et de la vente des autocollants.",
+      "title": "Conditions d'utilisation",
+      "intro": "En commandant ou en utilisant un autocollant AutoLink, vous acceptez les conditions ci-dessous, proposées par {company}.",
+      "sections": [
+        {
+          "title": "Le service",
+          "body": [
+            "AutoLink permet à une personne de prévenir le propriétaire d'un véhicule à partir d'un autocollant QR, sans voir ses coordonnées."
+          ]
+        },
+        {
+          "title": "Pas un service d'urgence",
+          "body": [
+            "AutoLink n'est pas un service d'urgence. En cas de danger immédiat, contactez les services d'urgence compétents."
+          ]
+        },
+        {
+          "title": "Commande et paiement",
+          "body": [
+            "L'autocollant est vendu au prix affiché au moment de la commande, payable en espèces à la livraison. Les frais de livraison dépendent de la wilaya et sont affichés avant confirmation."
+          ]
+        },
+        {
+          "title": "Usage acceptable",
+          "body": [
+            "Les messages envoyés doivent rester liés au véhicule. Les insultes, le harcèlement, la publicité et les messages répétés sans motif sont interdits et peuvent entraîner un blocage."
+          ]
+        },
+        {
+          "title": "Disponibilité",
+          "body": [
+            "Nous faisons notre possible pour que le service reste disponible, sans pouvoir garantir une absence totale d'interruption."
+          ]
+        },
+        {
+          "title": "Contact",
+          "body": [
+            "Pour toute question sur ces conditions : {email} — {address}."
+          ]
+        }
+      ]
+    }
+  },
+  "order": {
+    "metaTitle": "Commander — AutoLink",
+    "metaDescription": "Commandez votre autocollant AutoLink. Paiement à la livraison, dans les 58 wilayas.",
+    "eyebrow": "Commande",
+    "title": "Commandez votre autocollant.",
+    "subtitle": "Vous payez à la livraison. Nous vous appelons pour confirmer avant l’expédition.",
+    "unavailable": "Les commandes sont momentanément indisponibles. Réessayez dans quelques minutes.",
+    "notice": "Nous utilisons ces informations uniquement pour vous livrer et vous appeler au sujet de cette commande.",
+    "fields": {
+      "quantity": "Quantité",
+      "name": "Nom et prénom",
+      "phone": "Téléphone",
+      "phoneHint": "Mobile algérien, ex. 05 12 34 56 78",
+      "email": "E-mail (facultatif)",
+      "emailHint": "Pour recevoir la confirmation par écrit.",
+      "wilaya": "Wilaya",
+      "wilayaPlaceholder": "Choisissez votre wilaya",
+      "commune": "Commune",
+      "address": "Adresse",
+      "deliveryType": "Mode de livraison",
+      "home": "À domicile",
+      "stopdesk": "Au bureau du transporteur",
+      "notes": "Note pour la livraison (facultatif)",
+      "notesHint": "Un repère, un étage, une heure qui vous arrange."
+    },
+    "summary": {
+      "title": "Votre commande",
+      "unitPrice": "Prix unitaire",
+      "quantity": "Quantité",
+      "delivery": "Livraison",
+      "deliveryUnknown": "Choisissez une wilaya",
+      "total": "Total à payer",
+      "cod": "Paiement en espèces à la livraison. Rien à payer maintenant."
+    },
+    "actions": {
+      "review": "Vérifier ma commande",
+      "edit": "Modifier",
+      "confirm": "Confirmer la commande",
+      "confirming": "Envoi en cours…"
+    },
+    "errors": {
+      "required": "Ce champ est obligatoire.",
+      "invalid": "Cette valeur n’est pas valide.",
+      "too_short": "C’est un peu trop court.",
+      "too_long": "C’est trop long.",
+      "too_small": "La quantité minimale est 1.",
+      "too_large": "Cette quantité dépasse le maximum autorisé.",
+      "invalid_phone": "Entrez un mobile algérien valide (05, 06 ou 07).",
+      "invalid_email": "Cette adresse e-mail n’est pas valide.",
+      "no_delivery": "Nous ne livrons pas encore dans cette wilaya. Contactez-nous.",
+      "rate_limited": "Trop de commandes depuis cette connexion. Réessayez dans une heure.",
+      "rejected": "Nous n’avons pas pu traiter ce formulaire. Réessayez.",
+      "server_error": "Une erreur est survenue. Réessayez dans un instant."
+    },
+    "confirmation": {
+      "metaTitle": "Commande confirmée — AutoLink",
+      "title": "Commande reçue.",
+      "body": "Gardez cette référence. Nous vous appelons pour confirmer l’adresse avant l’expédition.",
+      "refLabel": "Référence",
+      "statusLabel": "Statut",
+      "status": {
+        "PENDING": "Reçue",
+        "CONFIRMED": "Confirmée",
+        "PREPARING": "En préparation",
+        "SHIPPED": "Expédiée",
+        "DELIVERED": "Livrée",
+        "CANCELLED": "Annulée"
+      },
+      "summary": {
+        "name": "Nom",
+        "phone": "Téléphone",
+        "address": "Adresse",
+        "delivery": "Livraison",
+        "home": "À domicile",
+        "stopdesk": "Au bureau du transporteur",
+        "quantity": "Quantité",
+        "total": "Total à payer"
+      },
+      "privateNote": "Les détails de cette commande ne s’affichent que sur l’appareil qui l’a passée. Gardez la référence et contactez-nous si besoin.",
+      "next": {
+        "call": "Nous vous appelons pour confirmer la commande et l’adresse.",
+        "deliver": "Le livreur vous remet l’autocollant et la fiche d’activation.",
+        "pay": "Vous payez en espèces au moment de la livraison."
+      },
+      "backHome": "Retour à l’accueil"
     }
   }
 }

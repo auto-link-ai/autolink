@@ -13,11 +13,6 @@
       "en": "English"
     }
   },
-  "home": {
-    "eyebrow": "QR sticker for your car",
-    "title": "Your car can receive messages.",
-    "subtitle": "Lights left on, a blocked gate, a window open: whoever notices scans the sticker and lets you know. Your number stays private."
-  },
   "scanner": {
     "categories": {
       "LIGHTS_ON": "Lights are on",
@@ -30,6 +25,7 @@
   },
   "notFound": {
     "title": "Page not found",
+    "body": "The link may be wrong, or the page has moved.",
     "backHome": "Back to home"
   },
   "admin": {
@@ -132,6 +128,476 @@
         "server_error": "Something went wrong. Try again.",
         "network": "Couldn't connect. Check your network and try again."
       }
+    }
+  },
+  "site": {
+    "nav": {
+      "label": "Main navigation",
+      "home": "AutoLink, home",
+      "howItWorks": "How it works",
+      "pricing": "Pricing",
+      "faq": "FAQ",
+      "contact": "Contact",
+      "order": "Order",
+      "menu": "Open menu",
+      "closeMenu": "Close menu",
+      "skipToContent": "Skip to content"
+    },
+    "hero": {
+      "trust": {
+        "secure": "Secure",
+        "private": "Private number",
+        "noApp": "No app"
+      },
+      "title": "Your car can receive messages.",
+      "subtitle": "You hear about it within seconds.",
+      "titleAccent": "Your number never shows.",
+      "subtitleAccent": "Nobody sees it, ever.",
+      "body": "Lights left on, a blocked exit, an open window: whoever notices scans the sticker and tells you. No app, no account, and never your number.",
+      "cta": "Order my sticker",
+      "secondary": "See how it works",
+      "price": "{price} — one payment, cash on delivery",
+      "chips": {
+        "scan": {
+          "title": "Someone blocking you in?",
+          "body": "They scan the sticker and you hear about it."
+        },
+        "notify": {
+          "title": "Something wrong with the car?",
+          "body": "The alert reaches you right away."
+        }
+      },
+      "illustrationLabel": "An AutoLink sticker on the rear window of a car."
+    },
+    "steps": {
+      "eyebrow": "Three steps",
+      "title": "Stick it once, stay reachable for good.",
+      "subtitle": "Nothing to install, nothing to renew. The sticker does the work for you.",
+      "items": {
+        "stick": {
+          "title": "Stick it on",
+          "body": "On a window, clearly visible from outside. You activate it once with the private code supplied."
+        },
+        "scan": {
+          "title": "Someone scans it",
+          "body": "They open their phone camera, pick the reason and add a note if they want."
+        },
+        "notify": {
+          "title": "You get the alert",
+          "body": "The message reaches your phone and your email. Your number was never shown."
+        }
+      },
+      "more": "See the full detail"
+    },
+    "scenarios": {
+      "title": "One sticker.",
+      "titleAccent": "Many situations.",
+      "subtitle": "Things that happen in car parks every day. The person picks the reason, you get the alert.",
+      "items": {
+        "LIGHTS_ON": "Your headlights have been on for a while.",
+        "BLOCKING_ACCESS": "Your car is blocking an exit or a garage.",
+        "VEHICLE_PROBLEM": "A flat tyre, an open window, a leak.",
+        "POSSIBLE_DAMAGE": "Someone caught your car while parking.",
+        "URGENT": "Something that cannot wait.",
+        "OTHER": "Anything else, in a few words."
+      }
+    },
+    "privacy": {
+      "eyebrow": "Fully private",
+      "title": "Your number never appears.",
+      "subtitle": "Between you and whoever writes to you sits AutoLink. Your details stay protected and the alert reaches you within seconds.",
+      "card": {
+        "label": "Phone number",
+        "note": "The message reaches you, and nobody sees your number."
+      },
+      "columns": {
+        "scan": {
+          "title": "They scan the sticker",
+          "body": "The page opens straight away in the browser, with nothing to install."
+        },
+        "reason": {
+          "title": "They explain the problem",
+          "body": "They pick the reason and can add a note for you."
+        },
+        "notify": {
+          "title": "The alert reaches you",
+          "body": "A notification and an email within seconds, without showing your number."
+        }
+      }
+    },
+    "demo": {
+      "title": "What the person scanning sees.",
+      "subtitle": "The sticker opens one simple page: the reason, an optional note, send. Nothing to download, no account to create.",
+      "points": {
+        "scan": "The page opens straight from the camera.",
+        "pick": "Six clear reasons, plus an optional note.",
+        "notify": "Sent immediately, with no personal details on screen."
+      },
+      "screen": {
+        "heading": "Something wrong with this car?",
+        "subheading": "Tell the owner — they get the alert right away.",
+        "vehicle": "Peugeot 208 · Blue",
+        "question": "What is happening?",
+        "noteLabel": "Note (optional)",
+        "notePlaceholder": "Your headlights have been on for a while.",
+        "send": "Send the alert"
+      }
+    },
+    "pricing": {
+      "eyebrow": "Pricing",
+      "title": "One payment. No subscription.",
+      "subtitle": "You pay for the sticker on delivery. After that it works with nothing more to pay.",
+      "product": "The AutoLink sticker",
+      "oneTime": "One payment, per sticker",
+      "includes": {
+        "sticker": "A hard-wearing QR sticker, ready to stick",
+        "code": "The private activation code, on a separate slip",
+        "unlimited": "Unlimited messages from your sticker",
+        "notify": "Notifications on your phone and by email",
+        "noSubscription": "No subscription, no hidden fees"
+      },
+      "delivery": "Delivery to all 58 wilayas. The fee depends on your wilaya and is shown before you confirm.",
+      "cta": "Order now",
+      "howTitle": "How ordering works",
+      "how": {
+        "order": {
+          "title": "You order",
+          "body": "Name, phone, wilaya and address. Nothing more."
+        },
+        "call": {
+          "title": "We call you",
+          "body": "A short call to confirm the order and the address."
+        },
+        "deliver": {
+          "title": "We deliver",
+          "body": "The courier hands you the sticker and the activation slip."
+        },
+        "pay": {
+          "title": "You pay on delivery",
+          "body": "In cash, when the parcel reaches you."
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "Frequently asked",
+      "title": "What people ask most",
+      "all": "See all questions",
+      "items": {
+        "app": {
+          "q": "Does anyone need an app?",
+          "a": "No — not you, and not the person scanning. A phone camera is enough, and your messages open in the browser."
+        },
+        "number": {
+          "q": "Is my number visible?",
+          "a": "Never. Whoever scans the sticker sees no phone number, no name, no email, no address and no plate."
+        },
+        "price": {
+          "q": "How much does it cost?",
+          "a": "A single payment of {price} per sticker, plus delivery. No subscription."
+        },
+        "receive": {
+          "q": "How do I receive messages?",
+          "a": "By notification on your phone and by email. They also stay in your own dashboard."
+        },
+        "pay": {
+          "q": "How do I pay?",
+          "a": "Cash on delivery. We deliver to all 58 wilayas."
+        },
+        "activate": {
+          "q": "How do I activate my sticker?",
+          "a": "With the private code printed on a separate slip, never on the sticker itself. Knowing the QR address alone is therefore not enough to claim a car."
+        },
+        "abuse": {
+          "q": "What if someone misuses it?",
+          "a": "The number of messages per hour is limited, and you can deactivate your sticker at any time from your dashboard."
+        },
+        "change": {
+          "q": "What if I change car?",
+          "a": "Peel the sticker off or deactivate it in your dashboard, then activate a new one on the other car."
+        },
+        "emergency": {
+          "q": "Is this an emergency service?",
+          "a": "No. AutoLink is not an emergency service. If there is immediate danger, contact the appropriate emergency services."
+        },
+        "retention": {
+          "q": "How long do you keep messages?",
+          "a": "Messages are deleted automatically {period}."
+        }
+      }
+    },
+    "ctaBand": {
+      "title": "Give your car a way to reach you.",
+      "body": "Order your sticker, pay on delivery, stick it on and forget about it.",
+      "button": "Order my sticker"
+    },
+    "price": {
+      "unknown": "Price shown at checkout",
+      "unknownInline": "the price shown at checkout",
+      "retentionDays": "after {days} days",
+      "retentionUnknown": "after a limited period"
+    },
+    "footer": {
+      "tagline": "A QR sticker on your car: you hear about a problem without anyone seeing your number.",
+      "product": "Product",
+      "legal": "Information",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "rights": "© {year} {company}. All rights reserved."
+    },
+    "pages": {
+      "howItWorks": {
+        "metaTitle": "How it works — AutoLink",
+        "metaDescription": "From the sticker on the glass to the message on your phone, without ever showing your number.",
+        "eyebrow": "How it works",
+        "title": "From sticker to message received.",
+        "subtitle": "Two sides: the person scanning, and you. Neither needs an app.",
+        "passerByTitle": "For the person scanning",
+        "passerByIntro": "Three steps, under a minute, no account.",
+        "passerBy": {
+          "scan": {
+            "title": "They scan the QR",
+            "body": "With the phone camera. The page opens in the browser."
+          },
+          "reason": {
+            "title": "They pick the reason",
+            "body": "Lights on, blocking access, vehicle problem, possible damage, urgent or other."
+          },
+          "send": {
+            "title": "They send",
+            "body": "They can add a note and a way to reach them back. Then it is done."
+          }
+        },
+        "ownerTitle": "For you, the owner",
+        "ownerIntro": "One setup, then you stop thinking about it.",
+        "owner": {
+          "order": {
+            "title": "You order",
+            "body": "Cash on delivery. You receive the sticker and a slip with the activation code."
+          },
+          "activate": {
+            "title": "You activate",
+            "body": "You enter the sticker ID and the private code from the slip."
+          },
+          "stick": {
+            "title": "You stick it on",
+            "body": "On clean, dry glass, clearly visible from outside."
+          },
+          "notify": {
+            "title": "You turn on notifications",
+            "body": "So messages reach your phone the moment they arrive."
+          }
+        },
+        "iosNote": "On iPhone, add the page to your home screen first: iOS only delivers web notifications to sites installed that way.",
+        "emergencyTitle": "AutoLink is not an emergency service",
+        "emergency": "If there is immediate danger, contact the appropriate emergency services. A message sent through AutoLink notifies the owner, nothing more."
+      },
+      "pricing": {
+        "metaTitle": "Pricing — AutoLink",
+        "metaDescription": "One payment, no subscription, cash on delivery across all 58 wilayas.",
+        "eyebrow": "Pricing",
+        "title": "One price, once.",
+        "subtitle": "The sticker is paid for on delivery. After that it works with no subscription and no hidden fees."
+      },
+      "faq": {
+        "metaTitle": "FAQ — AutoLink",
+        "metaDescription": "Apps, private numbers, price, activation and delivery: answers to the most common questions.",
+        "eyebrow": "Frequently asked",
+        "title": "Your questions, answered.",
+        "subtitle": "If your answer is not here, write to us."
+      },
+      "contact": {
+        "metaTitle": "Contact — AutoLink",
+        "metaDescription": "Write to us about an order, a delivery, or a question about your sticker.",
+        "eyebrow": "Contact",
+        "title": "Let's talk.",
+        "subtitle": "About an order, a delivery, or a question about your sticker.",
+        "email": "Email",
+        "phone": "Phone",
+        "whatsapp": "WhatsApp",
+        "hours": "Hours",
+        "address": "Address",
+        "ownerNoticeTitle": "Trying to reach a car owner?",
+        "ownerNotice": "Scan the sticker on their window: your message goes straight to them. We cannot pass a message on for you."
+      }
+    }
+  },
+  "legal": {
+    "eyebrow": "Legal",
+    "draftNotice": "A template to be reviewed by a lawyer before launch. Replace everything in square brackets.",
+    "updated": "Last updated: to be completed before launch.",
+    "privacy": {
+      "metaDescription": "What AutoLink collects, why, and how long it is kept.",
+      "title": "Privacy policy",
+      "intro": "{company} operates AutoLink. This page explains what we collect, why, and how long we keep it.",
+      "sections": [
+        {
+          "title": "What we collect",
+          "body": [
+            "For the owner: an email address, a hashed password, the vehicle details you enter and, if you order, your delivery details.",
+            "For the person scanning: the reason chosen, the message written, an optional way to reach them back, and a random session id. No account is created."
+          ]
+        },
+        {
+          "title": "What we never show",
+          "body": [
+            "Your phone number, name, email, address and plate number are never shown to the person scanning the sticker."
+          ]
+        },
+        {
+          "title": "IP addresses",
+          "body": [
+            "IP addresses are never stored in the clear. They are turned into an irreversible fingerprint, used only to limit abuse."
+          ]
+        },
+        {
+          "title": "Retention",
+          "body": [
+            "Messages are deleted automatically {period}. Orders are kept for accounting and delivery follow-up."
+          ]
+        },
+        {
+          "title": "Trackers",
+          "body": [
+            "No third-party analytics, no advertising pixel, no profiling. One technical cookie is used for the session."
+          ]
+        },
+        {
+          "title": "Your rights",
+          "body": [
+            "To access, correct or delete your data, write to {email}. Postal address: {address}."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "metaDescription": "Terms for using the AutoLink service and buying the stickers.",
+      "title": "Terms of use",
+      "intro": "By ordering or using an AutoLink sticker, you accept the terms below, offered by {company}.",
+      "sections": [
+        {
+          "title": "The service",
+          "body": [
+            "AutoLink lets someone notify a vehicle owner from a QR sticker, without seeing the owner's contact details."
+          ]
+        },
+        {
+          "title": "Not an emergency service",
+          "body": [
+            "AutoLink is not an emergency service. If there is immediate danger, contact the appropriate emergency services."
+          ]
+        },
+        {
+          "title": "Ordering and payment",
+          "body": [
+            "The sticker is sold at the price shown at the time of the order, payable in cash on delivery. Delivery fees depend on the wilaya and are shown before you confirm."
+          ]
+        },
+        {
+          "title": "Acceptable use",
+          "body": [
+            "Messages must stay related to the vehicle. Insults, harassment, advertising and repeated messages without reason are forbidden and may lead to a block."
+          ]
+        },
+        {
+          "title": "Availability",
+          "body": [
+            "We do our best to keep the service available, without being able to guarantee uninterrupted access."
+          ]
+        },
+        {
+          "title": "Contact",
+          "body": [
+            "For any question about these terms: {email} — {address}."
+          ]
+        }
+      ]
+    }
+  },
+  "order": {
+    "metaTitle": "Order — AutoLink",
+    "metaDescription": "Order your AutoLink sticker. Cash on delivery, across all 58 wilayas.",
+    "eyebrow": "Order",
+    "title": "Order your sticker.",
+    "subtitle": "You pay on delivery. We call you to confirm before anything ships.",
+    "unavailable": "Ordering is briefly unavailable. Please try again in a few minutes.",
+    "notice": "We use these details only to deliver this order and to call you about it.",
+    "fields": {
+      "quantity": "Quantity",
+      "name": "Full name",
+      "phone": "Phone",
+      "phoneHint": "Algerian mobile, e.g. 05 12 34 56 78",
+      "email": "Email (optional)",
+      "emailHint": "To receive the confirmation in writing.",
+      "wilaya": "Wilaya",
+      "wilayaPlaceholder": "Choose your wilaya",
+      "commune": "Commune",
+      "address": "Address",
+      "deliveryType": "Delivery method",
+      "home": "To my address",
+      "stopdesk": "To the courier desk",
+      "notes": "Delivery note (optional)",
+      "notesHint": "A landmark, a floor, a time that suits you."
+    },
+    "summary": {
+      "title": "Your order",
+      "unitPrice": "Unit price",
+      "quantity": "Quantity",
+      "delivery": "Delivery",
+      "deliveryUnknown": "Choose a wilaya",
+      "total": "Total to pay",
+      "cod": "Cash on delivery. Nothing to pay now."
+    },
+    "actions": {
+      "review": "Review my order",
+      "edit": "Edit",
+      "confirm": "Confirm order",
+      "confirming": "Sending…"
+    },
+    "errors": {
+      "required": "This field is required.",
+      "invalid": "That value is not valid.",
+      "too_short": "That is a little too short.",
+      "too_long": "That is too long.",
+      "too_small": "The minimum quantity is 1.",
+      "too_large": "That quantity is above the maximum allowed.",
+      "invalid_phone": "Enter a valid Algerian mobile (05, 06 or 07).",
+      "invalid_email": "That email address is not valid.",
+      "no_delivery": "We do not deliver to that wilaya yet. Please contact us.",
+      "rate_limited": "Too many orders from this connection. Try again in an hour.",
+      "rejected": "We could not process this form. Please try again.",
+      "server_error": "Something went wrong. Please try again in a moment."
+    },
+    "confirmation": {
+      "metaTitle": "Order confirmed — AutoLink",
+      "title": "Order received.",
+      "body": "Keep this reference. We will call you to confirm the address before anything ships.",
+      "refLabel": "Reference",
+      "statusLabel": "Status",
+      "status": {
+        "PENDING": "Received",
+        "CONFIRMED": "Confirmed",
+        "PREPARING": "Being prepared",
+        "SHIPPED": "Shipped",
+        "DELIVERED": "Delivered",
+        "CANCELLED": "Cancelled"
+      },
+      "summary": {
+        "name": "Name",
+        "phone": "Phone",
+        "address": "Address",
+        "delivery": "Delivery",
+        "home": "To my address",
+        "stopdesk": "To the courier desk",
+        "quantity": "Quantity",
+        "total": "Total to pay"
+      },
+      "privateNote": "The details of this order are shown only on the device that placed it. Keep the reference and contact us if you need anything.",
+      "next": {
+        "call": "We call you to confirm the order and the address.",
+        "deliver": "The courier hands you the sticker and the activation slip.",
+        "pay": "You pay in cash when it is delivered."
+      },
+      "backHome": "Back to home"
     }
   }
 }

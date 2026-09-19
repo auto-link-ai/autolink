@@ -26,6 +26,8 @@ export interface Setting {
   captchaThreshold: number;
   /** Admin login attempts per hour, counted per IP hash and per email. */
   rateLimitAdminLoginPerHour: number;
+  /** Orders per hour from one IP hash (guest checkout abuse guard). */
+  rateLimitOrdersPerHour: number;
   deliveryFees: DeliveryFee[];
   maxOrderQuantity: number;
   createdAt: Date;
@@ -52,6 +54,7 @@ const settingSchema = new Schema<Setting>(
     rateLimitPerIpPerHour: { type: Number, default: 10, min: 1 },
     captchaThreshold: { type: Number, default: 3, min: 0 },
     rateLimitAdminLoginPerHour: { type: Number, default: 10, min: 1 },
+    rateLimitOrdersPerHour: { type: Number, default: 5, min: 1 },
     deliveryFees: { type: [deliveryFeeSchema], default: [] },
     maxOrderQuantity: { type: Number, default: 10, min: 1 },
   },

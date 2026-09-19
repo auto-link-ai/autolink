@@ -60,5 +60,10 @@ const orderSchema = new Schema<Order>(
   { timestamps: true, collection: 'orders' },
 );
 
+// Admin list: newest first, optionally by status; search by phone.
+orderSchema.index({ status: 1, createdAt: -1 });
+orderSchema.index({ createdAt: -1 });
+orderSchema.index({ phone: 1 });
+
 export const OrderModel: Model<Order> =
   (models.Order as Model<Order> | undefined) ?? model<Order>('Order', orderSchema);

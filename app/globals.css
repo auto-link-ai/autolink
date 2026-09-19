@@ -2,49 +2,51 @@
 
 /* ==========================================================================
    AutoLink design tokens
-   - Brand palette: fixed by the spec (§2.3).
-   - Structural scale (type scale, radii, elevation, hard offset shadow,
-     eyebrow labels, 1200px container): taken from the design source file.
-   Build every page from these tokens. Do not add a second visual language.
+   Warm palette: cream/peach surfaces, one orange accent, near-black ink.
+   Structure: floating pill header, generous radii, soft diffuse shadows,
+   full-bleed section bands. Build every page from these tokens.
    ========================================================================== */
 
 :root {
   /* Brand */
-  --navy: #0b1220;
-  --blue: #2563eb;
-  --sky: #38bdf8;
+  --orange: #f2541b;
+  --orange-soft: #ff7a45;
+  --cream: #fdf7f3;
+  --peach: #fbe4d6;
+  --ink: #1d1714;
   --white: #ffffff;
-  --gray: #f1f5f9;
 
-  /* Semantic roles (contrast checked: every text colour ≥ 4.5:1 on --surface and --surface-2) */
-  --surface: var(--white);
-  --surface-2: var(--gray);
-  --surface-inverse: var(--navy);
-  --text: var(--navy);
-  --text-secondary: #334155;
-  --text-muted: #5b6474;
-  --text-on-inverse: var(--white);
-  --text-secondary-on-inverse: #cbd5e1;
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --accent: var(--blue);
-  --accent-hover: #1d4ed8;
+  /* Semantic roles (contrast checked on --surface and --surface-2) */
+  --surface: var(--cream);
+  --surface-2: #fff9f5;
+  --surface-3: #fdeee4;
+  --surface-inverse: #241d19;
+  --text: var(--ink);
+  --text-secondary: #6b5b52;
+  --text-muted: #9a877c;
+  --text-on-inverse: #fdf7f3;
+  --text-secondary-on-inverse: #c9b8ae;
+  --border: #f0ded2;
+  --border-strong: #e2c9b8;
+  --accent: var(--orange);
+  --accent-hover: #d8430d;
   --accent-ink: var(--white);
-  --signal: var(--sky);
-  --signal-ink: var(--navy);
-  --success: #15803d;
-  --danger: #b91c1c;
-  --focus-ring: var(--blue);
+  --accent-soft: #fdece2;
+  --signal: var(--orange-soft);
+  --signal-ink: var(--ink);
+  --success: #1a7f4b;
+  --danger: #c2371a;
+  --focus-ring: var(--orange);
 
-  /* Elevation */
-  --elev-sm: 0 1px 2px rgb(11 18 32 / 0.08);
-  --elev-md: 0 6px 16px rgb(11 18 32 / 0.1);
-  --elev-lg: 0 16px 40px rgb(11 18 32 / 0.14);
+  /* Elevation — soft and warm, never grey */
+  --elev-sm: 0 2px 10px rgb(93 55 34 / 0.06);
+  --elev-md: 0 10px 30px rgb(93 55 34 / 0.09);
+  --elev-lg: 0 24px 60px rgb(93 55 34 / 0.14);
 
-  /* Hard offset shadow for primary actions; the x offset flips in RTL. */
-  --hard-x: 2px;
-  --elev-hard: var(--hard-x) 2px 0 var(--navy);
-  --elev-hard-lg: calc(var(--hard-x) * 2) 4px 0 var(--navy);
+  /* Page background: peach glow at the top fading into cream */
+  --page-bg:
+    radial-gradient(1200px 520px at 50% -180px, #fcdcc9 0%, rgb(252 220 201 / 0) 70%),
+    linear-gradient(180deg, #fdece3 0%, var(--cream) 38%, var(--cream) 100%);
 
   /* Type families (next/font provides the --font-plex-* variables) */
   --app-font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
@@ -57,29 +59,28 @@
     sans-serif;
 }
 
-[dir="rtl"] {
-  --hard-x: -2px;
-}
-
 @theme inline {
-  --color-navy: var(--navy);
-  --color-blue: var(--blue);
-  --color-sky: var(--sky);
+  --color-orange: var(--orange);
+  --color-cream: var(--cream);
+  --color-peach: var(--peach);
+  --color-ink: var(--ink);
   --color-white: var(--white);
-  --color-gray: var(--gray);
 
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
   --color-surface-inverse: var(--surface-inverse);
   --color-text: var(--text);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
   --color-text-on-inverse: var(--text-on-inverse);
+  --color-text-secondary-on-inverse: var(--text-secondary-on-inverse);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
   --color-signal: var(--signal);
   --color-signal-ink: var(--signal-ink);
   --color-success: var(--success);
@@ -91,44 +92,43 @@
   --shadow-card-sm: var(--elev-sm);
   --shadow-card-md: var(--elev-md);
   --shadow-card-lg: var(--elev-lg);
-  --shadow-hard: var(--elev-hard);
-  --shadow-hard-lg: var(--elev-hard-lg);
 }
 
 @theme {
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-xl: 36px;
 
   --container-page: 1200px;
 
   /* Type scale — mobile values; the 48rem media query below steps them up. */
-  --text-display: 2rem;
-  --text-display--line-height: 1.05;
+  --text-display: 2.5rem;
+  --text-display--line-height: 1.08;
   --text-display--letter-spacing: -0.02em;
   --text-display--font-weight: 700;
   --text-h1: 2rem;
-  --text-h1--line-height: 1.1;
+  --text-h1--line-height: 1.12;
   --text-h1--letter-spacing: -0.015em;
   --text-h1--font-weight: 700;
-  --text-h2: 1.5rem;
+  --text-h2: 1.75rem;
   --text-h2--line-height: 1.15;
-  --text-h2--letter-spacing: -0.01em;
+  --text-h2--letter-spacing: -0.015em;
   --text-h2--font-weight: 700;
   --text-h3: 1.125rem;
   --text-h3--line-height: 1.3;
   --text-h3--font-weight: 700;
   --text-eyebrow: 0.75rem;
   --text-eyebrow--line-height: 1.4;
-  --text-eyebrow--letter-spacing: 0.08em;
+  --text-eyebrow--letter-spacing: 0.1em;
   --text-eyebrow--font-weight: 600;
 }
 
 @media (min-width: 48rem) {
   :root {
-    --text-display: 3.75rem;
-    --text-h1: 2.5rem;
-    --text-h2: 2rem;
+    --text-display: 4.5rem;
+    --text-h1: 3rem;
+    --text-h2: 2.75rem;
     --text-h3: 1.25rem;
   }
 }
@@ -140,7 +140,8 @@
   }
 
   body {
-    background: var(--surface);
+    background: var(--page-bg);
+    background-attachment: fixed;
     color: var(--text);
     font-family: var(--app-font-sans);
     -webkit-font-smoothing: antialiased;
@@ -183,13 +184,11 @@
     }
   }
 
-  /* Section label: mono caps with a sky rule on the leading edge. */
+  /* Section label: small caps in accent orange. */
   .eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    border-inline-start: 4px solid var(--signal);
-    padding-inline-start: 0.75rem;
     font-family: var(--app-font-mono);
     font-size: var(--text-eyebrow);
     line-height: var(--text-eyebrow--line-height);
@@ -200,5 +199,12 @@
   }
   :lang(ar) .eyebrow {
     font-family: var(--app-font-sans);
+  }
+
+  /* White card on the cream page. */
+  .card {
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    box-shadow: var(--elev-sm);
   }
 }

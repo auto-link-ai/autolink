@@ -126,7 +126,7 @@ export default async function AdminTagsPage({ params, searchParams }: Props) {
                   className={cx(
                     'inline-flex h-11 items-center rounded-full border px-4 text-sm font-semibold',
                     active
-                      ? 'border-navy bg-surface-inverse text-text-on-inverse'
+                      ? 'border-accent bg-accent text-accent-ink'
                       : 'border-border-strong bg-surface text-text-secondary hover:bg-surface-2',
                   )}
                 >

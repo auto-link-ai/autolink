@@ -48,6 +48,24 @@ export const ORDER_STATUSES = [
 ] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
+/** Admin actions on an order's status (see lib/orders/transitions.ts for the rules). */
+export const ORDER_ACTIONS = ['confirm', 'prepare', 'ship', 'deliver', 'cancel'] as const;
+export type OrderAction = (typeof ORDER_ACTIONS)[number];
+
+/** Order form field limits (characters). Quantity limits come from settings. */
+export const ORDER_FIELD_LIMITS = {
+  name: { min: 2, max: 80 },
+  commune: { min: 2, max: 80 },
+  address: { min: 5, max: 200 },
+  notes: { max: 300 },
+  email: { max: 254 },
+  courier: { max: 60 },
+  trackingNumber: { max: 60 },
+} as const;
+
+/** 'AL-' + 6 Crockford base32 characters, shown to the customer. */
+export const ORDER_REF_PATTERN = /^AL-[0-9A-HJKMNP-TV-Z]{6}$/;
+
 export const ADMIN_ROLES = ['ADMIN', 'SUPPORT'] as const;
 export type AdminRole = (typeof ADMIN_ROLES)[number];
 

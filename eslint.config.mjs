@@ -26,6 +26,12 @@ const eslintConfig = [
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "error",
+      // Repository functions keep the actor in their signature even when the
+      // query does not need it (rule 3), so `_actor` is intentionally unused.
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" },
+      ],
     },
   },
   // CLAUDE.md rule 3: the repository layer is the security boundary.

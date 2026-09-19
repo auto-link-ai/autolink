@@ -44,6 +44,8 @@ tagSchema.index({ batchId: 1, status: 1 });
 // Admin list: newest first, optionally filtered by status.
 tagSchema.index({ status: 1, createdAt: -1 });
 tagSchema.index({ createdAt: -1 });
+// Tags linked to an order (release on cancel / reassignment).
+tagSchema.index({ orderId: 1 }, { partialFilterExpression: { orderId: { $type: 'objectId' } } });
 
 export const TagModel: Model<Tag> =
   (models.Tag as Model<Tag> | undefined) ?? model<Tag>('Tag', tagSchema);
