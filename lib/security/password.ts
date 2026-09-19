@@ -1,5 +1,7 @@
 import 'server-only';
+import { randomBytes } from 'node:crypto';
 import { argon2id, hash, verify } from 'argon2';
+import { encodeCrockford } from '@/lib/tags/generate';
 
 /**
  * argon2id for passwords and activation codes.
@@ -16,6 +18,15 @@ const ARGON2_OPTIONS = {
 
 export function hashSecret(plain: string): Promise<string> {
   return hash(plain, ARGON2_OPTIONS);
+}
+
+/**
+ * Generated admin password: 20 Crockford characters (100 bits) in groups of 5,
+ * e.g. `7K3M9-QXZ2A-4B8CD-1EFGH`. No look-alike letters (I, L, O, U), so it
+ * survives being read off a screen and typed by hand.
+ */
+export function generateReadablePassword(): string {
+  return encodeCrockford(randomBytes(13), 20).match(/.{5}/g)!.join('-');
 }
 
 /** Returns false on mismatch or on a malformed hash — never throws. */

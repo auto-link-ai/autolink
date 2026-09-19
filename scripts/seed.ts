@@ -10,14 +10,13 @@
  * Runs under `tsx --conditions=react-server` so `server-only` modules load.
  * All data access goes through repositories, like the rest of the app.
  */
-import { randomBytes } from 'node:crypto';
 import { z } from 'zod';
 import { disconnectFromDatabase } from '@/lib/db/connect';
 import { adminUsersRepository } from '@/lib/db/repositories/adminUsers';
 import { syncAllIndexes } from '@/lib/db/repositories/maintenance';
 import { settingsRepository } from '@/lib/db/repositories/settings';
 import { wilayasRepository } from '@/lib/db/repositories/wilayas';
-import { hashSecret } from '@/lib/security/password';
+import { generateReadablePassword, hashSecret } from '@/lib/security/password';
 import { WILAYAS } from './data/wilayas';
 
 /**
@@ -66,7 +65,7 @@ async function main() {
   }
 
   const wasGenerated = !env.SEED_ADMIN_PASSWORD;
-  const password = env.SEED_ADMIN_PASSWORD ?? randomBytes(18).toString('base64url');
+  const password = env.SEED_ADMIN_PASSWORD ?? generateReadablePassword();
   const { created } = await adminUsersRepository.createIfMissing({
     email: adminEmail,
     passwordHash: await hashSecret(password),

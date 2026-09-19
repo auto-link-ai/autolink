@@ -14,7 +14,8 @@
     "test:e2e": "playwright test",
     "seed": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/seed.ts",
     "print:preview": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/print-preview.ts",
-    "check:codes": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/check-codes.ts"
+    "check:codes": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/check-codes.ts",
+    "admin:password": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/admin-password.ts"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.3",

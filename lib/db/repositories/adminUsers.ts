@@ -53,6 +53,19 @@ export const adminUsersRepository = {
   },
 
   /**
+   * Script-only (`pnpm admin:password`): replaces an existing admin's password.
+   * Returns false if no admin has that email.
+   */
+  async setPasswordHash(email: string, passwordHash: string): Promise<boolean> {
+    await connectToDatabase();
+    const result = await AdminUserModel.updateOne(
+      { email: email.trim().toLowerCase() },
+      { $set: { passwordHash } },
+    );
+    return result.matchedCount === 1;
+  },
+
+  /**
    * Seed helper. Creates the admin only if the email is not taken; never
    * overwrites an existing account's password.
    */

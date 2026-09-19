@@ -69,6 +69,7 @@ Sticker artwork, the designer brief and alignment checks: see [print/README.md](
 | `pnpm test` | Vitest unit tests |
 | `pnpm test:e2e` | Playwright (starts its own dev server on port 3100) |
 | `pnpm seed` | Seed / sync the database |
+| `pnpm admin:password <email>` | Give an existing admin a new generated password (shown once) |
 | `pnpm print:preview` | Render sample print files into `print/preview/` (no database) |
 | `pnpm check:codes <tags.csv>` | Prove a batch's activation codes are stored nowhere in plaintext |
 
