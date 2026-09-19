@@ -17,6 +17,16 @@ export interface RateLimitResult {
 
 export const rateLimitsRepository = {
   /**
+   * Script-only (`pnpm reset:ratelimits`): drops every counter so a test run
+   * starts from zero. The script refuses to touch anything but a test database.
+   */
+  async clearAll(): Promise<number> {
+    await connectToDatabase();
+    const result = await RateLimitModel.deleteMany({});
+    return result.deletedCount ?? 0;
+  },
+
+  /**
    * Counts one hit against `key` and reports whether it is within `limit` for
    * the current window. A single atomic update: it increments inside a live
    * window, or starts a new window (count 1) once the previous one has expired.

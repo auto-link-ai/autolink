@@ -34,7 +34,9 @@
     "nav": {
       "label": "Admin navigation",
       "tags": "Tags",
-      "logout": "Sign out"
+      "logout": "Sign out",
+      "orders": "Orders",
+      "settings": "Settings"
     },
     "login": {
       "title": "Admin sign-in",
@@ -127,6 +129,111 @@
         "forbidden": "Request refused.",
         "server_error": "Something went wrong. Try again.",
         "network": "Couldn't connect. Check your network and try again."
+      }
+    },
+    "orders": {
+      "title": "Orders",
+      "subtitle": "{pending} order(s) waiting to be confirmed.",
+      "export": "Export CSV",
+      "results": {
+        "ok": "Change saved.",
+        "not_found": "Order not found.",
+        "not_allowed": "That action is not possible in this state.",
+        "conflict": "The order changed in the meantime. Try again.",
+        "tags_missing": "Assign all of the order’s tags first.",
+        "wrong_count": "The number of tags must match the quantity ordered.",
+        "unavailable": "Some tags are not available (already assigned or activated).",
+        "invalid": "Invalid input."
+      },
+      "status": {
+        "PENDING": "Received",
+        "CONFIRMED": "Confirmed",
+        "PREPARING": "Being prepared",
+        "SHIPPED": "Shipped",
+        "DELIVERED": "Delivered",
+        "CANCELLED": "Cancelled"
+      },
+      "actions": {
+        "confirm": "Confirm",
+        "prepare": "Start preparing",
+        "ship": "Mark shipped",
+        "deliver": "Mark delivered",
+        "cancel": "Cancel"
+      },
+      "list": {
+        "title": "All orders",
+        "count": "{count} order(s)",
+        "filterLabel": "Filter by status",
+        "filterAll": "All",
+        "searchLabel": "Search",
+        "searchPlaceholder": "AL-7K3M9Q or 05…",
+        "searchSubmit": "Search",
+        "invalidSearch": "Enter a reference (AL-…) or a phone number.",
+        "empty": "No orders for this filter.",
+        "columns": {
+          "ref": "Reference",
+          "date": "Date",
+          "customer": "Customer",
+          "wilaya": "Wilaya",
+          "quantity": "Qty",
+          "total": "Total",
+          "status": "Status"
+        },
+        "pagination": "Orders pagination",
+        "previous": "Previous",
+        "next": "Next",
+        "pageOf": "Page {page} of {pages} · {size} per page"
+      },
+      "detail": {
+        "customer": "Customer",
+        "phone": "Phone",
+        "email": "Email",
+        "address": "Address",
+        "delivery": "Delivery",
+        "home": "To the address",
+        "stopdesk": "Courier desk",
+        "notes": "Note",
+        "quantity": "Quantity",
+        "unitPrice": "Unit price",
+        "deliveryFee": "Delivery fee",
+        "total": "Total",
+        "noActions": "No action is possible in this state.",
+        "assignLabel": "Tags to assign ({count} expected)",
+        "assignHint": "IDs separated by a space, a comma or a new line.",
+        "assignSubmit": "Assign tags",
+        "courier": "Courier",
+        "tracking": "Tracking number",
+        "saveShipping": "Save delivery details"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "The price, the maximum quantity and the delivery fees used by the site and by orders.",
+      "readOnly": "Your account can view these settings but not change them.",
+      "save": "Save settings",
+      "results": {
+        "ok": "Settings saved.",
+        "invalid": "Some values are invalid. Nothing was saved.",
+        "error": "Could not save. Please try again.",
+        "forbidden": "Only an ADMIN account can change these settings."
+      },
+      "commerce": {
+        "title": "Price and orders",
+        "description": "These values apply to new orders immediately.",
+        "unitPrice": "Unit price (DZD)",
+        "currencyLabel": "Currency label",
+        "maxQuantity": "Maximum quantity per order",
+        "orderRateLimit": "Orders per hour per IP"
+      },
+      "fees": {
+        "title": "Delivery fees by wilaya",
+        "description": "The initial values are PLACEHOLDERS. Enter your real rates before the first order.",
+        "wilaya": "Wilaya",
+        "home": "To the address",
+        "stopdesk": "Stop desk",
+        "fillAll": "Apply to all",
+        "fillHome": "Home (all)",
+        "fillStopdesk": "Stop desk (all)"
       }
     }
   },

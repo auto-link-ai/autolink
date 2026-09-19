@@ -9,7 +9,8 @@ import { formatDzd } from '@/lib/format/currency';
 import { computeOrderTotals, type FeeRow } from '@/lib/orders/totals';
 import type { DeliveryType } from '@/lib/domain/constants';
 import type { OrderField } from '@/lib/validation/order';
-import { ORDER_FORM_INITIAL, placeOrderAction, type OrderFormState } from './actions';
+import { placeOrderAction } from './actions';
+import { ORDER_FORM_INITIAL, type OrderFormState } from './formState';
 
 export interface OrderFormLabels {
   fields: Record<
@@ -32,27 +33,36 @@ interface Props {
   maxQuantity: number;
 }
 
+/**
+ * Label, control, then hint or error. The label points at the control by id
+ * rather than wrapping it: a wrapping label would swallow every <option> of a
+ * select into its own text, leaving the field without a usable name.
+ */
 function Field({
+  id,
   label,
   hint,
   error,
   children,
 }: {
+  id: string;
   label: string;
   hint?: string;
   error?: string;
   children: React.ReactNode;
 }) {
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-bold text-text">{label}</span>
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={id} className="text-sm font-bold text-text">
+        {label}
+      </label>
       {children}
       {error ? (
         <span className="text-sm font-medium text-danger">{error}</span>
       ) : (
         hint && <span className="text-sm text-text-muted">{hint}</span>
       )}
-    </label>
+    </div>
   );
 }
 
@@ -86,8 +96,9 @@ export function OrderForm({ locale, labels, wilayas, fees, unitPrice, currencyLa
 
       <div className={cx('rounded-xl bg-white p-6 shadow-card-sm md:p-8', !showDetails && 'hidden')}>
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label={labels.fields.quantity} error={fieldError('quantity')}>
+          <Field id="order-quantity" label={labels.fields.quantity} error={fieldError('quantity')}>
             <select
+              id="order-quantity"
               name="quantity"
               value={quantity}
               onChange={(event) => setQuantity(Number(event.target.value))}
@@ -101,20 +112,21 @@ export function OrderForm({ locale, labels, wilayas, fees, unitPrice, currencyLa
             </select>
           </Field>
 
-          <Field label={labels.fields.name} error={fieldError('customerName')}>
-            <input name="customerName" required maxLength={80} autoComplete="name" className={INPUT} />
+          <Field id="order-name" label={labels.fields.name} error={fieldError('customerName')}>
+            <input id="order-name" name="customerName" required maxLength={80} autoComplete="name" className={INPUT} />
           </Field>
 
-          <Field label={labels.fields.phone} hint={labels.fields.phoneHint} error={fieldError('phone')}>
-            <input name="phone" required inputMode="tel" dir="ltr" autoComplete="tel" className={INPUT} />
+          <Field id="order-phone" label={labels.fields.phone} hint={labels.fields.phoneHint} error={fieldError('phone')}>
+            <input id="order-phone" name="phone" required inputMode="tel" dir="ltr" autoComplete="tel" className={INPUT} />
           </Field>
 
-          <Field label={labels.fields.email} hint={labels.fields.emailHint} error={fieldError('email')}>
-            <input name="email" type="email" dir="ltr" autoComplete="email" className={INPUT} />
+          <Field id="order-email" label={labels.fields.email} hint={labels.fields.emailHint} error={fieldError('email')}>
+            <input id="order-email" name="email" type="email" dir="ltr" autoComplete="email" className={INPUT} />
           </Field>
 
-          <Field label={labels.fields.wilaya} error={fieldError('wilayaCode')}>
+          <Field id="order-wilaya" label={labels.fields.wilaya} error={fieldError('wilayaCode')}>
             <select
+              id="order-wilaya"
               name="wilayaCode"
               required
               value={wilayaCode}
@@ -132,13 +144,13 @@ export function OrderForm({ locale, labels, wilayas, fees, unitPrice, currencyLa
             </select>
           </Field>
 
-          <Field label={labels.fields.commune} error={fieldError('commune')}>
-            <input name="commune" required maxLength={80} className={INPUT} />
+          <Field id="order-commune" label={labels.fields.commune} error={fieldError('commune')}>
+            <input id="order-commune" name="commune" required maxLength={80} className={INPUT} />
           </Field>
 
           <div className="sm:col-span-2">
-            <Field label={labels.fields.address} error={fieldError('address')}>
-              <input name="address" required maxLength={200} autoComplete="street-address" className={INPUT} />
+            <Field id="order-address" label={labels.fields.address} error={fieldError('address')}>
+              <input id="order-address" name="address" required maxLength={200} autoComplete="street-address" className={INPUT} />
             </Field>
           </div>
 
@@ -176,8 +188,8 @@ export function OrderForm({ locale, labels, wilayas, fees, unitPrice, currencyLa
           </div>
 
           <div className="sm:col-span-2">
-            <Field label={labels.fields.notes} hint={labels.fields.notesHint} error={fieldError('deliveryNotes')}>
-              <textarea name="deliveryNotes" maxLength={300} rows={3} className={cx(INPUT, 'h-auto py-3')} />
+            <Field id="order-notes" label={labels.fields.notes} hint={labels.fields.notesHint} error={fieldError('deliveryNotes')}>
+              <textarea id="order-notes" name="deliveryNotes" maxLength={300} rows={3} className={cx(INPUT, 'h-auto py-3')} />
             </Field>
           </div>
         </div>

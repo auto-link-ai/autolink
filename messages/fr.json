@@ -34,7 +34,9 @@
     "nav": {
       "label": "Navigation administration",
       "tags": "Étiquettes",
-      "logout": "Se déconnecter"
+      "logout": "Se déconnecter",
+      "orders": "Commandes",
+      "settings": "Réglages"
     },
     "login": {
       "title": "Connexion administrateur",
@@ -127,6 +129,111 @@
         "forbidden": "Requête refusée.",
         "server_error": "Une erreur est survenue. Réessayez.",
         "network": "Connexion impossible. Vérifiez votre réseau et réessayez."
+      }
+    },
+    "orders": {
+      "title": "Commandes",
+      "subtitle": "{pending} commande(s) en attente de confirmation.",
+      "export": "Exporter en CSV",
+      "results": {
+        "ok": "Modification enregistrée.",
+        "not_found": "Commande introuvable.",
+        "not_allowed": "Cette action n’est pas possible dans cet état.",
+        "conflict": "La commande a changé entre-temps. Réessayez.",
+        "tags_missing": "Assignez d’abord toutes les étiquettes de la commande.",
+        "wrong_count": "Le nombre d’étiquettes doit correspondre à la quantité commandée.",
+        "unavailable": "Certaines étiquettes ne sont pas disponibles (déjà assignées ou activées).",
+        "invalid": "Saisie invalide."
+      },
+      "status": {
+        "PENDING": "Reçue",
+        "CONFIRMED": "Confirmée",
+        "PREPARING": "En préparation",
+        "SHIPPED": "Expédiée",
+        "DELIVERED": "Livrée",
+        "CANCELLED": "Annulée"
+      },
+      "actions": {
+        "confirm": "Confirmer",
+        "prepare": "Mettre en préparation",
+        "ship": "Marquer expédiée",
+        "deliver": "Marquer livrée",
+        "cancel": "Annuler"
+      },
+      "list": {
+        "title": "Toutes les commandes",
+        "count": "{count} commande(s)",
+        "filterLabel": "Filtrer par statut",
+        "filterAll": "Toutes",
+        "searchLabel": "Rechercher",
+        "searchPlaceholder": "AL-7K3M9Q ou 05…",
+        "searchSubmit": "Rechercher",
+        "invalidSearch": "Entrez une référence (AL-…) ou un numéro de téléphone.",
+        "empty": "Aucune commande pour ce filtre.",
+        "columns": {
+          "ref": "Référence",
+          "date": "Date",
+          "customer": "Client",
+          "wilaya": "Wilaya",
+          "quantity": "Qté",
+          "total": "Total",
+          "status": "Statut"
+        },
+        "pagination": "Pagination des commandes",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "pageOf": "Page {page} sur {pages} · {size} par page"
+      },
+      "detail": {
+        "customer": "Client",
+        "phone": "Téléphone",
+        "email": "E-mail",
+        "address": "Adresse",
+        "delivery": "Livraison",
+        "home": "À domicile",
+        "stopdesk": "Bureau du transporteur",
+        "notes": "Note",
+        "quantity": "Quantité",
+        "unitPrice": "Prix unitaire",
+        "deliveryFee": "Frais de livraison",
+        "total": "Total",
+        "noActions": "Aucune action possible dans cet état.",
+        "assignLabel": "Étiquettes à assigner ({count} attendue(s))",
+        "assignHint": "Identifiants séparés par un espace, une virgule ou un retour à la ligne.",
+        "assignSubmit": "Assigner les étiquettes",
+        "courier": "Transporteur",
+        "tracking": "Numéro de suivi",
+        "saveShipping": "Enregistrer la livraison"
+      }
+    },
+    "settings": {
+      "title": "Réglages",
+      "subtitle": "Le prix, la quantité maximale et les frais de livraison utilisés par le site et par les commandes.",
+      "readOnly": "Votre compte peut consulter ces réglages, mais pas les modifier.",
+      "save": "Enregistrer les réglages",
+      "results": {
+        "ok": "Réglages enregistrés.",
+        "invalid": "Certaines valeurs sont invalides. Rien n’a été enregistré.",
+        "error": "Enregistrement impossible. Réessayez.",
+        "forbidden": "Seul un compte ADMIN peut modifier ces réglages."
+      },
+      "commerce": {
+        "title": "Prix et commandes",
+        "description": "Ces valeurs s’appliquent immédiatement aux nouvelles commandes.",
+        "unitPrice": "Prix unitaire (DZD)",
+        "currencyLabel": "Symbole monétaire",
+        "maxQuantity": "Quantité maximale par commande",
+        "orderRateLimit": "Commandes/heure par IP"
+      },
+      "fees": {
+        "title": "Frais de livraison par wilaya",
+        "description": "Les valeurs initiales sont des PLACEHOLDERS. Saisissez vos tarifs réels avant la première commande.",
+        "wilaya": "Wilaya",
+        "home": "À domicile",
+        "stopdesk": "Stop-desk",
+        "fillAll": "Appliquer à toutes",
+        "fillHome": "Domicile (toutes)",
+        "fillStopdesk": "Stop-desk (toutes)"
       }
     }
   },

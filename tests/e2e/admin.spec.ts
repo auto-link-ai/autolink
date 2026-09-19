@@ -42,7 +42,9 @@ async function signIn(page: Page) {
   await page.getByLabel('Email').fill(EMAIL!);
   await page.getByLabel('Password').fill(PASSWORD!);
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page).toHaveURL(/\/en\/admin\/tags$/);
+  // `next dev` compiles the target route on this first hit; under parallel
+  // workers that can take longer than the default 5s expectation.
+  await expect(page).toHaveURL(/\/en\/admin\/tags$/, { timeout: 60_000 });
 }
 
 async function readZip(download: import('@playwright/test').Download) {

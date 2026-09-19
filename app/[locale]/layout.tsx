@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { isRtl } from '@/i18n/locales';
 import { routing } from '@/i18n/routing';
 import { fontVariables } from '@/lib/fonts';
+import { siteOrigin } from '@/lib/site/seo';
 import '../globals.css';
 
 type Props = {
@@ -22,6 +23,7 @@ export async function generateMetadata({ params }: Omit<Props, 'children'>): Pro
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: 'meta' });
   return {
+    metadataBase: siteOrigin(),
     title: t('title'),
     description: t('description'),
   };

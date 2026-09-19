@@ -9,15 +9,7 @@ import { sendNewOrderAlert } from '@/lib/orders/alert';
 import { placeOrder } from '@/lib/orders/placeOrder';
 import { ORDER_VIEW_COOKIE, ORDER_VIEW_TTL_SECONDS, orderViewToken } from '@/lib/orders/viewToken';
 import { getClientIp, hashIp } from '@/lib/security/ipHash';
-import type { OrderField } from '@/lib/validation/order';
-
-export interface OrderFormState {
-  status: 'idle' | 'error';
-  fieldErrors?: Partial<Record<OrderField, string>>;
-  formError?: string;
-}
-
-export const ORDER_FORM_INITIAL: OrderFormState = { status: 'idle' };
+import type { OrderFormState } from './formState';
 
 /**
  * Guest checkout. Everything price-related is recomputed on the server; the

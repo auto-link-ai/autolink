@@ -8,6 +8,7 @@ import { Wordmark } from '@/components/Wordmark';
 import { Button } from '@/components/ui/Button';
 import { routing } from '@/i18n/routing';
 import { requireAdmin } from '@/lib/admin/auth';
+import { adminOrdersRepository } from '@/lib/db/repositories/ordersAdmin';
 import { adminLogoutAction } from './actions';
 
 type Props = { children: ReactNode; params: Promise<{ locale: string }> };
@@ -25,6 +26,13 @@ export default async function AdminLayout({ children, params }: Props) {
   setRequestLocale(locale);
   const session = await requireAdmin(locale);
   const t = await getTranslations('admin');
+  // A badge on the nav so a new order is never missed.
+  let pending = 0;
+  try {
+    pending = (await adminOrdersRepository.countByStatus(session.actor)).PENDING;
+  } catch (error) {
+    console.error('[admin] pending count failed:', error instanceof Error ? error.message : error);
+  }
 
   return (
     <div className="min-h-dvh bg-surface-2">
@@ -36,10 +44,22 @@ export default async function AdminLayout({ children, params }: Props) {
               {t('badge')}
             </span>
           </div>
-          <nav aria-label={t('nav.label')} className="hidden sm:block">
-            <Link href={`/${locale}/admin/tags`} className="rounded-sm px-3 py-2 text-sm font-semibold text-text hover:bg-surface-2">
-              {t('nav.tags')}
-            </Link>
+          <nav aria-label={t('nav.label')}>
+            <ul className="flex items-center gap-1">
+              {(['orders', 'tags', 'settings'] as const).map((key) => (
+                <li key={key}>
+                  <Link
+                    href={`/${locale}/admin/${key}`}
+                    className="inline-flex items-center gap-2 rounded-sm px-3 py-2 text-sm font-semibold text-text hover:bg-surface-2"
+                  >
+                    {t(`nav.${key}`)}
+                    {key === 'orders' && pending > 0 && (
+                      <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-accent-ink">{pending}</span>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </nav>
           <div className="flex items-center gap-2">
             <span className="hidden text-sm text-text-muted md:inline" dir="ltr">

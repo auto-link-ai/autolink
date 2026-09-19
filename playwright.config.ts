@@ -14,6 +14,9 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',
+  // Against `next dev`, the first hit on a route compiles it; with several
+  // workers that can take well over the 5s default.
+  expect: { timeout: 20_000 },
   use: {
     baseURL,
     trace: 'retain-on-failure',

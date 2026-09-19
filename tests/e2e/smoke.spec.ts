@@ -26,7 +26,7 @@ test('Arabic page renders RTL', async ({ page }) => {
 test('English page renders and the language links switch locale', async ({ page }) => {
   await page.goto('/en');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your car can receive messages.');
-  await page.getByRole('link', { name: 'Français' }).click();
+  await page.getByRole('link', { name: 'Français' }).first().click();
   await expect(page).toHaveURL(/\/fr$/);
 });
 
