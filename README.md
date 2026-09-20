@@ -21,7 +21,14 @@ pnpm seed                       # indexes, 58 wilayas, settings, first admin
 pnpm dev                        # http://localhost:3000 → redirects to /fr, /ar or /en
 ```
 
-Admin: `http://localhost:3000/fr/admin` (sign in with the seeded admin).
+Admin: `http://localhost:3000/fr/admin` (sign in with the seeded admin). It opens on an
+overview, and has Orders, Tags, **Customers** and Settings. Add a colleague with
+`pnpm admin:create <email> [ADMIN|SUPPORT]`: `ADMIN` can change everything, `SUPPORT` can
+read the admin area but not touch settings, tags or customer accounts. Lost a password?
+`pnpm admin:password <email>`.
+
+The admin area is closed to everyone else: a customer who registered on the site holds a
+different session entirely and gets the admin login, never data (`tests/e2e/adminAccess.spec.ts`).
 
 ### Environment
 
@@ -84,7 +91,9 @@ Sticker artwork, the designer brief and alignment checks: see [print/README.md](
 | `pnpm test` | Vitest unit tests |
 | `pnpm test:e2e` | Playwright (starts its own dev server on port 3100) |
 | `pnpm seed` | Seed / sync the database |
+| `pnpm admin:create <email> [ADMIN\|SUPPORT]` | Create another admin account; prints its password once |
 | `pnpm admin:password <email>` | Give an existing admin a new generated password (shown once) |
+| `pnpm backfill:user-ids` | Give a `publicUserId` to customer accounts created before that field |
 | `pnpm print:preview` | Render sample print files into `print/preview/` (no database) |
 | `pnpm check:codes <tags.csv>` | Prove a batch's activation codes are stored nowhere in plaintext |
 
@@ -92,6 +101,11 @@ Playwright needs a browser: `pnpm exec playwright install chromium`, or use an i
 Chrome with `PLAYWRIGHT_CHANNEL=chrome pnpm test:e2e`. The admin flow tests run only when
 `E2E_ADMIN_EMAIL` / `E2E_ADMIN_PASSWORD` are set — point `MONGODB_DB_NAME` at a
 throwaway database for them.
+
+Run `pnpm reset:ratelimits` first: every spec that signs in counts against the admin login
+limiter (10/hour), so repeated runs otherwise lock themselves out and fail with the
+throttled message instead of the one they expect. The e2e server builds into `.next-e2e`,
+so a `pnpm dev` you already have open is left alone.
 
 Before declaring a phase done: `pnpm typecheck && pnpm lint && pnpm test`.
 

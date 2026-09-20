@@ -15,7 +15,7 @@
 import 'server-only';
 import { connectToDatabase } from '@/lib/db/connect';
 import { TagModel } from '@/lib/db/models/tag';
-import type { TagAction, TagStatus } from '@/lib/domain/constants';
+import { TAG_STATUSES, type TagAction, type TagStatus } from '@/lib/domain/constants';
 import { canApply, targetStatus } from '@/lib/tags/transitions';
 import type { AdminActor } from './actor';
 import { auditLogsRepository } from './auditLogs';
@@ -56,6 +56,17 @@ export type TransitionResult =
 export const ADMIN_TAG_PAGE_SIZE = 50;
 
 export const tagsRepository = {
+  /** How many tags sit in each state — the admin overview's tag row. */
+  async countByStatus(_admin: AdminActor): Promise<Record<TagStatus, number>> {
+    await connectToDatabase();
+    const rows = await TagModel.aggregate<{ _id: TagStatus; count: number }>([
+      { $group: { _id: '$status', count: { $sum: 1 } } },
+    ]);
+    const counts = Object.fromEntries(TAG_STATUSES.map((status) => [status, 0])) as Record<TagStatus, number>;
+    for (const row of rows) if (row._id in counts) counts[row._id] = row.count;
+    return counts;
+  },
+
   /** Which of these ids already exist (collision check before a batch is created). */
   async findExistingPublicTagIds(_admin: AdminActor, ids: string[]): Promise<Set<string>> {
     if (ids.length === 0) return new Set();

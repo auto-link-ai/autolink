@@ -46,10 +46,10 @@ export default async function AdminLayout({ children, params }: Props) {
           </div>
           <nav aria-label={t('nav.label')}>
             <ul className="flex items-center gap-1">
-              {(['orders', 'tags', 'settings'] as const).map((key) => (
+              {(['overview', 'orders', 'tags', 'customers', 'settings'] as const).map((key) => (
                 <li key={key}>
                   <Link
-                    href={`/${locale}/admin/${key}`}
+                    href={key === 'overview' ? `/${locale}/admin` : `/${locale}/admin/${key}`}
                     className="inline-flex items-center gap-2 rounded-sm px-3 py-2 text-sm font-semibold text-text hover:bg-surface-2"
                   >
                     {t(`nav.${key}`)}

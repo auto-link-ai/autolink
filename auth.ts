@@ -27,6 +27,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: 'jwt', maxAge: THIRTY_DAYS_SECONDS },
   pages: { signIn: '/fr/login' },
   trustHost: true,
+  logger: {
+    // A wrong password is an expected event, not an incident: one line, no
+    // stack trace. Everything else is logged as it comes.
+    error(error) {
+      if (error.name === 'CredentialsSignin') {
+        console.warn('[auth] sign-in refused');
+        return;
+      }
+      console.error('[auth]', error);
+    },
+  },
   providers: [
     Credentials({
       credentials: { email: {}, password: {} },

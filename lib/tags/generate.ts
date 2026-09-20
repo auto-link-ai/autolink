@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { formatActivationCode, ACTIVATION_CODE_LENGTH } from '@/lib/validation/activationCode';
+import { PUBLIC_USER_ID_BODY_LENGTH, PUBLIC_USER_ID_PREFIX } from '@/lib/validation/publicUserId';
 import { CROCKFORD_ALPHABET, TAG_ID_BODY_LENGTH, TAG_ID_PREFIX } from '@/lib/validation/tagId';
 
 /**
@@ -39,6 +40,11 @@ export function generateActivationCode(): string {
 /** Opaque public handle for a tag batch (rule 4: never expose `_id`). */
 export function generateBatchPublicId(): string {
   return 'B-' + encodeCrockford(randomBytes(5), 8);
+}
+
+/** Opaque public handle for a customer account, used in admin URLs. */
+export function generatePublicUserId(): string {
+  return PUBLIC_USER_ID_PREFIX + encodeCrockford(randomBytes(5), PUBLIC_USER_ID_BODY_LENGTH);
 }
 
 /** `count` distinct tag IDs. */

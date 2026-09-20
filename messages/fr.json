@@ -36,7 +36,9 @@
       "tags": "Étiquettes",
       "logout": "Se déconnecter",
       "orders": "Commandes",
-      "settings": "Réglages"
+      "settings": "Réglages",
+      "overview": "Vue d'ensemble",
+      "customers": "Clients"
     },
     "login": {
       "title": "Connexion administrateur",
@@ -234,6 +236,105 @@
         "fillAll": "Appliquer à toutes",
         "fillHome": "Domicile (toutes)",
         "fillStopdesk": "Stop-desk (toutes)"
+      }
+    },
+    "overview": {
+      "title": "Vue d'ensemble",
+      "subtitle": "L'état d'AutoLink en un coup d'œil.",
+      "cards": {
+        "pending": "Commandes en attente",
+        "unassigned": "Étiquettes non attribuées",
+        "activated": "Étiquettes activées",
+        "customers": "Comptes clients"
+      },
+      "hints": {
+        "pending": "À traiter.",
+        "unassigned": "Imprimées, pas encore liées.",
+        "activated": "Liées à une voiture.",
+        "customers": "Créés sur le site."
+      },
+      "orders": {
+        "title": "Commandes par statut",
+        "description": "Depuis le premier jour."
+      },
+      "tags": {
+        "title": "Étiquettes par statut",
+        "description": "Toutes les étiquettes générées."
+      },
+      "customers": {
+        "title": "Clients",
+        "description": "Comptes créés sur le site.",
+        "total": "Total",
+        "active": "Actifs",
+        "blocked": "Bloqués",
+        "newLast7Days": "Nouveaux (7 jours)"
+      }
+    },
+    "customers": {
+      "title": "Clients",
+      "subtitle": "{total} compte(s) · {blocked} bloqué(s) · {recent} cette semaine.",
+      "readOnly": "Lecture seule : seul un ADMIN peut modifier un compte.",
+      "results": {
+        "ok": "Modification enregistrée.",
+        "not_found": "Compte introuvable.",
+        "not_allowed": "Votre rôle ne permet pas cette action.",
+        "invalid": "Vérifiez les champs."
+      },
+      "status": {
+        "ACTIVE": "Actif",
+        "BLOCKED": "Bloqué"
+      },
+      "tagStatus": {
+        "UNASSIGNED": "Non attribuée",
+        "ACTIVE": "Active",
+        "DEACTIVATED": "Désactivée",
+        "SUSPENDED": "Suspendue",
+        "LOST": "Perdue"
+      },
+      "list": {
+        "title": "Comptes",
+        "count": "{count} compte(s)",
+        "filterLabel": "Filtrer par statut",
+        "filterAll": "Tous",
+        "searchLabel": "Rechercher",
+        "searchPlaceholder": "e-mail ou 05…",
+        "searchSubmit": "Rechercher",
+        "empty": "Aucun compte pour ce filtre.",
+        "pagination": "Pagination des clients",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "pageOf": "Page {page} sur {pages}",
+        "columns": {
+          "email": "E-mail",
+          "name": "Nom",
+          "phone": "Téléphone",
+          "stickers": "Étiquettes",
+          "registered": "Inscrit le",
+          "lastLogin": "Dernière connexion",
+          "status": "Statut"
+        }
+      },
+      "detail": {
+        "noName": "Sans nom",
+        "email": "E-mail",
+        "phone": "Téléphone",
+        "registered": "Inscrit le",
+        "lastLogin": "Dernière connexion",
+        "never": "Jamais",
+        "stickers": "Étiquettes ({count})",
+        "noStickers": "Aucune étiquette activée.",
+        "noVehicle": "Sans détails de voiture",
+        "name": "Nom",
+        "save": "Enregistrer",
+        "resetPassword": "Réinitialiser le mot de passe",
+        "resetting": "Réinitialisation…",
+        "resetHint": "Le nouveau mot de passe s'affiche une seule fois.",
+        "resetDone": "Nouveau mot de passe :",
+        "resetFailed": "La réinitialisation a échoué. Réessayez.",
+        "block": "Bloquer le compte",
+        "blockHint": "Le client ne pourra plus se connecter.",
+        "unblock": "Débloquer",
+        "unblockHint": "Le client pourra se reconnecter."
       }
     }
   },

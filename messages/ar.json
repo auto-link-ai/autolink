@@ -36,7 +36,9 @@
       "tags": "الملصقات",
       "logout": "تسجيل الخروج",
       "orders": "الطلبات",
-      "settings": "الإعدادات"
+      "settings": "الإعدادات",
+      "overview": "نظرة عامة",
+      "customers": "العملاء"
     },
     "login": {
       "title": "دخول المسؤول",
@@ -234,6 +236,105 @@
         "fillAll": "تطبيق على الكل",
         "fillHome": "المنزل (للكل)",
         "fillStopdesk": "المكتب (للكل)"
+      }
+    },
+    "overview": {
+      "title": "نظرة عامة",
+      "subtitle": "حالة AutoLink في لمحة.",
+      "cards": {
+        "pending": "طلبات قيد الانتظار",
+        "unassigned": "ملصقات غير مُسنَدة",
+        "activated": "ملصقات مفعّلة",
+        "customers": "حسابات العملاء"
+      },
+      "hints": {
+        "pending": "بحاجة إلى معالجة.",
+        "unassigned": "مطبوعة ولم تُربط بعد.",
+        "activated": "مرتبطة بسيارة.",
+        "customers": "أُنشئت على الموقع."
+      },
+      "orders": {
+        "title": "الطلبات حسب الحالة",
+        "description": "منذ البداية."
+      },
+      "tags": {
+        "title": "الملصقات حسب الحالة",
+        "description": "كل الملصقات المُولَّدة."
+      },
+      "customers": {
+        "title": "العملاء",
+        "description": "حسابات أُنشئت على الموقع.",
+        "total": "الإجمالي",
+        "active": "نشِطة",
+        "blocked": "محظورة",
+        "newLast7Days": "جديدة (7 أيام)"
+      }
+    },
+    "customers": {
+      "title": "العملاء",
+      "subtitle": "{total} حساب · {blocked} محظور · {recent} هذا الأسبوع.",
+      "readOnly": "للقراءة فقط: تعديل الحسابات متاح للمسؤول ADMIN فقط.",
+      "results": {
+        "ok": "تم حفظ التغيير.",
+        "not_found": "الحساب غير موجود.",
+        "not_allowed": "دورك لا يسمح بهذا الإجراء.",
+        "invalid": "تحقّق من الحقول."
+      },
+      "status": {
+        "ACTIVE": "نشِط",
+        "BLOCKED": "محظور"
+      },
+      "tagStatus": {
+        "UNASSIGNED": "غير مُسنَد",
+        "ACTIVE": "مفعّل",
+        "DEACTIVATED": "معطّل",
+        "SUSPENDED": "موقوف",
+        "LOST": "مفقود"
+      },
+      "list": {
+        "title": "الحسابات",
+        "count": "{count} حساب",
+        "filterLabel": "التصفية حسب الحالة",
+        "filterAll": "الكل",
+        "searchLabel": "بحث",
+        "searchPlaceholder": "بريد إلكتروني أو 05…",
+        "searchSubmit": "بحث",
+        "empty": "لا توجد حسابات بهذه التصفية.",
+        "pagination": "تصفّح العملاء",
+        "previous": "السابق",
+        "next": "التالي",
+        "pageOf": "الصفحة {page} من {pages}",
+        "columns": {
+          "email": "البريد الإلكتروني",
+          "name": "الاسم",
+          "phone": "الهاتف",
+          "stickers": "الملصقات",
+          "registered": "تاريخ التسجيل",
+          "lastLogin": "آخر دخول",
+          "status": "الحالة"
+        }
+      },
+      "detail": {
+        "noName": "بدون اسم",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "registered": "تاريخ التسجيل",
+        "lastLogin": "آخر دخول",
+        "never": "أبدًا",
+        "stickers": "الملصقات ({count})",
+        "noStickers": "لا توجد ملصقات مفعّلة.",
+        "noVehicle": "بدون تفاصيل السيارة",
+        "name": "الاسم",
+        "save": "حفظ",
+        "resetPassword": "إعادة تعيين كلمة المرور",
+        "resetting": "جارٍ إعادة التعيين…",
+        "resetHint": "تظهر كلمة المرور الجديدة مرة واحدة فقط.",
+        "resetDone": "كلمة المرور الجديدة:",
+        "resetFailed": "فشلت إعادة التعيين. حاول مجددًا.",
+        "block": "حظر الحساب",
+        "blockHint": "لن يتمكّن العميل من تسجيل الدخول.",
+        "unblock": "رفع الحظر",
+        "unblockHint": "سيتمكّن العميل من الدخول مجددًا."
       }
     }
   },

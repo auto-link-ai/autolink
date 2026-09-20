@@ -21,29 +21,41 @@ export const emailSchema = z
   .transform((value) => value.toLowerCase())
   .pipe(z.email('invalid_email'));
 
+export const nameSchema = z
+  .string()
+  .trim()
+  .transform((value) => value.replace(/\s+/g, ' '))
+  .pipe(z.string().min(2, 'too_short').max(80, 'too_long'));
+
+/** Optional: many customers order by phone, but it is not the identity. */
+export const optionalPhoneSchema = z
+  .string()
+  .trim()
+  .transform((value, ctx) => {
+    if (value === '') return null;
+    const parsed = dzPhoneSchema.safeParse(value);
+    if (!parsed.success) {
+      ctx.addIssue({ code: 'custom', message: 'invalid_phone' });
+      return z.NEVER;
+    }
+    return parsed.data;
+  });
+
 export const registerSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .transform((value) => value.replace(/\s+/g, ' '))
-    .pipe(z.string().min(2, 'too_short').max(80, 'too_long')),
+  name: nameSchema,
   email: emailSchema,
-  // Optional: many customers order by phone, but it is not the identity.
-  phone: z
-    .string()
-    .trim()
-    .transform((value, ctx) => {
-      if (value === '') return null;
-      const parsed = dzPhoneSchema.safeParse(value);
-      if (!parsed.success) {
-        ctx.addIssue({ code: 'custom', message: 'invalid_phone' });
-        return z.NEVER;
-      }
-      return parsed.data;
-    }),
+  phone: optionalPhoneSchema,
   password: passwordSchema,
   locale: z.enum(locales).catch('fr'),
 });
+
+/** What an admin may correct on a customer's account. Never the email. */
+export const customerContactSchema = z.object({
+  name: nameSchema,
+  phone: optionalPhoneSchema,
+});
+
+export type CustomerContactInput = z.infer<typeof customerContactSchema>;
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type RegisterField = keyof RegisterInput;

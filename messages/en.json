@@ -36,7 +36,9 @@
       "tags": "Tags",
       "logout": "Sign out",
       "orders": "Orders",
-      "settings": "Settings"
+      "settings": "Settings",
+      "overview": "Overview",
+      "customers": "Customers"
     },
     "login": {
       "title": "Admin sign-in",
@@ -234,6 +236,105 @@
         "fillAll": "Apply to all",
         "fillHome": "Home (all)",
         "fillStopdesk": "Stop desk (all)"
+      }
+    },
+    "overview": {
+      "title": "Overview",
+      "subtitle": "AutoLink at a glance.",
+      "cards": {
+        "pending": "Pending orders",
+        "unassigned": "Unassigned tags",
+        "activated": "Activated tags",
+        "customers": "Customer accounts"
+      },
+      "hints": {
+        "pending": "Waiting for you.",
+        "unassigned": "Printed, not claimed yet.",
+        "activated": "Linked to a car.",
+        "customers": "Created on the site."
+      },
+      "orders": {
+        "title": "Orders by status",
+        "description": "Since day one."
+      },
+      "tags": {
+        "title": "Tags by status",
+        "description": "Every tag generated."
+      },
+      "customers": {
+        "title": "Customers",
+        "description": "Accounts created on the site.",
+        "total": "Total",
+        "active": "Active",
+        "blocked": "Blocked",
+        "newLast7Days": "New (7 days)"
+      }
+    },
+    "customers": {
+      "title": "Customers",
+      "subtitle": "{total} account(s) · {blocked} blocked · {recent} this week.",
+      "readOnly": "Read-only: only an ADMIN can change an account.",
+      "results": {
+        "ok": "Change saved.",
+        "not_found": "Account not found.",
+        "not_allowed": "Your role does not allow that.",
+        "invalid": "Check the fields."
+      },
+      "status": {
+        "ACTIVE": "Active",
+        "BLOCKED": "Blocked"
+      },
+      "tagStatus": {
+        "UNASSIGNED": "Unassigned",
+        "ACTIVE": "Active",
+        "DEACTIVATED": "Deactivated",
+        "SUSPENDED": "Suspended",
+        "LOST": "Lost"
+      },
+      "list": {
+        "title": "Accounts",
+        "count": "{count} account(s)",
+        "filterLabel": "Filter by status",
+        "filterAll": "All",
+        "searchLabel": "Search",
+        "searchPlaceholder": "email or 05…",
+        "searchSubmit": "Search",
+        "empty": "No accounts for this filter.",
+        "pagination": "Customers pagination",
+        "previous": "Previous",
+        "next": "Next",
+        "pageOf": "Page {page} of {pages}",
+        "columns": {
+          "email": "Email",
+          "name": "Name",
+          "phone": "Phone",
+          "stickers": "Stickers",
+          "registered": "Registered",
+          "lastLogin": "Last sign-in",
+          "status": "Status"
+        }
+      },
+      "detail": {
+        "noName": "No name",
+        "email": "Email",
+        "phone": "Phone",
+        "registered": "Registered",
+        "lastLogin": "Last sign-in",
+        "never": "Never",
+        "stickers": "Stickers ({count})",
+        "noStickers": "No sticker activated yet.",
+        "noVehicle": "No car details",
+        "name": "Name",
+        "save": "Save",
+        "resetPassword": "Reset password",
+        "resetting": "Resetting…",
+        "resetHint": "The new password is shown once.",
+        "resetDone": "New password:",
+        "resetFailed": "The reset failed. Try again.",
+        "block": "Block account",
+        "blockHint": "The customer will not be able to sign in.",
+        "unblock": "Unblock",
+        "unblockHint": "The customer can sign in again."
       }
     }
   },

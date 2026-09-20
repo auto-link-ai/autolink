@@ -12,9 +12,11 @@
 import 'server-only';
 import { connectToDatabase } from '@/lib/db/connect';
 import { TagModel } from '@/lib/db/models/tag';
+import { UserModel } from '@/lib/db/models/user';
 import { VehicleModel } from '@/lib/db/models/vehicle';
 import type { TagStatus } from '@/lib/domain/constants';
-import type { OwnerActor } from './actor';
+import { isValidPublicUserId } from '@/lib/validation/publicUserId';
+import type { AdminActor, OwnerActor } from './actor';
 import { auditLogsRepository } from './auditLogs';
 import { toObjectId } from './objectId';
 import { vehiclesRepository, type NewVehicle } from './vehicles';
@@ -159,6 +161,19 @@ export const ownerTagsRepository = {
           : null,
       };
     });
+  },
+
+  /**
+   * The same list, for an admin looking at one customer's account. It resolves
+   * the account by its public id, so no Mongo `_id` ever travels through the
+   * page layer to get here.
+   */
+  async listForOwnerAdmin(_admin: AdminActor, publicUserId: string): Promise<OwnerTagRow[]> {
+    if (!isValidPublicUserId(publicUserId)) return [];
+    await connectToDatabase();
+    const user = await UserModel.findOne({ publicUserId }, { _id: 1 }).lean();
+    if (!user) return [];
+    return this.listForOwner({ kind: 'owner', userId: user._id.toString() });
   },
 
   /** The owner turning their own sticker off and on again. */
