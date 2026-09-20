@@ -21,6 +21,38 @@
       "POSSIBLE_DAMAGE": "Possible damage",
       "URGENT": "Urgent",
       "OTHER": "Other"
+    },
+    "title": "Something wrong with this car?",
+    "subtitle": "Write to the owner. They are told straight away, and you never see their number.",
+    "footer": "AutoLink · the owner stays anonymous",
+    "form": {
+      "category": "What is it about?",
+      "body": "Your message",
+      "bodyPlaceholder": "For example: your lights are still on, Ardis car park.",
+      "contact": "Your contact (optional)",
+      "contactHint": "Only if you want a reply. The owner alone can see it.",
+      "submit": "Send to the owner",
+      "sending": "Sending…",
+      "privacy": "We never show your number, or theirs.",
+      "challenge": "Confirm you are not a robot."
+    },
+    "sent": {
+      "title": "Message sent",
+      "body": "The owner has just been notified. Thank you for taking the time.",
+      "privacy": "Your number was not shared."
+    },
+    "unavailable": {
+      "title": "This AutoLink is not available",
+      "body": "This code does not match an active sticker. Check the link, or try again later."
+    },
+    "errors": {
+      "invalid": "Check this field.",
+      "too_short": "Write a few more words.",
+      "too_long": "At most {max} characters.",
+      "rate_limited": "Too many messages right now. Try again in an hour.",
+      "unavailable": "This AutoLink is not available.",
+      "challenge_failed": "The check failed. Try again.",
+      "server_error": "Something went wrong. Try again in a moment."
     }
   },
   "notFound": {
@@ -945,6 +977,20 @@
       "deactivateHint": "Nobody will be able to message you through this sticker.",
       "reactivate": "Switch back on",
       "reactivateHint": "The sticker will receive messages again."
+    },
+    "inbox": {
+      "title": "Messages",
+      "empty": "No messages yet. You will be told as soon as someone writes.",
+      "unread": "{count} unread",
+      "from": "Received through {tagId}",
+      "contact": "Contact left:",
+      "noContact": "No contact left.",
+      "markRead": "Mark as read",
+      "archive": "Archive",
+      "results": {
+        "ok": "Message updated.",
+        "invalid": "That did not work."
+      }
     }
   }
 }

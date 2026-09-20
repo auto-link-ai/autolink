@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { toLocale } from '@/i18n/locales';
 import { getOwnerSession } from '@/lib/auth/session';
+import { messagesRepository } from '@/lib/db/repositories/messages';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
 import { vehiclesRepository } from '@/lib/db/repositories/vehicles';
 import { isValidTagIdShape } from '@/lib/validation/tagId';
@@ -23,6 +24,20 @@ export async function toggleStickerAction(formData: FormData): Promise<void> {
   if (!isValidTagIdShape(publicTagId) || (next !== 'ACTIVE' && next !== 'DEACTIVATED')) back(locale, 'invalid');
 
   const result = await ownerTagsRepository.setOwnerStatus(session.actor, publicTagId, next);
+  back(locale, result.ok ? 'ok' : 'invalid');
+}
+
+/** Mark a message read, or archive it. Only the owner's own messages move. */
+export async function setMessageStatusAction(formData: FormData): Promise<void> {
+  const locale = toLocale(formData.get('locale'));
+  const session = await getOwnerSession();
+  if (!session) redirect(`/${locale}/login`);
+
+  const publicId = String(formData.get('publicId') ?? '');
+  const status = formData.get('status');
+  if (!publicId || (status !== 'READ' && status !== 'ARCHIVED')) back(locale, 'invalid');
+
+  const result = await messagesRepository.setStatus(session.actor, publicId, status);
   back(locale, result.ok ? 'ok' : 'invalid');
 }
 

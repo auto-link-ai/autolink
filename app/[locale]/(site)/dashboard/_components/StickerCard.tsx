@@ -13,7 +13,18 @@ const INPUT =
  * One sticker: which car it is on, its id, its state, and the controls to edit
  * the car or switch the sticker off. The id is what tells two stickers apart.
  */
-export async function StickerCard({ tag, locale, scanUrl }: { tag: OwnerTagRow; locale: Locale; scanUrl: string }) {
+export async function StickerCard({
+  tag,
+  locale,
+  scanUrl,
+  unread,
+}: {
+  tag: OwnerTagRow;
+  locale: Locale;
+  scanUrl: string;
+  /** Messages received through this sticker that the owner has not read. */
+  unread: number;
+}) {
   const t = await getTranslations('dashboard');
   const live = tag.status === 'ACTIVE';
 
@@ -29,14 +40,21 @@ export async function StickerCard({ tag, locale, scanUrl }: { tag: OwnerTagRow; 
             {tag.publicTagId}
           </p>
         </div>
-        <span
-          className={cx(
-            'rounded-full px-3 py-1 text-xs font-bold',
-            live ? 'bg-success/10 text-success' : 'bg-surface-3 text-text-muted',
+        <div className="flex items-center gap-2">
+          {unread > 0 && (
+            <span className="rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-ink">
+              {t('inbox.unread', { count: unread })}
+            </span>
           )}
-        >
-          {t(`status.${tag.status}`)}
-        </span>
+          <span
+            className={cx(
+              'rounded-full px-3 py-1 text-xs font-bold',
+              live ? 'bg-success/10 text-success' : 'bg-surface-3 text-text-muted',
+            )}
+          >
+            {t(`status.${tag.status}`)}
+          </span>
+        </div>
       </div>
 
       <p className="mt-3 text-sm text-text-muted">

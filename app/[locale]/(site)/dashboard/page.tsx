@@ -8,11 +8,13 @@ import { PageHero } from '@/components/site/sections/SectionHeading';
 import { buttonClasses } from '@/components/ui/Button';
 import { routing } from '@/i18n/routing';
 import { requireOwner } from '@/lib/auth/session';
+import { messagesRepository } from '@/lib/db/repositories/messages';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
 import { cx } from '@/lib/cx';
 import { siteOrigin } from '@/lib/site/seo';
 import { isValidTagIdShape } from '@/lib/validation/tagId';
 import { signOutAction } from '../_auth/actions';
+import { Inbox } from './_components/Inbox';
 import { StickerCard } from './_components/StickerCard';
 
 export const dynamic = 'force-dynamic';
@@ -43,7 +45,11 @@ export default async function DashboardPage({ params, searchParams }: Props) {
   const raw = await searchParams;
   const activated = first(raw.activated);
   const result = first(raw.result);
-  const tags = await ownerTagsRepository.listForOwner(session.actor);
+  const [tags, messages, unreadByTag] = await Promise.all([
+    ownerTagsRepository.listForOwner(session.actor),
+    messagesRepository.listForOwner(session.actor),
+    messagesRepository.unreadByTag(session.actor),
+  ]);
   const origin = siteOrigin().toString().replace(/\/$/, '');
 
   return (
@@ -78,6 +84,8 @@ export default async function DashboardPage({ params, searchParams }: Props) {
             </p>
           )}
 
+          {tags.length > 0 && <Inbox messages={messages} locale={locale} />}
+
           {tags.length === 0 ? (
             <div className="rounded-xl bg-white p-8 text-center shadow-card-sm">
               <h2 className="text-h3 text-text">{t('empty.title')}</h2>
@@ -97,6 +105,7 @@ export default async function DashboardPage({ params, searchParams }: Props) {
                     tag={tag}
                     locale={locale}
                     scanUrl={`${origin}/t/${tag.publicTagId}`}
+                    unread={unreadByTag.get(tag.publicTagId) ?? 0}
                   />
                 ))}
               </ul>

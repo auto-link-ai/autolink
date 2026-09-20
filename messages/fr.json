@@ -21,6 +21,38 @@
       "POSSIBLE_DAMAGE": "Dommage possible",
       "URGENT": "Urgence",
       "OTHER": "Autre"
+    },
+    "title": "Un problème avec cette voiture ?",
+    "subtitle": "Écrivez au propriétaire. Il reçoit votre message tout de suite, et vous ne voyez jamais son numéro.",
+    "footer": "AutoLink · le propriétaire reste anonyme",
+    "form": {
+      "category": "De quoi s’agit-il ?",
+      "body": "Votre message",
+      "bodyPlaceholder": "Exemple : vos phares sont restés allumés, parking Ardis.",
+      "contact": "Votre contact (facultatif)",
+      "contactHint": "Uniquement si vous voulez une réponse. Visible par le propriétaire seul.",
+      "submit": "Envoyer au propriétaire",
+      "sending": "Envoi…",
+      "privacy": "Nous ne montrons jamais votre numéro ni celui du propriétaire.",
+      "challenge": "Confirmez que vous n’êtes pas un robot."
+    },
+    "sent": {
+      "title": "Message envoyé",
+      "body": "Le propriétaire vient d’être prévenu. Merci d’avoir pris le temps.",
+      "privacy": "Votre numéro n’a pas été communiqué."
+    },
+    "unavailable": {
+      "title": "Cet AutoLink n’est pas disponible",
+      "body": "Ce code ne correspond à aucun autocollant actif. Vérifiez le lien ou réessayez plus tard."
+    },
+    "errors": {
+      "invalid": "Vérifiez ce champ.",
+      "too_short": "Écrivez quelques mots de plus.",
+      "too_long": "Maximum {max} caractères.",
+      "rate_limited": "Trop de messages pour le moment. Réessayez dans une heure.",
+      "unavailable": "Cet AutoLink n’est pas disponible.",
+      "challenge_failed": "La vérification a échoué. Réessayez.",
+      "server_error": "Une erreur est survenue. Réessayez dans un instant."
     }
   },
   "notFound": {
@@ -945,6 +977,20 @@
       "deactivateHint": "Personne ne pourra plus vous écrire via cet autocollant.",
       "reactivate": "Réactiver",
       "reactivateHint": "L’autocollant recommencera à recevoir des messages."
+    },
+    "inbox": {
+      "title": "Messages reçus",
+      "empty": "Aucun message pour l’instant. Vous serez prévenu dès qu’on vous écrit.",
+      "unread": "{count} non lu(s)",
+      "from": "Reçu via {tagId}",
+      "contact": "Contact laissé :",
+      "noContact": "Aucun contact laissé.",
+      "markRead": "Marquer comme lu",
+      "archive": "Archiver",
+      "results": {
+        "ok": "Message mis à jour.",
+        "invalid": "Action impossible."
+      }
     }
   }
 }
