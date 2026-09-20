@@ -50,4 +50,18 @@ describe('admin session token', () => {
   it('refuses to seal without a secret', async () => {
     await expect(sealAdminSession({ sub: ADMIN_ID, role: 'ADMIN' }, undefined)).rejects.toThrow('AUTH_SECRET');
   });
+
+  /**
+   * Customer sessions are Auth.js tokens signed from the same AUTH_SECRET. A
+   * customer must never be able to paste one into the admin cookie: the admin
+   * key is derived under its own HKDF label, and the format differs too.
+   */
+  it('rejects an Auth.js session token, even though both derive from AUTH_SECRET', async () => {
+    const jwt = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2NWYwYzBmZmVlMDAwMDAwMDAwMGFiY2QifQ.c2lnbmF0dXJl';
+    const jwe = ['eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0', 'AAAA', 'BBBB', 'CCCC', 'DDDD'].join('.');
+    expect(await openAdminSession(jwt, SECRET)).toBeNull();
+    expect(await openAdminSession(jwe, SECRET)).toBeNull();
+    // ...and the same payload re-labelled as an admin token is still refused.
+    expect(await openAdminSession(`v1.${jwt.split('.')[1]}.${jwt.split('.')[2]}`, SECRET)).toBeNull();
+  });
 });
