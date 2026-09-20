@@ -53,6 +53,13 @@ export type TransitionResult =
   | { ok: true; from: TagStatus; to: TagStatus }
   | { ok: false; reason: 'not_found' | 'not_allowed' | 'conflict' };
 
+/** One line of the dashboard's activation feed. */
+export interface ActivatedTagRow {
+  publicTagId: string;
+  status: TagStatus;
+  activatedAt: Date;
+}
+
 export const ADMIN_TAG_PAGE_SIZE = 50;
 
 export const tagsRepository = {
@@ -65,6 +72,18 @@ export const tagsRepository = {
     const counts = Object.fromEntries(TAG_STATUSES.map((status) => [status, 0])) as Record<TagStatus, number>;
     for (const row of rows) if (row._id in counts) counts[row._id] = row.count;
     return counts;
+  },
+
+  /** The stickers customers claimed most recently — the dashboard's activity list. */
+  async recentlyActivated(_admin: AdminActor, limit = 5): Promise<ActivatedTagRow[]> {
+    await connectToDatabase();
+    return TagModel.find(
+      { activatedAt: { $ne: null } },
+      { _id: 0, publicTagId: 1, activatedAt: 1, status: 1 },
+    )
+      .sort({ activatedAt: -1 })
+      .limit(limit)
+      .lean<ActivatedTagRow[]>();
   },
 
   /** Which of these ids already exist (collision check before a batch is created). */

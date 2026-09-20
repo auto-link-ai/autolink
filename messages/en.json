@@ -240,7 +240,7 @@
     },
     "overview": {
       "title": "Overview",
-      "subtitle": "AutoLink at a glance.",
+      "subtitle": "What is waiting for you, and where AutoLink stands.",
       "cards": {
         "pending": "Pending orders",
         "unassigned": "Unassigned tags",
@@ -268,6 +268,28 @@
         "active": "Active",
         "blocked": "Blocked",
         "newLast7Days": "New (7 days)"
+      },
+      "queue": {
+        "title": "To do",
+        "description": "Orders waiting to be confirmed, oldest first.",
+        "empty": "Nothing waiting. You are up to date.",
+        "seeAll": "See all {count} orders"
+      },
+      "shortcuts": {
+        "title": "Shortcuts",
+        "generate": "Generate a batch of tags",
+        "orders": "All orders",
+        "settings": "Price and delivery fees"
+      },
+      "activations": {
+        "title": "Recent activations",
+        "description": "Tags their owners linked to a car.",
+        "empty": "No tag activated yet."
+      },
+      "newCustomers": {
+        "title": "New customers",
+        "description": "The newest accounts created on the site.",
+        "empty": "No account yet."
       }
     },
     "customers": {

@@ -240,7 +240,7 @@
     },
     "overview": {
       "title": "Vue d'ensemble",
-      "subtitle": "L'état d'AutoLink en un coup d'œil.",
+      "subtitle": "Ce qui vous attend, et où en est AutoLink.",
       "cards": {
         "pending": "Commandes en attente",
         "unassigned": "Étiquettes non attribuées",
@@ -268,6 +268,28 @@
         "active": "Actifs",
         "blocked": "Bloqués",
         "newLast7Days": "Nouveaux (7 jours)"
+      },
+      "queue": {
+        "title": "À faire",
+        "description": "Les commandes en attente, la plus ancienne en premier.",
+        "empty": "Rien à traiter. Tout est à jour.",
+        "seeAll": "Voir les {count} commandes"
+      },
+      "shortcuts": {
+        "title": "Raccourcis",
+        "generate": "Générer un lot d’étiquettes",
+        "orders": "Toutes les commandes",
+        "settings": "Prix et frais de livraison"
+      },
+      "activations": {
+        "title": "Dernières activations",
+        "description": "Étiquettes liées à une voiture par leur propriétaire.",
+        "empty": "Aucune étiquette activée pour le moment."
+      },
+      "newCustomers": {
+        "title": "Nouveaux clients",
+        "description": "Derniers comptes créés sur le site.",
+        "empty": "Aucun compte pour le moment."
       }
     },
     "customers": {

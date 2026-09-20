@@ -15,7 +15,13 @@ export function Card({
   className?: string;
 }) {
   return (
-    <section className={cx('rounded-md border border-border bg-surface p-5 shadow-card-sm md:p-6', className)}>
+    // A <section> is only announced as a region once it has a name, and the
+    // title is that name — otherwise these panels are invisible to a screen
+    // reader navigating by landmark.
+    <section
+      aria-label={title}
+      className={cx('rounded-md border border-border bg-surface p-5 shadow-card-sm md:p-6', className)}
+    >
       {(title || actions) && (
         <header className="mb-5 flex flex-wrap items-start justify-between gap-3">
           <div>

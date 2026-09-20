@@ -14,3 +14,22 @@ export function formatDateTime(date: Date, locale: Locale): string {
     timeZone: 'Africa/Algiers',
   }).format(date);
 }
+
+const MINUTE = 60_000;
+const UNITS: readonly [limit: number, size: number, unit: Intl.RelativeTimeFormatUnit][] = [
+  [60 * MINUTE, MINUTE, 'minute'],
+  [24 * 60 * MINUTE, 60 * MINUTE, 'hour'],
+  [30 * 24 * 60 * MINUTE, 24 * 60 * MINUTE, 'day'],
+  [Number.POSITIVE_INFINITY, 30 * 24 * 60 * MINUTE, 'month'],
+];
+
+/**
+ * "2 hours ago" — how old something is, for the admin's queue where the age of
+ * an order matters more than its date. Rounds down to the largest unit that fits.
+ */
+export function formatAge(date: Date, locale: Locale, now: Date = new Date()): string {
+  const elapsed = Math.max(0, now.getTime() - date.getTime());
+  const [, size, unit] = UNITS.find(([limit]) => elapsed < limit) ?? UNITS[UNITS.length - 1]!;
+  const format = new Intl.RelativeTimeFormat(INTL_LOCALE[locale], { numeric: 'auto' });
+  return format.format(-Math.floor(elapsed / size), unit);
+}
