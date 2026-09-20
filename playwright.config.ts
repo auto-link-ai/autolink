@@ -13,6 +13,9 @@ export default defineConfig({
   // Compile every route once, serially, before the workers start.
   globalSetup: './tests/e2e/warmup.ts',
   fullyParallel: true,
+  // One `next dev` process serves them all: past two workers it thrashes, and
+  // navigations start timing out. Two is also faster in wall time than four.
+  workers: 2,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',

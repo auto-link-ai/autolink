@@ -1,26 +1,16 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
 import JSZip from 'jszip';
+import { adminContext, hasAdminCredentials } from './adminSession';
 
 /**
  * The admin side of a customer account: find them, see what they own, and the
  * two support actions that matter — block and reset the password.
  */
 
-const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL;
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD;
-
 const PASSWORD = 'e2e-customer-password';
 const run = Date.now().toString(36);
 const CUSTOMER = `e2e-customer-${run}@example.dz`;
-
-async function signInAdmin(page: Page) {
-  await page.goto('/en/admin/login');
-  await page.getByLabel('Email').fill(ADMIN_EMAIL!);
-  await page.getByLabel('Password').fill(ADMIN_PASSWORD!);
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page).toHaveURL(/\/en\/admin\/(tags|orders)$/, { timeout: 60_000 });
-}
 
 async function openCustomer(page: Page, email: string) {
   await page.goto('/en/admin/customers');
@@ -32,19 +22,17 @@ async function openCustomer(page: Page, email: string) {
 
 test.describe('an admin looking after a customer', () => {
   test.describe.configure({ mode: 'serial' });
-  test.skip(
-    !ADMIN_EMAIL || !ADMIN_PASSWORD,
-    'Set E2E_ADMIN_EMAIL, E2E_ADMIN_PASSWORD and a disposable MONGODB_DB_NAME.',
-  );
+  test.skip(!hasAdminCredentials, 'Set E2E_ADMIN_EMAIL, E2E_ADMIN_PASSWORD and a disposable MONGODB_DB_NAME.');
   test.beforeEach(({}, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop-chromium', 'Writes to the database: run once.');
   });
 
   let tag = { id: '', code: '' };
 
-  test('the overview counts what exists', async ({ page }) => {
+  test('the overview counts what exists', async ({ browser }) => {
     test.setTimeout(180_000);
-    await signInAdmin(page);
+    const office = await adminContext(browser);
+    const page = await office.newPage();
 
     // A tag to hand out, so the rest of this file has something to activate.
     await page.goto('/en/admin/tags');
@@ -63,6 +51,7 @@ test.describe('an admin looking after a customer', () => {
     const unassigned = page.getByRole('link', { name: /Unassigned tags/ });
     await expect(unassigned).toContainText('Printed, not claimed yet.');
     await expect(page.getByRole('link', { name: /Customer accounts/ })).toBeVisible();
+    await office.close();
   });
 
   test('a new customer shows up with their sticker and car', async ({ browser }) => {
@@ -86,9 +75,8 @@ test.describe('an admin looking after a customer', () => {
     await expect(customer).toHaveURL(/\/en\/dashboard\?activated=/, { timeout: 60_000 });
     await shop.close();
 
-    const office = await browser.newContext();
+    const office = await adminContext(browser);
     const admin = await office.newPage();
-    await signInAdmin(admin);
     await openCustomer(admin, CUSTOMER);
 
     // Scoped to the detail panel: the list row underneath shows the same values.
@@ -102,9 +90,8 @@ test.describe('an admin looking after a customer', () => {
 
   test('blocking shuts the customer out, unblocking lets them back in', async ({ browser }) => {
     test.setTimeout(240_000);
-    const office = await browser.newContext();
+    const office = await adminContext(browser);
     const admin = await office.newPage();
-    await signInAdmin(admin);
     await openCustomer(admin, CUSTOMER);
 
     await admin.getByRole('button', { name: 'Block account' }).click();
@@ -138,9 +125,8 @@ test.describe('an admin looking after a customer', () => {
 
   test('a reset password is shown once, and it works', async ({ browser }) => {
     test.setTimeout(240_000);
-    const office = await browser.newContext();
+    const office = await adminContext(browser);
     const admin = await office.newPage();
-    await signInAdmin(admin);
     await openCustomer(admin, CUSTOMER);
 
     await admin.getByRole('button', { name: 'Reset password' }).click();
