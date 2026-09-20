@@ -87,7 +87,8 @@ Sticker artwork, the designer brief and alignment checks: see [print/README.md](
 | Command | What it does |
 |---|---|
 | `pnpm dev` | Dev server |
-| `pnpm build` / `pnpm start` | Production build / serve |
+| `pnpm build` / `pnpm start` | Production build / serve (writes to `.next`) |
+| `pnpm build:check` | The same build, into `.next-build` — use it while `pnpm dev` is open |
 | `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm lint` | ESLint (includes the repository-boundary import rule) |
 | `pnpm test` | Vitest unit tests |
@@ -110,6 +111,11 @@ throttled message instead of the one they expect. The e2e server builds into `.n
 so a `pnpm dev` you already have open is left alone.
 
 Before declaring a phase done: `pnpm typecheck && pnpm lint && pnpm test`.
+
+`pnpm dev`, `pnpm build` and the e2e server each need their own build directory —
+`.next`, `.next-build` and `.next-e2e`. Two of them sharing one leaves a half-production,
+half-development directory, and the dev server then dies on a missing vendor chunk. Use
+`pnpm build:check` rather than `pnpm build` whenever a dev server is open.
 
 ## Layout
 

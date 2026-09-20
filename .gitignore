@@ -24,6 +24,8 @@
 # e2e build output: its own directory so a `pnpm dev` you already have open and
 # the Playwright server never share (and corrupt) one build.
 /.next-e2e/
+# verification build output (pnpm build:check)
+/.next-build/
 /out/
 
 # production
