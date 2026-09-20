@@ -24,7 +24,9 @@ pnpm dev                        # http://localhost:3000 → redirects to /fr, /a
 Admin: `http://localhost:3000/fr/admin` (sign in with the seeded admin). It opens on an
 overview, and has Orders, Tags, **Customers** and Settings. Add a colleague with
 `pnpm admin:create <email> [ADMIN|SUPPORT]`: `ADMIN` can change everything, `SUPPORT` can
-read the admin area but not touch settings, tags or customer accounts. Lost a password?
+read the admin area but not touch settings, tags or customer accounts. It prints a
+generated password once; set `ADMIN_PASSWORD` to choose your own instead (in the
+environment, not in the command, so it stays out of your shell history). Lost a password?
 `pnpm admin:password <email>`.
 
 The admin area is closed to everyone else: a customer who registered on the site holds a

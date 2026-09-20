@@ -5,15 +5,20 @@
  * everything; SUPPORT can read the admin area but not change settings, tags or
  * customer accounts.
  *
- * Run it in your own terminal: the password is shown there and nowhere else.
- * It refuses an email that already has an account — use `pnpm admin:password`
- * to give that one a new password instead.
+ * To choose the password instead of having one generated, put it in
+ * ADMIN_PASSWORD (an environment variable, so it stays out of your shell
+ * history and the process list). It is then never printed.
+ *
+ * Run it in your own terminal: a generated password is shown there and nowhere
+ * else. It refuses an email that already has an account — use
+ * `pnpm admin:password` to give that one a new password instead.
  */
 import { disconnectFromDatabase } from '@/lib/db/connect';
 import { adminUsersRepository } from '@/lib/db/repositories/adminUsers';
 import { auditLogsRepository } from '@/lib/db/repositories/auditLogs';
 import { ADMIN_ROLES, type AdminRole } from '@/lib/domain/constants';
 import { generateReadablePassword, hashSecret } from '@/lib/security/password';
+import { PASSWORD_MIN_LENGTH } from '@/lib/validation/auth';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -30,7 +35,12 @@ async function main() {
   if (!EMAIL_PATTERN.test(email)) throw new Error(`"${email}" is not an email address.`);
   const role = parseRole(process.argv[3]);
 
-  const password = generateReadablePassword();
+  const chosen = process.env.ADMIN_PASSWORD?.trim();
+  if (chosen && chosen.length < PASSWORD_MIN_LENGTH) {
+    throw new Error(`ADMIN_PASSWORD is too short: at least ${PASSWORD_MIN_LENGTH} characters.`);
+  }
+  const password = chosen || generateReadablePassword();
+
   const { created } = await adminUsersRepository.createIfMissing({
     email,
     passwordHash: await hashSecret(password),
@@ -46,8 +56,12 @@ async function main() {
   );
 
   console.log(`✓ Admin created: ${email} (${role})`);
-  console.log('  Password (shown once, store it now):');
-  console.log(`  ${password}`);
+  if (chosen) {
+    console.log('  Password: the one you supplied in ADMIN_PASSWORD.');
+  } else {
+    console.log('  Password (shown once, store it now):');
+    console.log(`  ${password}`);
+  }
 }
 
 main()
