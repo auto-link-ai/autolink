@@ -1,7 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { claimUrl, resolveQrBaseUrl, tagUrl } from '@/lib/tags/tagUrl';
 
 describe('resolveQrBaseUrl', () => {
+  // The suite must not depend on the shell it runs in: this value is read from
+  // the environment by default.
+  afterEach(() => vi.unstubAllEnvs());
+
   it('accepts a bare https origin in production', () => {
     expect(resolveQrBaseUrl('https://autolink.dz', true)).toEqual({ ok: true, baseUrl: 'https://autolink.dz' });
     expect(resolveQrBaseUrl('https://autolink.dz/', true)).toEqual({ ok: true, baseUrl: 'https://autolink.dz' });
@@ -12,8 +16,15 @@ describe('resolveQrBaseUrl', () => {
     expect(resolveQrBaseUrl('http://localhost:3000', false).ok).toBe(true);
   });
 
+  it('falls back to NEXT_PUBLIC_APP_URL when the caller passes nothing', () => {
+    vi.stubEnv('NEXT_PUBLIC_APP_URL', 'https://autolink.dz');
+    expect(resolveQrBaseUrl(undefined, true)).toEqual({ ok: true, baseUrl: 'https://autolink.dz' });
+    // Unset: generation must refuse rather than print a sticker pointing nowhere.
+    vi.stubEnv('NEXT_PUBLIC_APP_URL', '');
+    expect(resolveQrBaseUrl(undefined, true)).toEqual({ ok: false, problem: 'base_url_missing', value: null });
+  });
+
   it.each([
-    [undefined, 'base_url_missing'],
     ['', 'base_url_missing'],
     ['autolink.dz', 'base_url_invalid'],
     ['https://autolink.dz/app', 'base_url_invalid'],

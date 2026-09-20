@@ -1,8 +1,13 @@
 import path from 'node:path';
 import JSZip from 'jszip';
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { describe, expect, it } from 'vitest';
-import { renderActivationSlips, SLIPS_PER_PAGE } from '@/lib/print/activationSlips';
+import {
+  renderActivationSlips,
+  slipLineBudgetMm,
+  slipLines,
+  SLIPS_PER_PAGE,
+} from '@/lib/print/activationSlips';
 import { buildBatchZip } from '@/lib/print/batchZip';
 import { toTagsCsv } from '@/lib/print/csv';
 import { gangGrid, renderPrintSheet } from '@/lib/print/printSheet';
@@ -116,6 +121,23 @@ describe('PDFs', () => {
     const pdf = await PDFDocument.load(await renderPrintSheet(await repoTemplate(), [1, 2, 3].map(entry)));
     expect(pdf.getPageCount()).toBe(2);
   });
+
+  it.each(['autolink.dz/activate', 'localhost:3100/activate'])(
+    'every slip line fits its column (%s)',
+    async (activateAt) => {
+      const doc = await PDFDocument.create();
+      const fonts = {
+        regular: await doc.embedFont(StandardFonts.Helvetica),
+        bold: await doc.embedFont(StandardFonts.HelveticaBold),
+        mono: await doc.embedFont(StandardFonts.CourierBold),
+      };
+      for (const line of slipLines(entry(1), activateAt)) {
+        const widthMm = fonts[line.font].widthOfTextAtSize(line.text, line.size) / mm(1);
+        // Nothing may reach the claim QR beside it, or the cut line.
+        expect(widthMm, line.text).toBeLessThanOrEqual(slipLineBudgetMm(line));
+      }
+    },
+  );
 
   it('activation slips paginate at 12 per page', async () => {
     const entries = Array.from({ length: SLIPS_PER_PAGE + 1 }, (_, i) => entry(i % 10));

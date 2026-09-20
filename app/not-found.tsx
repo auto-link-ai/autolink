@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Wordmark } from '@/components/Wordmark';
 import './globals.css';
 
 /**
@@ -10,10 +11,10 @@ export default function RootNotFound() {
     <html lang="fr" dir="ltr">
       <body>
         <main className="container-page flex min-h-dvh flex-col items-start justify-center gap-4">
-          <h1 className="text-h2">Page introuvable · Page not found · الصفحة غير موجودة</h1>
-          <Link href="/" className="font-semibold text-accent underline underline-offset-4">
-            AutoLink
+          <Link href="/" aria-label="AutoLink">
+            <Wordmark decorative />
           </Link>
+          <h1 className="text-h2">Page introuvable · Page not found · الصفحة غير موجودة</h1>
         </main>
       </body>
     </html>

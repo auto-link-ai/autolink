@@ -35,7 +35,7 @@ export default async function AdminLoginPage({ params, searchParams }: Props) {
   return (
     <main className="flex min-h-dvh items-center justify-center bg-surface-2 px-4 py-14">
       <div className="w-full max-w-sm rounded-md border border-border bg-surface p-6 shadow-card-md md:p-8">
-        <Wordmark />
+        <Wordmark className="h-12" />
         <h1 className="mt-6 text-h2 text-text">{t('title')}</h1>
         <p className="mt-2 text-sm text-text-secondary">{t('subtitle')}</p>
 

@@ -36,7 +36,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
         <div className="rounded-xl bg-white px-6 py-10 shadow-card-sm md:px-12 md:py-14">
           <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
             <div className="max-w-sm">
-              <Wordmark />
+              <Wordmark className="h-13" />
               <p className="mt-4 text-sm leading-relaxed text-text-secondary">{t('footer.tagline')}</p>
               <p className="mt-3 text-sm font-bold text-accent">{common('tagline')}</p>
             </div>

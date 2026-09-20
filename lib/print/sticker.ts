@@ -7,6 +7,7 @@ import {
   type PDFFont,
   type PDFPage,
 } from 'pdf-lib';
+import { loadBrandLogo, type BrandLogo } from './logo';
 import { QR_QUIET_ZONE_MODULES, qrMatrix } from './qr';
 import { PrintTemplateError, assertModuleSize, type PrintTemplate, type StickerLayout } from './template';
 import { mm } from './units';
@@ -31,7 +32,12 @@ export interface StickerResources {
   layout: StickerLayout;
   artwork: PDFEmbeddedPage | null;
   bold: PDFFont;
+  /** Null when the artwork file is unreadable; the placeholder then uses type. */
+  logo: BrandLogo | null;
 }
+
+/** The lockup on the placeholder sticker: width and top margin, in mm. */
+const BUILT_IN_LOGO = { widthMm: 38, topMm: 3 } as const;
 
 export interface Point {
   x: number;
@@ -70,7 +76,7 @@ export async function prepareStickerResources(
     }
     artwork = page;
   }
-  return { layout, artwork, bold };
+  return { layout, artwork, bold, logo: await loadBrandLogo() };
 }
 
 function trimBox(layout: StickerLayout, origin: Point) {
@@ -86,6 +92,13 @@ function drawBuiltInBackground(page: PDFPage, res: StickerResources, origin: Poi
   page.drawRectangle({ x: origin.x, y: origin.y, width: art, height: art, color: PAPER });
 
   const trim = trimBox(res.layout, origin);
+  if (res.logo) {
+    const width = mm(BUILT_IN_LOGO.widthMm);
+    const x = trim.left + (mm(res.layout.trimMm) - width) / 2;
+    res.logo.draw(page, { x, y: trim.top - mm(BUILT_IN_LOGO.topMm), width });
+    return;
+  }
+
   const size = 20;
   const auto = 'Auto';
   const link = 'Link';

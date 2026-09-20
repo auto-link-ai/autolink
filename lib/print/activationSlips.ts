@@ -1,4 +1,5 @@
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from 'pdf-lib';
+import { loadBrandLogo, type BrandLogo } from './logo';
 import { QR_QUIET_ZONE_MODULES, qrMatrix } from './qr';
 import { A4_MM, mm } from './units';
 
@@ -19,8 +20,18 @@ export interface SlipEntry {
   claimUrl: string;
 }
 
-/** The claim QR box on a slip: position from the slip's top-left, in mm. */
-const CLAIM_QR = { xMm: 61, yMm: 5, sizeMm: 26 } as const;
+/** One slip, in mm. Everything below is measured from its top-left corner. */
+export const SLIP_MM = {
+  width: (A4_MM.width - 2 * SLIP_GRID.marginMm) / SLIP_GRID.cols,
+  height: (A4_MM.height - 2 * SLIP_GRID.marginMm) / SLIP_GRID.rows,
+  pad: 6,
+  /** Where the claim-QR column starts; text on the left must stop before it. */
+  qrColumn: 62,
+} as const;
+
+const CLAIM_QR = { xMm: SLIP_MM.qrColumn, yMm: 3.5, sizeMm: 27 } as const;
+/** The lowest line that still sits beside the QR column. */
+const QR_COLUMN_BOTTOM_MM = 38;
 
 const INK = rgb(11 / 255, 18 / 255, 32 / 255);
 const BLUE = rgb(37 / 255, 99 / 255, 235 / 255);
@@ -32,6 +43,56 @@ interface Fonts {
   regular: PDFFont;
   bold: PDFFont;
   mono: PDFFont;
+}
+
+/** The lockup on a slip: width and top margin, in mm. */
+const SLIP_LOGO = { widthMm: 24, topMm: 3.5 } as const;
+
+export type SlipFont = 'regular' | 'bold' | 'mono';
+
+export interface SlipLine {
+  text: string;
+  /** From the slip's top-left, in mm. */
+  xMm: number;
+  dyMm: number;
+  size: number;
+  font: SlipFont;
+  muted?: boolean;
+}
+
+/**
+ * Every printed line of one slip. Exported so a test can measure the real font
+ * widths and prove no line runs into the claim QR or over the cut line —
+ * these strings are French + English, and translations grow.
+ */
+export function slipLines(entry: SlipEntry, activateAt: string): SlipLine[] {
+  const left = SLIP_MM.pad;
+  const right = SLIP_MM.qrColumn;
+  return [
+    { text: "Code d'activation · Activation code", xMm: left, dyMm: 17, size: 7.5, font: 'regular', muted: true },
+    { text: entry.activationCode, xMm: left, dyMm: 25.5, size: 17, font: 'mono' },
+    { text: `Étiquette · Tag   ${entry.publicTagId}`, xMm: left, dyMm: 31.5, size: 8.5, font: 'bold' },
+    { text: 'Activez sur · Activate at', xMm: left, dyMm: 36.5, size: 7, font: 'regular', muted: true },
+    { text: activateAt, xMm: left, dyMm: 40.5, size: 9, font: 'bold' },
+    {
+      text: 'Gardez ce papier · Keep this slip. Ne le collez pas sur la voiture.',
+      xMm: left,
+      dyMm: 44,
+      size: 6,
+      font: 'regular',
+      muted: true,
+    },
+    { text: 'Scannez pour activer', xMm: right, dyMm: 34, size: 6, font: 'regular', muted: true },
+    { text: 'Scan to activate', xMm: right, dyMm: 37, size: 6, font: 'regular', muted: true },
+  ];
+}
+
+/** How wide a line may print before it collides with something, in mm. */
+export function slipLineBudgetMm(line: SlipLine): number {
+  if (line.xMm >= SLIP_MM.qrColumn) return SLIP_MM.width - SLIP_MM.pad - line.xMm;
+  // 2mm of air between the two columns.
+  if (line.dyMm <= QR_COLUMN_BOTTOM_MM) return SLIP_MM.qrColumn - 2 - line.xMm;
+  return SLIP_MM.width - SLIP_MM.pad - line.xMm;
 }
 
 /** Dark modules as horizontal runs: fewer draw ops and no seams within a run. */
@@ -61,33 +122,43 @@ function drawClaimQr(page: PDFPage, text: string, left: number, top: number, box
   }
 }
 
-function drawSlip(page: PDFPage, fonts: Fonts, entry: SlipEntry, activateAt: string, x: number, top: number) {
-  const pad = mm(6);
-  const text = (value: string, dy: number, size: number, font: PDFFont, color = INK) =>
-    page.drawText(value, { x: x + pad, y: top - mm(dy), size, font, color });
+function drawSlip(
+  page: PDFPage,
+  fonts: Fonts,
+  logo: BrandLogo | null,
+  entry: SlipEntry,
+  activateAt: string,
+  x: number,
+  top: number,
+) {
+  const pad = mm(SLIP_MM.pad);
 
-  const auto = 'Auto';
-  page.drawText(auto, { x: x + pad, y: top - mm(9), size: 12, font: fonts.bold, color: INK });
-  page.drawText('Link', {
-    x: x + pad + fonts.bold.widthOfTextAtSize(auto, 12),
-    y: top - mm(9),
-    size: 12,
-    font: fonts.bold,
-    color: BLUE,
-  });
-  text("Code d'activation · Activation code", 15, 7.5, fonts.regular, MUTED);
-  text(entry.activationCode, 23.5, 17, fonts.mono);
-  text(`Étiquette · Tag   ${entry.publicTagId}`, 30, 8.5, fonts.bold);
-  text(`Activez sur · Activate at   ${activateAt}`, 35.5, 8, fonts.regular);
-  text('Gardez ce papier. Ne le collez pas sur la voiture.', 39.5, 6.5, fonts.regular, MUTED);
-  text('Keep this slip. Do not stick it on the car.', 42.5, 6.5, fonts.regular, MUTED);
+  if (logo) {
+    logo.draw(page, { x: x + pad, y: top - mm(SLIP_LOGO.topMm), width: mm(SLIP_LOGO.widthMm) });
+  } else {
+    const auto = 'Auto';
+    page.drawText(auto, { x: x + pad, y: top - mm(9), size: 12, font: fonts.bold, color: INK });
+    page.drawText('Link', {
+      x: x + pad + fonts.bold.widthOfTextAtSize(auto, 12),
+      y: top - mm(9),
+      size: 12,
+      font: fonts.bold,
+      color: BLUE,
+    });
+  }
 
   // The claim QR: scanning it opens the activation page with both values filled in.
   drawClaimQr(page, entry.claimUrl, x + mm(CLAIM_QR.xMm), top - mm(CLAIM_QR.yMm), mm(CLAIM_QR.sizeMm));
-  const caption = (value: string, dy: number) =>
-    page.drawText(value, { x: x + mm(CLAIM_QR.xMm), y: top - mm(dy), size: 6, font: fonts.regular, color: MUTED });
-  caption('Scannez pour activer', CLAIM_QR.yMm + CLAIM_QR.sizeMm + 2.5);
-  caption('Scan to activate', CLAIM_QR.yMm + CLAIM_QR.sizeMm + 5.5);
+
+  for (const line of slipLines(entry, activateAt)) {
+    page.drawText(line.text, {
+      x: x + mm(line.xMm),
+      y: top - mm(line.dyMm),
+      size: line.size,
+      font: fonts[line.font],
+      color: line.muted ? MUTED : INK,
+    });
+  }
 }
 
 function drawCutLines(page: PDFPage, slipW: number, slipH: number, left: number, top: number) {
@@ -115,6 +186,7 @@ export async function renderActivationSlips(entries: SlipEntry[], activateAt: st
     mono: await doc.embedFont(StandardFonts.CourierBold),
   };
 
+  const logo = await loadBrandLogo();
   const { cols, rows, marginMm } = SLIP_GRID;
   const slipW = mm((A4_MM.width - 2 * marginMm) / cols);
   const slipH = mm((A4_MM.height - 2 * marginMm) / rows);
@@ -130,7 +202,7 @@ export async function renderActivationSlips(entries: SlipEntry[], activateAt: st
     }
     const col = slot % cols;
     const row = Math.floor(slot / cols);
-    drawSlip(page, fonts, entry, activateAt, left + col * slipW, top - row * slipH);
+    drawSlip(page, fonts, logo, entry, activateAt, left + col * slipW, top - row * slipH);
   }
 
   return doc.save();

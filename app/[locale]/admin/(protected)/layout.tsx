@@ -39,7 +39,7 @@ export default async function AdminLayout({ children, params }: Props) {
       <header className="border-b border-border bg-surface">
         <div className="container-page flex h-16 items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Wordmark />
+            <Wordmark className="h-10" />
             <span className="rounded-sm bg-surface-inverse px-2 py-0.5 text-xs font-semibold text-text-on-inverse">
               {t('badge')}
             </span>

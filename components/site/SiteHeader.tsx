@@ -26,7 +26,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
       <div className="container-page">
         <div className="relative flex h-16 items-center justify-between gap-3 rounded-full bg-white/95 px-3 shadow-card-md backdrop-blur md:h-18 md:px-5">
           <Link href={href(locale, '')} className="rounded-full px-1" aria-label={t('home')}>
-            <Wordmark />
+            <Wordmark decorative className="h-11 md:h-13" />
           </Link>
 
           <nav aria-label={t('label')} className="hidden lg:block">

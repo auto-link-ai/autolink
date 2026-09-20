@@ -66,6 +66,11 @@ Two QRs per sticker, and they are not interchangeable:
 Send a customer only their own `claim/` image. It carries the activation code, so it can
 **never be regenerated** from the database — reissue the batch's codes instead.
 
+The logo lives in [public/brand/](public/brand/): `autolink-logo.svg` (the lockup) and
+`autolink-mark.svg` (the mark alone, also the favicon at `app/icon.svg`). The site uses it
+through `components/Wordmark.tsx`, and the print code draws the same file into the PDFs, so
+screen and paper cannot drift apart.
+
 Sticker artwork, the designer brief and alignment checks: see [print/README.md](print/README.md).
 
 ## Scripts
