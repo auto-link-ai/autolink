@@ -991,6 +991,22 @@
         "ok": "Message mis à jour.",
         "invalid": "Action impossible."
       }
+    },
+    "notify": {
+      "title": "Soyez prévenu tout de suite",
+      "body": "Recevez une notification sur ce téléphone dès que quelqu’un scanne votre autocollant.",
+      "enable": "Activer les notifications",
+      "working": "Activation…",
+      "enabled": "Notifications activées sur cet appareil.",
+      "denied": "Les notifications sont bloquées dans votre navigateur. Autorisez-les dans ses réglages.",
+      "unsupported": "Ce navigateur ne gère pas les notifications. Vos messages restent visibles ici.",
+      "failed": "Activation impossible. Réessayez."
+    }
+  },
+  "notifications": {
+    "newMessage": {
+      "title": "Nouveau message AutoLink",
+      "titleWithCar": "Message à propos de votre {car}"
     }
   }
 }

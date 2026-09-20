@@ -17,6 +17,7 @@ import { randomBytes } from 'node:crypto';
 import { connectToDatabase } from '@/lib/db/connect';
 import { MessageModel } from '@/lib/db/models/message';
 import { TagModel } from '@/lib/db/models/tag';
+import { UserModel } from '@/lib/db/models/user';
 import { VehicleModel } from '@/lib/db/models/vehicle';
 import type { Locale } from '@/i18n/locales';
 import type { MessageCategory, MessageStatus } from '@/lib/domain/constants';
@@ -105,6 +106,28 @@ export const messagesRepository = {
       expiresAt: new Date(Date.now() + input.retentionDays * DAY_MS),
     });
     return { ok: true, publicId };
+  },
+
+  /**
+   * What a notification may say: which car, what kind of problem, in the
+   * owner's language. Never the body — a lock screen is a public place.
+   */
+  async findForNotification(
+    publicId: string,
+  ): Promise<{ category: MessageCategory; vehicleLabel: string | null; locale: Locale } | null> {
+    await connectToDatabase();
+    const message = await MessageModel.findOne({ publicId }, { category: 1, vehicleId: 1, ownerId: 1 }).lean();
+    if (!message) return null;
+
+    const [vehicle, owner] = await Promise.all([
+      VehicleModel.findById(message.vehicleId, { brand: 1, model: 1, color: 1 }).lean(),
+      UserModel.findById(message.ownerId, { locale: 1 }).lean(),
+    ]);
+    return {
+      category: message.category,
+      vehicleLabel: vehicleLabel(vehicle ?? null),
+      locale: owner?.locale ?? 'fr',
+    };
   },
 
   /** The owner's inbox: their messages only, newest first. */

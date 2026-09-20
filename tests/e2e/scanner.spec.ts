@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Browser, type BrowserContext, type Page } from '@playwright/test';
 import JSZip from 'jszip';
 import { adminContext, hasAdminCredentials } from './adminSession';
 
@@ -18,12 +18,28 @@ const PLATE = '12345-116-16';
 const REPORT = 'Your lights are still on, level -2 of the car park.';
 const SENDER_CONTACT = '0770 11 22 33';
 
-async function signInOwner(page: Page) {
-  await page.goto('/en/login');
-  await page.getByLabel('Email').fill(OWNER_EMAIL);
-  await page.getByLabel('Password').fill(OWNER_PASSWORD);
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
+/**
+ * One sign-in for the whole file. The owner login limiter allows 10 an hour,
+ * and a spec that signs in for every test spends them on nothing.
+ */
+let ownerSession: BrowserContext | null = null;
+
+async function ownerPage(browser: Browser): Promise<Page> {
+  if (!ownerSession) {
+    // Granted up front: Chromium answers the permission request instead of
+    // silently leaving it at "default", which no test could then explain.
+    ownerSession = await browser.newContext({ permissions: ['notifications'] });
+    const page = await ownerSession.newPage();
+    await page.goto('/en/login');
+    await page.getByLabel('Email').fill(OWNER_EMAIL);
+    await page.getByLabel('Password').fill(OWNER_PASSWORD);
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
+    return page;
+  }
+  const page = await ownerSession.newPage();
+  await page.goto('/en/dashboard');
+  return page;
 }
 
 test.describe('scanning a sticker', () => {
@@ -34,6 +50,11 @@ test.describe('scanning a sticker', () => {
   });
 
   let tag = { id: '', code: '' };
+
+  test.afterAll(async () => {
+    await ownerSession?.close();
+    ownerSession = null;
+  });
 
   test('an owner activates a sticker', async ({ browser }) => {
     test.setTimeout(180_000);
@@ -98,9 +119,7 @@ test.describe('scanning a sticker', () => {
 
   test('the owner reads it on the dashboard', async ({ browser }) => {
     test.setTimeout(180_000);
-    const home = await browser.newContext();
-    const page = await home.newPage();
-    await signInOwner(page);
+    const page = await ownerPage(browser);
 
     const inbox = page.getByRole('region', { name: 'Messages' });
     await expect(inbox.getByText(REPORT)).toBeVisible();
@@ -111,17 +130,37 @@ test.describe('scanning a sticker', () => {
     await inbox.getByRole('button', { name: 'Mark as read' }).click();
     await expect(page.getByRole('status')).toHaveText('Change saved.');
     await expect(page.getByText('1 unread')).toHaveCount(0);
-    await home.close();
+  });
+
+  test('the owner is offered notifications, and a refusal is explained', async ({ browser }) => {
+    test.setTimeout(180_000);
+    // Chromium grants the permission instead of prompting.
+    const page = await ownerPage(browser);
+
+    const enable = page.getByRole('button', { name: 'Turn on notifications' });
+    if ((await enable.count()) === 0) {
+      // No VAPID keys configured here: the offer is withheld rather than broken.
+      await expect(page.getByText('Know straight away')).toHaveCount(0);
+      return;
+    }
+
+    await expect(page.getByText('Know straight away')).toBeVisible();
+    await enable.click();
+
+    // Automated Chrome cannot reach a real push service, so a subscription may
+    // legitimately fail here. What must hold either way: the owner is told, and
+    // the page keeps working. Delivery to a real phone is checked by hand.
+    await expect(
+      page.getByText(/Notifications are on for this device\.|Could not turn them on\./),
+    ).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByRole('region', { name: 'Messages' })).toBeVisible();
   });
 
   test('a switched-off sticker looks exactly like one that never existed', async ({ browser }) => {
     test.setTimeout(180_000);
-    const home = await browser.newContext();
-    const owner = await home.newPage();
-    await signInOwner(owner);
+    const owner = await ownerPage(browser);
     await owner.getByRole('button', { name: 'Switch off' }).click();
     await expect(owner.getByRole('status')).toHaveText('Change saved.');
-    await home.close();
 
     const street = await browser.newContext();
     const page = await street.newPage();

@@ -14,7 +14,9 @@ import { cx } from '@/lib/cx';
 import { siteOrigin } from '@/lib/site/seo';
 import { isValidTagIdShape } from '@/lib/validation/tagId';
 import { signOutAction } from '../_auth/actions';
+import { pushPublicKey } from '@/lib/notifications/push';
 import { Inbox } from './_components/Inbox';
+import { NotifyToggle } from './_components/NotifyToggle';
 import { StickerCard } from './_components/StickerCard';
 
 export const dynamic = 'force-dynamic';
@@ -51,6 +53,7 @@ export default async function DashboardPage({ params, searchParams }: Props) {
     messagesRepository.unreadByTag(session.actor),
   ]);
   const origin = siteOrigin().toString().replace(/\/$/, '');
+  const pushKey = pushPublicKey();
 
   return (
     <>
@@ -82,6 +85,23 @@ export default async function DashboardPage({ params, searchParams }: Props) {
             >
               {t(`results.${result}`)}
             </p>
+          )}
+
+          {tags.length > 0 && pushKey && (
+            <NotifyToggle
+              locale={locale}
+              publicKey={pushKey}
+              labels={{
+                title: t('notify.title'),
+                body: t('notify.body'),
+                enable: t('notify.enable'),
+                working: t('notify.working'),
+                enabled: t('notify.enabled'),
+                denied: t('notify.denied'),
+                unsupported: t('notify.unsupported'),
+                failed: t('notify.failed'),
+              }}
+            />
           )}
 
           {tags.length > 0 && <Inbox messages={messages} locale={locale} />}

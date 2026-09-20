@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { toLocale } from '@/i18n/locales';
 import { getOwnerSession } from '@/lib/auth/session';
 import { messagesRepository } from '@/lib/db/repositories/messages';
+import { notificationSubscriptionsRepository } from '@/lib/db/repositories/notificationSubscriptions';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
 import { vehiclesRepository } from '@/lib/db/repositories/vehicles';
 import { isValidTagIdShape } from '@/lib/validation/tagId';
@@ -25,6 +26,23 @@ export async function toggleStickerAction(formData: FormData): Promise<void> {
 
   const result = await ownerTagsRepository.setOwnerStatus(session.actor, publicTagId, next);
   back(locale, result.ok ? 'ok' : 'invalid');
+}
+
+/**
+ * Stores this browser's push subscription against the signed-in owner. Returns
+ * a result rather than redirecting: the toggle stays where it is.
+ */
+export async function savePushSubscriptionAction(formData: FormData): Promise<{ ok: boolean }> {
+  const session = await getOwnerSession();
+  if (!session) return { ok: false };
+
+  const endpoint = String(formData.get('endpoint') ?? '');
+  const p256dh = String(formData.get('p256dh') ?? '');
+  const auth = String(formData.get('auth') ?? '');
+  // Endpoints are push-service URLs; anything else is not worth storing.
+  if (!endpoint.startsWith('https://') || !p256dh || !auth) return { ok: false };
+
+  return notificationSubscriptionsRepository.save(session.actor, { endpoint, keys: { p256dh, auth } });
 }
 
 /** Mark a message read, or archive it. Only the owner's own messages move. */

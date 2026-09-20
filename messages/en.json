@@ -991,6 +991,22 @@
         "ok": "Message updated.",
         "invalid": "That did not work."
       }
+    },
+    "notify": {
+      "title": "Know straight away",
+      "body": "Get a notification on this phone the moment someone scans your sticker.",
+      "enable": "Turn on notifications",
+      "working": "Turning on…",
+      "enabled": "Notifications are on for this device.",
+      "denied": "Notifications are blocked in your browser. Allow them in its settings.",
+      "unsupported": "This browser cannot show notifications. Your messages still appear here.",
+      "failed": "Could not turn them on. Try again."
+    }
+  },
+  "notifications": {
+    "newMessage": {
+      "title": "New AutoLink message",
+      "titleWithCar": "Message about your {car}"
     }
   }
 }
