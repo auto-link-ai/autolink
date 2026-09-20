@@ -10,6 +10,8 @@ const channel = process.env.PLAYWRIGHT_CHANNEL || undefined;
 
 export default defineConfig({
   testDir: 'tests/e2e',
+  // Compile every route once, serially, before the workers start.
+  globalSetup: './tests/e2e/warmup.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
@@ -30,5 +32,8 @@ export default defineConfig({
     url: `${baseURL}/fr`,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
+    // Its own build directory: a `pnpm dev` you already have open writes to
+    // .next, and two dev servers sharing one build corrupt each other.
+    env: { NEXT_DIST_DIR: '.next-e2e' },
   },
 });

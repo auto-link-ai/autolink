@@ -12,6 +12,9 @@ const PRINT_FILES = ['./print/sticker/**/*', ...BRAND_FILES];
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  // Two dev servers sharing one build directory corrupt each other's chunks.
+  // The e2e run sets this so it never collides with a `pnpm dev` left open.
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   // Pin the workspace root to this project; a lockfile in a parent folder would
   // otherwise be picked up as the root.
   outputFileTracingRoot: path.join(__dirname),

@@ -19,6 +19,9 @@
 
 # next.js
 /.next/
+# e2e build output: its own directory so a `pnpm dev` you already have open and
+# the Playwright server never share (and corrupt) one build.
+/.next-e2e/
 /out/
 
 # production
