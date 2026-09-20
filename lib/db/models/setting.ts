@@ -28,6 +28,10 @@ export interface Setting {
   rateLimitAdminLoginPerHour: number;
   /** Orders per hour from one IP hash (guest checkout abuse guard). */
   rateLimitOrdersPerHour: number;
+  /** Customer sign-in attempts per hour, counted per IP hash and per email. */
+  rateLimitOwnerLoginPerHour: number;
+  /** Activation attempts per hour from one IP hash (spec §2.12). */
+  rateLimitActivationPerIpPerHour: number;
   deliveryFees: DeliveryFee[];
   maxOrderQuantity: number;
   createdAt: Date;
@@ -55,6 +59,11 @@ const settingSchema = new Schema<Setting>(
     captchaThreshold: { type: Number, default: 3, min: 0 },
     rateLimitAdminLoginPerHour: { type: Number, default: 10, min: 1 },
     rateLimitOrdersPerHour: { type: Number, default: 5, min: 1 },
+    rateLimitOwnerLoginPerHour: { type: Number, default: 10, min: 1 },
+    // Above the 5-attempt per-tag lockout on purpose: the lockout is the
+    // anti-guessing defence, and mobile carriers put many customers behind one
+    // address, so a tight IP limit would lock out strangers instead.
+    rateLimitActivationPerIpPerHour: { type: Number, default: 20, min: 1 },
     deliveryFees: { type: [deliveryFeeSchema], default: [] },
     maxOrderQuantity: { type: Number, default: 10, min: 1 },
   },

@@ -9,7 +9,8 @@ import { renderActivationSlips } from '@/lib/print/activationSlips';
 import { renderPrintSheet } from '@/lib/print/printSheet';
 import { renderStickerPdf } from '@/lib/print/sticker';
 import { loadPrintTemplate } from '@/lib/print/template';
-import { resolveQrBaseUrl, tagUrl } from '@/lib/tags/tagUrl';
+import { defaultLocale } from '@/i18n/locales';
+import { claimUrl, resolveQrBaseUrl, tagUrl } from '@/lib/tags/tagUrl';
 
 const SAMPLES = [
   { publicTagId: 'AUT-SAMP1E00', activationCode: 'ABCD-EFGH-JK' },
@@ -21,7 +22,11 @@ async function main() {
   const resolved = resolveQrBaseUrl(process.env.NEXT_PUBLIC_APP_URL, false);
   const baseUrl = resolved.ok ? resolved.baseUrl : 'https://autolink.dz';
   const template = await loadPrintTemplate();
-  const entries = SAMPLES.map((s) => ({ ...s, url: tagUrl(baseUrl, s.publicTagId) }));
+  const entries = SAMPLES.map((s) => ({
+    ...s,
+    url: tagUrl(baseUrl, s.publicTagId),
+    claimUrl: claimUrl(baseUrl, defaultLocale, s.publicTagId, s.activationCode),
+  }));
   const out = path.join(process.cwd(), 'print', 'preview');
   await mkdir(out, { recursive: true });
 

@@ -52,9 +52,19 @@ wilaya). Replace them with real courier prices before taking orders.
 
 `/admin/tags` generates a batch (1–100 tags) and downloads a ZIP: QR codes (SVG + PNG),
 one sticker PDF per tag (100 × 100 mm, 3 mm bleed, crop marks), an A4 gang sheet,
-the activation slips, and `tags.csv`. **Activation codes exist only in that ZIP** — the
-database stores argon2id hashes. If a ZIP is lost, "Reissue codes" issues new codes for
-the batch's tags that are not activated yet.
+the activation slips, `claim/AUT-*.png`, and `tags.csv`. **Activation codes exist only in
+that ZIP** — the database stores argon2id hashes. If a ZIP is lost, "Reissue codes" issues
+new codes for the batch's tags that are not activated yet.
+
+Two QRs per sticker, and they are not interchangeable:
+
+| | Where it goes | Opens |
+|---|---|---|
+| `qr/AUT-*.svg` \| `.png` | printed on the sticker, on the car | `/t/AUT-…` — anyone can scan it |
+| `claim/AUT-*.png` | sent to that one customer (also on their slip) | `/fr/activate?t=…&c=…` — claims the sticker |
+
+Send a customer only their own `claim/` image. It carries the activation code, so it can
+**never be regenerated** from the database — reissue the batch's codes instead.
 
 Sticker artwork, the designer brief and alignment checks: see [print/README.md](print/README.md).
 

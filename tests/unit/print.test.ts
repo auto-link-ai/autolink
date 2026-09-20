@@ -24,6 +24,7 @@ const entry = (n: number) => ({
   publicTagId: `AUT-7K3M9QX${n}`,
   activationCode: `ABCD-EFGH-J${n}`,
   url: `https://autolink.dz/t/AUT-7K3M9QX${n}`,
+  claimUrl: `https://autolink.dz/fr/activate?t=AUT-7K3M9QX${n}&c=ABCD-EFGH-J${n}`,
 });
 
 async function repoTemplate(): Promise<PrintTemplate> {
@@ -143,6 +144,8 @@ describe('CSV and ZIP', () => {
     expect(names).toEqual(
       [
         'README.txt',
+        'claim/AUT-7K3M9QX1.png',
+        'claim/AUT-7K3M9QX2.png',
         'pdf/AUT-7K3M9QX1.pdf',
         'pdf/AUT-7K3M9QX2.pdf',
         'pdf/activation-slips.pdf',

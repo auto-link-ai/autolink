@@ -1,4 +1,5 @@
 import 'server-only';
+import { defaultLocale } from '@/i18n/locales';
 import type { AdminActor } from '@/lib/db/repositories/actor';
 import { tagBatchesRepository } from '@/lib/db/repositories/tagBatches';
 import { tagsRepository } from '@/lib/db/repositories/tags';
@@ -6,7 +7,7 @@ import { buildBatchZip, type BatchPrintEntry } from '@/lib/print/batchZip';
 import { PrintTemplateError, loadPrintTemplate, type PrintTemplate } from '@/lib/print/template';
 import { hashSecret } from '@/lib/security/password';
 import { generateActivationCode, generateBatchPublicId, generateTagId, generateUniqueTagIds } from './generate';
-import { resolveQrBaseUrl, tagUrl, type QrBaseUrlProblem } from './tagUrl';
+import { claimUrl, resolveQrBaseUrl, tagUrl, type QrBaseUrlProblem } from './tagUrl';
 
 /**
  * Tag batch generation. Plaintext activation codes live only in memory here and
@@ -85,6 +86,16 @@ async function freshTagIds(admin: AdminActor, count: number): Promise<string[]> 
   throw new BatchError('conflict', 409);
 }
 
+/** Both QRs for one tag: the public one for the sticker, the claim one for the slip. */
+function printEntry(baseUrl: string, publicTagId: string, activationCode: string): BatchPrintEntry {
+  return {
+    publicTagId,
+    activationCode,
+    url: tagUrl(baseUrl, publicTagId),
+    claimUrl: claimUrl(baseUrl, defaultLocale, publicTagId, activationCode),
+  };
+}
+
 function printMeta(label: string, batchPublicId: string, baseUrl: string) {
   return { label, batchPublicId, activateAt: `${new URL(baseUrl).host}/activate`, generatedAt: new Date() };
 }
@@ -100,11 +111,7 @@ export async function createTagBatch(
   // Retry only for the (astronomically unlikely) race where an id is taken between check and insert.
   for (let attempt = 0; attempt < 3; attempt++) {
     const ids = await freshTagIds(admin, input.quantity);
-    const entries: BatchPrintEntry[] = ids.map((id) => ({
-      publicTagId: id,
-      activationCode: generateActivationCode(),
-      url: tagUrl(baseUrl, id),
-    }));
+    const entries: BatchPrintEntry[] = ids.map((id) => printEntry(baseUrl, id, generateActivationCode()));
     const batchPublicId = generateBatchPublicId();
 
     // Build the ZIP first: if rendering fails, nothing has been written.
@@ -135,11 +142,9 @@ export async function reissueBatchCodes(admin: AdminActor, batchPublicId: string
   if (!batch) throw new BatchError('not_found', 404);
   if (batch.publicTagIds.length === 0) throw new BatchError('nothing_to_reissue', 409);
 
-  const entries: BatchPrintEntry[] = batch.publicTagIds.map((id) => ({
-    publicTagId: id,
-    activationCode: generateActivationCode(),
-    url: tagUrl(baseUrl, id),
-  }));
+  const entries: BatchPrintEntry[] = batch.publicTagIds.map((id) =>
+    printEntry(baseUrl, id, generateActivationCode()),
+  );
   const hashes = await Promise.all(entries.map((e) => hashSecret(e.activationCode)));
   const updated = new Set(
     await tagBatchesRepository.replaceActivationHashes(

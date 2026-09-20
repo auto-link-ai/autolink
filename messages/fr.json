@@ -248,7 +248,9 @@
       "order": "Commander",
       "menu": "Ouvrir le menu",
       "closeMenu": "Fermer le menu",
-      "skipToContent": "Aller au contenu"
+      "skipToContent": "Aller au contenu",
+      "signIn": "Se connecter",
+      "myStickers": "Mes autocollants"
     },
     "hero": {
       "trust": {
@@ -705,6 +707,121 @@
         "pay": "Vous payez en espèces au moment de la livraison."
       },
       "backHome": "Retour à l’accueil"
+    }
+  },
+  "auth": {
+    "fields": {
+      "name": "Nom et prénom",
+      "email": "E-mail",
+      "phone": "Téléphone (facultatif)",
+      "phoneHint": "Pour qu’on puisse vous joindre au sujet d’une commande.",
+      "password": "Mot de passe",
+      "passwordHint": "Au moins 10 caractères."
+    },
+    "errors": {
+      "invalid": "Cette valeur n’est pas valide.",
+      "too_short": "C’est un peu trop court.",
+      "too_long": "C’est trop long.",
+      "invalid_email": "Cette adresse e-mail n’est pas valide.",
+      "invalid_phone": "Entrez un mobile algérien valide (05, 06 ou 07).",
+      "password_too_short": "Le mot de passe doit faire au moins 10 caractères.",
+      "email_taken": "Un compte existe déjà avec cette adresse. Connectez-vous.",
+      "invalid_credentials": "E-mail ou mot de passe incorrect.",
+      "rate_limited": "Trop de tentatives. Réessayez dans une heure.",
+      "server_error": "Une erreur est survenue. Réessayez dans un instant."
+    },
+    "login": {
+      "metaTitle": "Connexion — AutoLink",
+      "metaDescription": "Connectez-vous pour activer un autocollant et voir vos messages.",
+      "eyebrow": "Votre espace",
+      "title": "Connectez-vous.",
+      "subtitle": "Pour activer un autocollant et gérer vos voitures.",
+      "submit": "Se connecter",
+      "submitting": "Connexion…",
+      "switchText": "Pas encore de compte ?",
+      "switchLink": "Créer un compte"
+    },
+    "register": {
+      "metaTitle": "Créer un compte — AutoLink",
+      "metaDescription": "Créez votre compte pour activer votre autocollant AutoLink.",
+      "eyebrow": "Votre espace",
+      "title": "Créez votre compte.",
+      "subtitle": "Une fois connecté, scannez le QR que nous vous avons envoyé pour lier l’autocollant à votre compte.",
+      "submit": "Créer mon compte",
+      "submitting": "Création…",
+      "switchText": "Vous avez déjà un compte ?",
+      "switchLink": "Se connecter"
+    }
+  },
+  "activate": {
+    "metaTitle": "Activer un autocollant — AutoLink",
+    "eyebrow": "Activation",
+    "title": "Liez l’autocollant à votre voiture.",
+    "subtitle": "Scannez le QR que nous vous avons envoyé, ou recopiez l’identifiant et le code de la fiche.",
+    "submit": "Activer l’autocollant",
+    "submitting": "Activation…",
+    "help": "Le code d’activation est imprimé sur la fiche jointe à votre commande, jamais sur l’autocollant. Si vous ne le trouvez plus, contactez-nous : nous vous renvoyons un code.",
+    "fields": {
+      "tagId": "Identifiant de l’autocollant",
+      "tagIdHint": "Imprimé sur l’autocollant, par exemple AUT-7K3M9QXZ.",
+      "code": "Code d’activation",
+      "codeHint": "Sur la fiche envoyée avec votre commande.",
+      "brand": "Marque",
+      "model": "Modèle",
+      "color": "Couleur",
+      "plate": "Plaque (facultatif)",
+      "plateHint": "Gardée privée : jamais affichée à la personne qui scanne.",
+      "showDetails": "Afficher la marque, le modèle et la couleur",
+      "showDetailsHint": "Aide la personne qui scanne à vérifier qu’elle est devant la bonne voiture. Vous pouvez le désactiver à tout moment."
+    },
+    "errors": {
+      "invalid": "Identifiant ou code incorrect.",
+      "too_short": "C’est un peu trop court.",
+      "too_long": "C’est trop long.",
+      "locked": "Trop d’essais sur cet autocollant. Réessayez dans 24 heures.",
+      "rate_limited": "Trop de tentatives depuis cette connexion. Réessayez dans une heure.",
+      "server_error": "Une erreur est survenue. Réessayez dans un instant."
+    }
+  },
+  "dashboard": {
+    "metaTitle": "Mes autocollants — AutoLink",
+    "eyebrow": "Votre espace",
+    "title": "Mes autocollants",
+    "subtitle": "{count} autocollant(s) sur votre compte.",
+    "signOut": "Se déconnecter",
+    "activated": "Autocollant {tagId} activé. Il est maintenant lié à votre voiture.",
+    "addAnother": "Activer un autre autocollant",
+    "results": {
+      "ok": "Modification enregistrée.",
+      "invalid": "Modification impossible. Vérifiez les champs."
+    },
+    "status": {
+      "UNASSIGNED": "Non activé",
+      "ACTIVE": "Actif",
+      "DEACTIVATED": "Désactivé",
+      "SUSPENDED": "Suspendu",
+      "LOST": "Perdu"
+    },
+    "empty": {
+      "title": "Aucun autocollant pour l’instant",
+      "body": "Quand vous recevez votre autocollant, scannez le QR d’activation que nous vous envoyons pour le lier à votre voiture.",
+      "cta": "Activer un autocollant"
+    },
+    "card": {
+      "noVehicle": "Voiture non renseignée",
+      "activatedOn": "Activé le {date}",
+      "scanUrl": "Adresse du QR",
+      "edit": "Modifier la voiture",
+      "brand": "Marque",
+      "model": "Modèle",
+      "color": "Couleur",
+      "plate": "Plaque (privée)",
+      "showDetails": "Afficher la marque, le modèle et la couleur à la personne qui scanne",
+      "save": "Enregistrer",
+      "deactivate": "Désactiver",
+      "deactivateHint": "Personne ne pourra plus vous écrire via cet autocollant.",
+      "reactivate": "Réactiver",
+      "reactivateHint": "L’autocollant recommencera à recevoir des messages."
     }
   }
 }

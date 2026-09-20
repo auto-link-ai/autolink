@@ -36,6 +36,8 @@ function toAppSettings(doc: Setting): AppSettings {
     captchaThreshold: doc.captchaThreshold,
     rateLimitAdminLoginPerHour: doc.rateLimitAdminLoginPerHour,
     rateLimitOrdersPerHour: doc.rateLimitOrdersPerHour,
+    rateLimitOwnerLoginPerHour: doc.rateLimitOwnerLoginPerHour,
+    rateLimitActivationPerIpPerHour: doc.rateLimitActivationPerIpPerHour,
     deliveryFees: doc.deliveryFees.map(({ wilayaCode, home, stopdesk }) => ({
       wilayaCode,
       home,

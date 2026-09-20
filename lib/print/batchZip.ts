@@ -9,7 +9,10 @@ import type { PrintTemplate } from './template';
 export interface BatchPrintEntry {
   publicTagId: string;
   activationCode: string;
+  /** Public QR: `/t/{publicTagId}`. Printed on the sticker. */
   url: string;
+  /** Claim QR: `/{locale}/activate?t=…&c=…`. Sent to one customer, never printed on the car. */
+  claimUrl: string;
 }
 
 export interface BatchPrintMeta {
@@ -25,14 +28,18 @@ function readme(meta: BatchPrintMeta, count: number, trimMm: number): string {
     `AutoLink — ${meta.label} (${meta.batchPublicId}) — ${count} tags`,
     `Généré le / Generated: ${meta.generatedAt.toISOString()}`,
     '',
-    'qr/                        QR codes — SVG (impression / print) et PNG 1024 px',
+    'qr/                        QR codes publics — SVG (impression / print) et PNG 1024 px',
+    "claim/AUT-*.png            QR d'activation à envoyer AU CLIENT — un fichier par étiquette",
+    '                           Claim QR to send TO THE CUSTOMER — one file per tag',
     `pdf/AUT-*.pdf              Autocollants ${trimMm}×${trimMm} mm, fond perdu + traits de coupe / stickers with bleed + crop marks`,
     'pdf/activation-slips.pdf   Codes d\'activation — CONFIDENTIEL, à garder séparés / CONFIDENTIAL, keep separate',
     'print-sheet.pdf            Planche A4 / A4 gang sheet',
     'tags.csv                   tag_id, activation_code, qr_url — CONFIDENTIEL / CONFIDENTIAL',
     '',
-    "Les codes d'activation n'existent que dans ce téléchargement. Conservez-le en lieu sûr.",
-    'Activation codes exist only in this download. Store it somewhere safe.',
+    "Les codes d'activation n'existent que dans ce téléchargement — ils ne peuvent pas être régénérés.",
+    "Perdu ? Réémettez les codes du lot (les anciens cessent de fonctionner).",
+    'Activation codes exist only in this download and cannot be regenerated.',
+    "Lost it? Reissue the batch's codes — the old ones stop working.",
     '',
   ].join('\r\n');
 }
@@ -52,6 +59,7 @@ export async function buildBatchZip(
   for (const entry of entries) {
     zip.file(`qr/${entry.publicTagId}.svg`, await qrSvg(entry.url));
     zip.file(`qr/${entry.publicTagId}.png`, await qrPng(entry.url));
+    zip.file(`claim/${entry.publicTagId}.png`, await qrPng(entry.claimUrl));
     zip.file(`pdf/${entry.publicTagId}.pdf`, await renderStickerPdf(template, entry));
   }
   zip.file('pdf/activation-slips.pdf', await renderActivationSlips(entries, meta.activateAt));

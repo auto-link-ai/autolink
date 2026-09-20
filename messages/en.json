@@ -248,7 +248,9 @@
       "order": "Order",
       "menu": "Open menu",
       "closeMenu": "Close menu",
-      "skipToContent": "Skip to content"
+      "skipToContent": "Skip to content",
+      "signIn": "Sign in",
+      "myStickers": "My stickers"
     },
     "hero": {
       "trust": {
@@ -705,6 +707,121 @@
         "pay": "You pay in cash when it is delivered."
       },
       "backHome": "Back to home"
+    }
+  },
+  "auth": {
+    "fields": {
+      "name": "Full name",
+      "email": "Email",
+      "phone": "Phone (optional)",
+      "phoneHint": "So we can reach you about an order.",
+      "password": "Password",
+      "passwordHint": "At least 10 characters."
+    },
+    "errors": {
+      "invalid": "That value is not valid.",
+      "too_short": "That is a little too short.",
+      "too_long": "That is too long.",
+      "invalid_email": "That email address is not valid.",
+      "invalid_phone": "Enter a valid Algerian mobile (05, 06 or 07).",
+      "password_too_short": "The password must be at least 10 characters.",
+      "email_taken": "An account already uses this address. Sign in instead.",
+      "invalid_credentials": "Wrong email or password.",
+      "rate_limited": "Too many attempts. Try again in an hour.",
+      "server_error": "Something went wrong. Please try again in a moment."
+    },
+    "login": {
+      "metaTitle": "Sign in — AutoLink",
+      "metaDescription": "Sign in to activate a sticker and read your messages.",
+      "eyebrow": "Your account",
+      "title": "Sign in.",
+      "subtitle": "To activate a sticker and manage your cars.",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "switchText": "No account yet?",
+      "switchLink": "Create one"
+    },
+    "register": {
+      "metaTitle": "Create an account — AutoLink",
+      "metaDescription": "Create your account to activate your AutoLink sticker.",
+      "eyebrow": "Your account",
+      "title": "Create your account.",
+      "subtitle": "Once you are signed in, scan the QR we sent you to link the sticker to your account.",
+      "submit": "Create my account",
+      "submitting": "Creating…",
+      "switchText": "Already have an account?",
+      "switchLink": "Sign in"
+    }
+  },
+  "activate": {
+    "metaTitle": "Activate a sticker — AutoLink",
+    "eyebrow": "Activation",
+    "title": "Link the sticker to your car.",
+    "subtitle": "Scan the QR we sent you, or copy the id and the code from the slip.",
+    "submit": "Activate the sticker",
+    "submitting": "Activating…",
+    "help": "The activation code is printed on the slip that came with your order, never on the sticker itself. If you have lost it, contact us and we will send you a new code.",
+    "fields": {
+      "tagId": "Sticker id",
+      "tagIdHint": "Printed on the sticker, for example AUT-7K3M9QXZ.",
+      "code": "Activation code",
+      "codeHint": "On the slip sent with your order.",
+      "brand": "Make",
+      "model": "Model",
+      "color": "Colour",
+      "plate": "Plate (optional)",
+      "plateHint": "Kept private: never shown to the person scanning.",
+      "showDetails": "Show the make, model and colour",
+      "showDetailsHint": "Helps whoever scans check they are at the right car. You can turn this off at any time."
+    },
+    "errors": {
+      "invalid": "Wrong sticker id or code.",
+      "too_short": "That is a little too short.",
+      "too_long": "That is too long.",
+      "locked": "Too many attempts on this sticker. Try again in 24 hours.",
+      "rate_limited": "Too many attempts from this connection. Try again in an hour.",
+      "server_error": "Something went wrong. Please try again in a moment."
+    }
+  },
+  "dashboard": {
+    "metaTitle": "My stickers — AutoLink",
+    "eyebrow": "Your account",
+    "title": "My stickers",
+    "subtitle": "{count} sticker(s) on your account.",
+    "signOut": "Sign out",
+    "activated": "Sticker {tagId} activated. It is now linked to your car.",
+    "addAnother": "Activate another sticker",
+    "results": {
+      "ok": "Change saved.",
+      "invalid": "Could not save. Check the fields."
+    },
+    "status": {
+      "UNASSIGNED": "Not activated",
+      "ACTIVE": "Active",
+      "DEACTIVATED": "Switched off",
+      "SUSPENDED": "Suspended",
+      "LOST": "Lost"
+    },
+    "empty": {
+      "title": "No stickers yet",
+      "body": "When your sticker arrives, scan the activation QR we send you to link it to your car.",
+      "cta": "Activate a sticker"
+    },
+    "card": {
+      "noVehicle": "No car details",
+      "activatedOn": "Activated on {date}",
+      "scanUrl": "QR address",
+      "edit": "Edit the car",
+      "brand": "Make",
+      "model": "Model",
+      "color": "Colour",
+      "plate": "Plate (private)",
+      "showDetails": "Show the make, model and colour to whoever scans",
+      "save": "Save",
+      "deactivate": "Switch off",
+      "deactivateHint": "Nobody will be able to message you through this sticker.",
+      "reactivate": "Switch back on",
+      "reactivateHint": "The sticker will receive messages again."
     }
   }
 }

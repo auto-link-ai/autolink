@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Wordmark } from '@/components/Wordmark';
 import { buttonClasses } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
+import { getOwnerSession } from '@/lib/auth/session';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { href } from './links';
 import { MobileMenu, type NavItem } from './MobileMenu';
@@ -11,6 +12,7 @@ import { MobileMenu, type NavItem } from './MobileMenu';
 export async function SiteHeader({ locale }: { locale: Locale }) {
   const t = await getTranslations('site.nav');
   const common = await getTranslations('common');
+  const session = await getOwnerSession();
 
   const items: NavItem[] = [
     { href: href(locale, '/how-it-works'), label: t('howItWorks') },
@@ -43,12 +45,32 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           </nav>
 
           <div className="flex items-center gap-2">
-            <LanguageSwitcher current={locale} label={common('languageSwitcherLabel')} className="hidden sm:block" />
+            <LanguageSwitcher current={locale} label={common('languageSwitcherLabel')} className="hidden md:block" />
+            {session ? (
+              <Link
+                href={href(locale, '/dashboard')}
+                className="hidden h-11 items-center rounded-full px-4 text-[15px] font-bold text-text hover:bg-surface-3 sm:inline-flex"
+              >
+                {t('myStickers')}
+              </Link>
+            ) : (
+              <Link
+                href={href(locale, '/login')}
+                className="hidden h-11 items-center rounded-full px-4 text-[15px] font-semibold text-text-secondary hover:bg-surface-3 hover:text-text sm:inline-flex"
+              >
+                {t('signIn')}
+              </Link>
+            )}
             <Link href={href(locale, '/order')} className={buttonClasses('primary', 'sm', 'hidden sm:inline-flex')}>
               {t('order')}
             </Link>
             <MobileMenu
-              items={items}
+              items={[
+                ...items,
+                session
+                  ? { href: href(locale, '/dashboard'), label: t('myStickers') }
+                  : { href: href(locale, '/login'), label: t('signIn') },
+              ]}
               openLabel={t('menu')}
               closeLabel={t('closeMenu')}
               orderHref={href(locale, '/order')}

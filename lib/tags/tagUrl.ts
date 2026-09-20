@@ -1,3 +1,4 @@
+import { isValidActivationCodeShape } from '@/lib/validation/activationCode';
 import { isValidTagIdShape } from '@/lib/validation/tagId';
 
 /**
@@ -50,4 +51,27 @@ export function tagUrl(baseUrl: string, publicTagId: string): string {
     throw new RangeError(`tagUrl: invalid tag id ${publicTagId}`);
   }
   return `${baseUrl}/t/${publicTagId}`;
+}
+
+/**
+ * The claim link, printed as a second QR on the activation slip and never on
+ * the sticker: the code travels with the paper we hand the customer, so a
+ * passer-by who scans the car can never claim it.
+ */
+export function claimUrl(
+  baseUrl: string,
+  locale: string,
+  publicTagId: string,
+  activationCode: string,
+): string {
+  if (!isValidTagIdShape(publicTagId)) {
+    throw new RangeError(`claimUrl: invalid tag id ${publicTagId}`);
+  }
+  if (!isValidActivationCodeShape(activationCode)) {
+    throw new RangeError('claimUrl: invalid activation code');
+  }
+  const url = new URL(`/${locale}/activate`, baseUrl);
+  url.searchParams.set('t', publicTagId);
+  url.searchParams.set('c', activationCode);
+  return url.toString();
 }
