@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { CashIcon, CheckIcon, PhoneIcon, TruckIcon } from '@/components/site/icons';
+import { CashIcon, CheckIcon, PhoneIcon, QrIcon, TruckIcon } from '@/components/site/icons';
 import { href } from '@/components/site/links';
 import { buttonClasses } from '@/components/ui/Button';
 import { routing } from '@/i18n/routing';
@@ -26,10 +26,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: t('metaTitle'), robots: { index: false, follow: false } };
 }
 
+/**
+ * The whole road to a working sticker. It used to stop at paying — and the step
+ * that makes the sticker theirs, activating it, was nowhere on the page.
+ */
 const NEXT_STEPS = [
   { key: 'call', Icon: PhoneIcon },
   { key: 'deliver', Icon: TruckIcon },
   { key: 'pay', Icon: CashIcon },
+  { key: 'activate', Icon: QrIcon },
 ] as const;
 
 export default async function OrderConfirmationPage({ params }: Props) {
@@ -115,16 +120,27 @@ export default async function OrderConfirmationPage({ params }: Props) {
             </p>
           )}
 
-          <ul className="mt-8 grid gap-5 border-t border-border pt-6 md:grid-cols-3">
-            {NEXT_STEPS.map(({ key, Icon }) => (
+          <h2 className="mt-8 border-t border-border pt-6 text-[17px] font-bold text-text">{t('nextTitle')}</h2>
+          <ol className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {NEXT_STEPS.map(({ key, Icon }, index) => (
               <li key={key} className="flex gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-surface-3 text-accent">
+                <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-surface-3 text-accent">
                   <Icon className="h-5 w-5" />
+                  <span className="absolute -inset-e-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent font-mono text-[10px] font-bold text-white">
+                    {index + 1}
+                  </span>
                 </span>
-                <p className="text-[15px] leading-relaxed text-text-secondary">{t(`next.${key}`)}</p>
+                <div>
+                  <p className="text-[15px] leading-relaxed text-text-secondary">{t(`next.${key}`)}</p>
+                  {key === 'activate' && (
+                    <Link href={href(locale, '/register')} className="mt-1 inline-block text-sm font-bold text-accent hover:underline">
+                      {t('activateLink')}
+                    </Link>
+                  )}
+                </div>
               </li>
             ))}
-          </ul>
+          </ol>
 
           <Link href={href(locale, '')} className={buttonClasses('secondary', 'md', 'mt-8')}>
             {t('backHome')}

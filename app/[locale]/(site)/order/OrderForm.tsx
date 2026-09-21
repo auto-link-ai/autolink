@@ -200,7 +200,20 @@ export function OrderForm({ locale, labels, wilayas, fees, unitPrice, currencyLa
           </p>
         )}
 
-        <Button type="button" onClick={() => setReview(true)} className="mt-6 w-full sm:w-auto">
+        {/*
+          On a phone the summary sits below this button, so without this line
+          people would press it having never seen the price.
+        */}
+        <p className="mt-6 flex items-baseline justify-between gap-4 rounded-2xl bg-surface-3 px-4 py-3 text-[15px] lg:hidden">
+          <span className="font-bold text-text">{labels.summary.total}</span>
+          <span dir="ltr" className="font-bold text-accent">
+            {totals
+              ? formatDzd(totals.totalPrice, currencyLabel)
+              : `${formatDzd(unitPrice * quantity, currencyLabel)} + ${labels.summary.delivery}`}
+          </span>
+        </p>
+
+        <Button type="button" onClick={() => setReview(true)} className="mt-4 w-full sm:w-auto lg:mt-6">
           {labels.actions.review}
         </Button>
       </div>

@@ -859,9 +859,12 @@
       "next": {
         "call": "We call you to confirm the order and the address.",
         "deliver": "The courier hands you the sticker and the activation slip.",
-        "pay": "You pay in cash when it is delivered."
+        "pay": "You pay in cash when it is delivered.",
+        "activate": "Scan the QR on your slip to link the sticker to your car."
       },
-      "backHome": "Back to home"
+      "backHome": "Back to home",
+      "nextTitle": "What happens next",
+      "activateLink": "Create my account now"
     }
   },
   "auth": {

@@ -859,9 +859,12 @@
       "next": {
         "call": "Nous vous appelons pour confirmer la commande et l’adresse.",
         "deliver": "Le livreur vous remet l’autocollant et la fiche d’activation.",
-        "pay": "Vous payez en espèces au moment de la livraison."
+        "pay": "Vous payez en espèces au moment de la livraison.",
+        "activate": "Scannez le QR de votre fiche pour lier l’autocollant à votre voiture."
       },
-      "backHome": "Retour à l’accueil"
+      "backHome": "Retour à l’accueil",
+      "nextTitle": "Et maintenant",
+      "activateLink": "Créer mon compte dès maintenant"
     }
   },
   "auth": {
