@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from 'react';
 import { Button } from '@/components/ui/Button';
+import { submitKeepingValues } from '@/components/ui/submitKeepingValues';
 import { CheckIcon } from '@/components/site/icons';
 import type { Locale } from '@/i18n/locales';
 import { cx } from '@/lib/cx';
@@ -89,7 +90,11 @@ export function OrderForm({ locale, labels, wilayas, fees, unitPrice, currencyLa
   const showDetails = !review || state.status === 'error';
 
   return (
-    <form action={formAction} className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+    <form
+      action={formAction}
+      onSubmit={submitKeepingValues(formAction)}
+      className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-start"
+    >
       <input type="hidden" name="locale" value={locale} />
       {/* Honeypot: hidden from people, tempting for bots. */}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />

@@ -3,6 +3,7 @@
 import { useActionState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { PasswordInput } from '@/components/ui/PasswordInput';
+import { submitKeepingValues } from '@/components/ui/submitKeepingValues';
 import type { Locale } from '@/i18n/locales';
 import { changePasswordAction } from '../actions';
 import { CHANGE_PASSWORD_INITIAL, type ChangePasswordState } from '../passwordState';
@@ -38,7 +39,9 @@ export function ChangePassword({ locale, labels }: { locale: Locale; labels: Cha
   };
 
   return (
-    <details className="rounded-xl bg-white p-6 shadow-card-sm" open={state.status !== 'idle'}>
+    // Left to the user while idle: a controlled `open={false}` would snap the
+    // panel shut on any re-render. Forced open only to show a result.
+    <details className="rounded-xl bg-white p-6 shadow-card-sm" open={state.status !== 'idle' || undefined}>
       <summary className="cursor-pointer list-none text-[15px] font-bold text-text">{labels.title}</summary>
 
       {state.status === 'done' ? (
@@ -46,7 +49,7 @@ export function ChangePassword({ locale, labels }: { locale: Locale; labels: Cha
           {labels.done}
         </p>
       ) : (
-        <form action={formAction} className="mt-4 flex flex-col gap-4">
+        <form action={formAction} onSubmit={submitKeepingValues(formAction)} className="mt-4 flex flex-col gap-4">
           <input type="hidden" name="locale" value={locale} />
 
           <div className="flex flex-col gap-1.5">

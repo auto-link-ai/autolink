@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
+import { submitKeepingValues } from '@/components/ui/submitKeepingValues';
 import { MESSAGE_CATEGORIES } from '@/lib/domain/constants';
 import { cx } from '@/lib/cx';
 import { sendReportAction } from './actions';
@@ -45,7 +46,7 @@ export function ReportForm({
   const needsChallenge = Boolean(state.challenge && turnstileSiteKey);
 
   return (
-    <form action={formAction} className="flex flex-col gap-6">
+    <form action={formAction} onSubmit={submitKeepingValues(formAction)} className="flex flex-col gap-6">
       <input type="hidden" name="tagId" value={tagId} />
 
       <fieldset>

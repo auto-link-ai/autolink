@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react';
 import { Button } from '@/components/ui/Button';
+import { submitKeepingValues } from '@/components/ui/submitKeepingValues';
 import type { Locale } from '@/i18n/locales';
 import { cx } from '@/lib/cx';
 import { activateAction } from './actions';
@@ -102,7 +103,11 @@ export function ActivateForm({
   };
 
   return (
-    <form action={formAction} className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-card-sm md:p-8">
+    <form
+      action={formAction}
+      onSubmit={submitKeepingValues(formAction)}
+      className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-card-sm md:p-8"
+    >
       <input type="hidden" name="locale" value={locale} />
 
       <div className="grid gap-5 sm:grid-cols-2">

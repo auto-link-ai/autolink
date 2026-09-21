@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useActionState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { PasswordInput } from '@/components/ui/PasswordInput';
+import { submitKeepingValues } from '@/components/ui/submitKeepingValues';
 import type { Locale } from '@/i18n/locales';
 import { cx } from '@/lib/cx';
 import { registerAction, signInAction } from './actions';
@@ -86,7 +87,11 @@ export function AuthForm({
 
   return (
     <>
-      <form action={formAction} className="flex flex-col gap-5 rounded-xl bg-white p-6 shadow-card-sm md:p-8">
+      <form
+        action={formAction}
+        onSubmit={submitKeepingValues(formAction)}
+        className="flex flex-col gap-5 rounded-xl bg-white p-6 shadow-card-sm md:p-8"
+      >
         <input type="hidden" name="locale" value={locale} />
         {next && <input type="hidden" name="next" value={next} />}
 
