@@ -147,28 +147,52 @@ test.describe('scanning a sticker', () => {
     await expect(page.getByText('1 unread').first()).toBeVisible();
   });
 
-  test('the owner is offered notifications, and a refusal is explained', async ({ browser }) => {
+  test('a browser that already allowed notifications is switched on at sign-in, without a tap', async ({ browser }) => {
     test.setTimeout(180_000);
-    // Chromium grants the permission instead of prompting.
+    // This context granted the permission up front, as an earlier "Allow" would
+    // have. (The notification tests need WEB_PUSH_* keys; `next dev` reads .env.)
     const page = await ownerPage(browser);
 
-    const enable = page.getByRole('button', { name: 'Turn on notifications' });
-    if ((await enable.count()) === 0) {
-      // No VAPID keys configured here: the offer is withheld rather than broken.
-      await expect(page.getByText('Know straight away')).toHaveCount(0);
-      return;
-    }
-
-    await expect(page.getByText('Know straight away')).toBeVisible();
-    await enable.click();
-
-    // Automated Chrome cannot reach a real push service, so a subscription may
-    // legitimately fail here. What must hold either way: the owner is told, and
-    // the page keeps working. Delivery to a real phone is checked by hand.
+    // Automated Chrome cannot reach a real push service, so linking may
+    // legitimately fail here. What must hold either way: no tap was needed, the
+    // owner is told, and the page keeps working. Delivery is checked by hand.
     await expect(
-      page.getByText(/Notifications are on for this device\.|Could not turn them on\./),
+      page.getByText(/Notifications are on in this browser\.|Could not turn them on\./),
     ).toBeVisible({ timeout: 60_000 });
     await expect(page.getByRole('region', { name: 'Messages' })).toBeVisible();
+  });
+
+  test('a browser that has not answered yet is asked, for this website only', async ({ browser }) => {
+    test.setTimeout(180_000);
+    await ownerPage(browser);
+    // Same account, fresh browser: no permission granted, none refused.
+    const fresh = await browser.newContext({ storageState: await ownerSession!.storageState() });
+    const page = await fresh.newPage();
+    await page.goto('/en/dashboard');
+
+    const panel = page.getByRole('region', { name: 'Know straight away' });
+    await expect(panel).toBeVisible({ timeout: 60_000 });
+    await expect(panel).toContainText('only for this website');
+    await expect(panel.getByRole('button', { name: 'Turn on notifications' })).toBeEnabled();
+    await fresh.close();
+  });
+
+  test('an iPhone in Safari is shown how to add AutoLink to the Home Screen', async ({ browser }) => {
+    test.setTimeout(180_000);
+    await ownerPage(browser);
+    const iphone = await browser.newContext({
+      storageState: await ownerSession!.storageState(),
+      userAgent:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
+    });
+    const page = await iphone.newPage();
+    await page.goto('/en/dashboard');
+
+    const panel = page.getByRole('region', { name: 'Know straight away' });
+    await expect(panel).toContainText('“Add to Home Screen”', { timeout: 60_000 });
+    // Nothing to tap that could not work there.
+    await expect(panel.getByRole('button')).toHaveCount(0);
+    await iphone.close();
   });
 
   test('a switched-off sticker looks exactly like one that never existed', async ({ browser }) => {

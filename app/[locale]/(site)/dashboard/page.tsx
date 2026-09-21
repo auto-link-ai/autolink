@@ -86,6 +86,7 @@ export default async function DashboardPage({ params, searchParams }: Props) {
             </p>
           )}
 
+          {/* First thing after signing in: without it, a message waits until they look. */}
           {tags.length > 0 && pushKey && (
             <NotifyToggle
               locale={locale}
@@ -96,7 +97,11 @@ export default async function DashboardPage({ params, searchParams }: Props) {
                 enable: t('notify.enable'),
                 working: t('notify.working'),
                 enabled: t('notify.enabled'),
+                confirmFailed: t('notify.confirmFailed'),
                 denied: t('notify.denied'),
+                deniedHelp: t('notify.deniedHelp'),
+                iosInstall: t('notify.iosInstall'),
+                insecure: t('notify.insecure'),
                 unsupported: t('notify.unsupported'),
                 failed: t('notify.failed'),
               }}

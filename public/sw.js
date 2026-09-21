@@ -21,8 +21,10 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(title, {
       body: payload.body || '',
-      icon: '/brand/autolink-mark.svg',
-      badge: '/brand/autolink-mark.svg',
+      // PNG, not SVG: Chrome on Android and Windows shows no SVG notification icon.
+      // The badge is a one-colour silhouette, as Android draws it in the status bar.
+      icon: '/brand/icon-192.png',
+      badge: '/brand/badge-96.png',
       // One car, one notification: a second message replaces the first rather
       // than burying the phone.
       tag: 'autolink-message',

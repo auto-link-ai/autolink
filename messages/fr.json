@@ -1035,11 +1035,15 @@
     },
     "notify": {
       "title": "Soyez prévenu tout de suite",
-      "body": "Recevez une notification sur ce téléphone dès que quelqu’un scanne votre autocollant.",
+      "body": "Recevez une notification dès que quelqu’un vous écrit au sujet de votre voiture. Votre navigateur vous le demande une seule fois, et uniquement pour ce site.",
       "enable": "Activer les notifications",
       "working": "Activation…",
-      "enabled": "Notifications activées sur cet appareil.",
-      "denied": "Les notifications sont bloquées dans votre navigateur. Autorisez-les dans ses réglages.",
+      "enabled": "Notifications activées dans ce navigateur.",
+      "confirmFailed": "Nous avons envoyé une notification de test, mais elle n’est pas arrivée. Vérifiez que cet appareil autorise votre navigateur à afficher des notifications (sous Windows : Paramètres › Système › Notifications).",
+      "denied": "Les notifications sont bloquées pour ce site.",
+      "deniedHelp": "Pour les autoriser, cliquez sur le cadenas à côté de l’adresse du site, réglez Notifications sur Autoriser, puis rechargez la page.",
+      "iosInstall": "Sur iPhone, les notifications fonctionnent une fois AutoLink ajouté à l’écran d’accueil : touchez Partager, puis « Sur l’écran d’accueil ». Ouvrez AutoLink depuis l’écran d’accueil, connectez-vous et activez-les ici.",
+      "insecure": "Les notifications nécessitent une connexion sécurisée (https). Vos messages restent visibles ici.",
       "unsupported": "Ce navigateur ne gère pas les notifications. Vos messages restent visibles ici.",
       "failed": "Activation impossible. Réessayez."
     },
@@ -1070,6 +1074,10 @@
     "newMessage": {
       "title": "Nouveau message AutoLink",
       "titleWithCar": "Message à propos de votre {car}"
+    },
+    "confirm": {
+      "title": "Notifications activées",
+      "body": "C’est ainsi qu’AutoLink vous préviendra quand quelqu’un vous écrit au sujet de votre voiture."
     }
   }
 }

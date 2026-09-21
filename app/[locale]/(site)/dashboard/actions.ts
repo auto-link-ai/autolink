@@ -1,5 +1,6 @@
 'use server';
 
+import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { toLocale } from '@/i18n/locales';
 import { getOwnerSession } from '@/lib/auth/session';
@@ -12,6 +13,8 @@ import { changePasswordSchema, fieldErrors, type ChangePasswordField } from '@/l
 import type { ChangePasswordState } from './passwordState';
 import { notificationSubscriptionsRepository } from '@/lib/db/repositories/notificationSubscriptions';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
+import { sendPush } from '@/lib/notifications/push';
+import type { SavePushResult } from './pushState';
 import { vehiclesRepository } from '@/lib/db/repositories/vehicles';
 import { isValidTagIdShape } from '@/lib/validation/tagId';
 import { vehicleSchema } from '@/lib/validation/vehicle';
@@ -77,20 +80,44 @@ export async function changePasswordAction(
 }
 
 /**
- * Stores this browser's push subscription against the signed-in owner. Returns
- * a result rather than redirecting: the toggle stays where it is.
+ * Stores this browser's push subscription against the signed-in owner — on
+ * every dashboard visit, so a browser always belongs to whoever signed in on it
+ * last. Returns a result rather than redirecting: the panel stays where it is.
+ *
+ * With `confirm`, the owner has just switched notifications on: one test
+ * notification goes to this browser only, so they see it work straight away.
  */
-export async function savePushSubscriptionAction(formData: FormData): Promise<{ ok: boolean }> {
+export async function savePushSubscriptionAction(formData: FormData): Promise<SavePushResult> {
   const session = await getOwnerSession();
   if (!session) return { ok: false };
 
+  const locale = toLocale(formData.get('locale'));
   const endpoint = String(formData.get('endpoint') ?? '');
   const p256dh = String(formData.get('p256dh') ?? '');
   const auth = String(formData.get('auth') ?? '');
   // Endpoints are push-service URLs; anything else is not worth storing.
   if (!endpoint.startsWith('https://') || !p256dh || !auth) return { ok: false };
+  const target = { endpoint, keys: { p256dh, auth } };
 
-  return notificationSubscriptionsRepository.save(session.actor, { endpoint, keys: { p256dh, auth } });
+  try {
+    const saved = await notificationSubscriptionsRepository.save(session.actor, target);
+    if (!saved.ok || formData.get('confirm') !== '1') return saved;
+
+    const settings = await getSettings();
+    const hit = await rateLimitsRepository.hit(
+      `pushconfirm:user:${session.actor.userId}`,
+      settings.rateLimitOwnerLoginPerHour,
+      60 * 60 * 1000,
+    );
+    if (!hit.allowed) return { ok: true };
+
+    const t = await getTranslations({ locale, namespace: 'notifications.confirm' });
+    const outcome = await sendPush([target], { title: t('title'), body: t('body'), url: `/${locale}/dashboard` });
+    return { ok: true, confirmed: outcome.sent > 0 };
+  } catch (error) {
+    console.error('[dashboard] saving a push subscription failed:', error instanceof Error ? error.message : error);
+    return { ok: false };
+  }
 }
 
 /** Mark a message read, or archive it. Only the owner's own messages move. */

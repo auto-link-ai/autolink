@@ -1035,11 +1035,15 @@
     },
     "notify": {
       "title": "Know straight away",
-      "body": "Get a notification on this phone the moment someone scans your sticker.",
+      "body": "Get a notification the moment someone writes to you about your car. Your browser asks once, and only for this website.",
       "enable": "Turn on notifications",
       "working": "Turning on…",
-      "enabled": "Notifications are on for this device.",
-      "denied": "Notifications are blocked in your browser. Allow them in its settings.",
+      "enabled": "Notifications are on in this browser.",
+      "confirmFailed": "We sent a test notification but it did not arrive. Check that this device lets your browser show notifications (on Windows: Settings › System › Notifications).",
+      "denied": "Notifications are blocked for this website.",
+      "deniedHelp": "To allow them, click the lock icon next to the web address, set Notifications to Allow, then reload this page.",
+      "iosInstall": "On iPhone, notifications work once AutoLink is on your Home Screen: tap Share, then “Add to Home Screen”. Open AutoLink from there, sign in, and turn them on here.",
+      "insecure": "Notifications need a secure (https) connection. Your messages still appear here.",
       "unsupported": "This browser cannot show notifications. Your messages still appear here.",
       "failed": "Could not turn them on. Try again."
     },
@@ -1070,6 +1074,10 @@
     "newMessage": {
       "title": "New AutoLink message",
       "titleWithCar": "Message about your {car}"
+    },
+    "confirm": {
+      "title": "Notifications are on",
+      "body": "This is how AutoLink will tell you when someone writes about your car."
     }
   }
 }

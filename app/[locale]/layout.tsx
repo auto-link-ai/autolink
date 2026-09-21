@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { isRtl } from '@/i18n/locales';
 import { routing } from '@/i18n/routing';
+import { SITE } from '@/lib/config/site';
 import { fontVariables } from '@/lib/fonts';
 import { siteOrigin } from '@/lib/site/seo';
 import '../globals.css';
@@ -26,6 +27,8 @@ export async function generateMetadata({ params }: Omit<Props, 'children'>): Pro
     metadataBase: siteOrigin(),
     title: t('title'),
     description: t('description'),
+    // Home Screen name and bar on iPhone (see app/manifest.ts).
+    appleWebApp: { capable: true, title: SITE.brand, statusBarStyle: 'default' },
   };
 }
 
