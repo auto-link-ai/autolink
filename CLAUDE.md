@@ -6,6 +6,11 @@ message the owner without ever seeing the owner's phone number.
 
 Buy → activate → stick → forget → get contacted.
 
+The sticker also opens the owner's private **car book** when they scan their own
+sticker while signed in: oil change, insurance, contrôle technique, vignette, repairs,
+notes, with reminders before things are due. One owner, their own cars, visible to
+nobody else. It stays that — not fleet management, not shared.
+
 ## What this project is NOT
 Not fleet management. Not a dashboard SaaS. Not NFC. Not a marketplace. Not a delivery
 platform. Not social. Not subscriptions. Not a mobile app. Not analytics.

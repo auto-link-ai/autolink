@@ -14,6 +14,7 @@ import { NotificationAttemptModel } from '@/lib/db/models/notificationAttempt';
 import { NotificationSubscriptionModel } from '@/lib/db/models/notificationSubscription';
 import { OrderModel } from '@/lib/db/models/order';
 import { RateLimitModel } from '@/lib/db/models/rateLimit';
+import { ServiceRecordModel } from '@/lib/db/models/serviceRecord';
 import { SettingModel } from '@/lib/db/models/setting';
 import { TagModel } from '@/lib/db/models/tag';
 import { TagBatchModel } from '@/lib/db/models/tagBatch';
@@ -33,6 +34,7 @@ const ALL_MODELS: ReadonlyArray<Pick<Model<unknown>, 'syncIndexes' | 'collection
   AdminUserModel,
   AuditLogModel,
   RateLimitModel,
+  ServiceRecordModel,
   SettingModel,
   WilayaModel,
 ];

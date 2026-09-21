@@ -44,6 +44,7 @@ function toAppSettings(doc: Setting): AppSettings {
       stopdesk,
     })),
     maxOrderQuantity: doc.maxOrderQuantity,
+    careReminderDays: doc.careReminderDays,
   };
 }
 

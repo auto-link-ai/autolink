@@ -2,12 +2,16 @@ import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Wordmark } from '@/components/Wordmark';
 import { locales } from '@/i18n/locales';
+import { getOwnerSession } from '@/lib/auth/session';
+import { algiersToday, dueItems } from '@/lib/care/due';
+import { carBookRepository } from '@/lib/db/repositories/carBook';
 import { scannerTagsRepository } from '@/lib/db/repositories/tagsScanner';
 import { getSettings } from '@/lib/config/settings';
 import { resolveScannerLocale } from '@/lib/scanner/request';
 import { turnstileSiteKey } from '@/lib/security/turnstile';
 import { MESSAGE_CATEGORIES } from '@/lib/domain/constants';
 import { setScannerLanguageAction } from './actions';
+import { OwnerPanel } from './OwnerPanel';
 import { ReportForm, type ReportLabels } from './ReportForm';
 
 export const dynamic = 'force-dynamic';
@@ -31,6 +35,13 @@ export default async function ScanPage({ params, searchParams }: Props) {
   const tag = await scannerTagsRepository.findForScanner(tagId);
   // Unknown, malformed, deactivated, suspended, lost: one answer for all.
   if (!tag) notFound();
+
+  // The owner, signed in, scanning their own sticker gets their car instead of
+  // the message form. Decided here on the server; for everyone else — other
+  // accounts included — `mine` is null and the page is unchanged.
+  // `?view=public` lets the owner see exactly what others see.
+  const owner = raw.view === 'public' ? null : await getOwnerSession();
+  const mine = owner ? await carBookRepository.summaryForOwner(owner.actor, tag.publicTagId) : null;
 
   const sent = raw.sent === '1';
   const settings = await getSettings();
@@ -83,7 +94,13 @@ export default async function ScanPage({ params, searchParams }: Props) {
         </form>
       </header>
 
-      {sent ? (
+      {mine ? (
+        <OwnerPanel
+          summary={mine}
+          items={dueItems(mine.due, algiersToday(), settings.careReminderDays)}
+          locale={locale}
+        />
+      ) : sent ? (
         <section className="rounded-xl bg-white p-6 text-center shadow-card-sm">
           <h1 className="text-h2 text-text">{t('sent.title')}</h1>
           <p className="mx-auto mt-3 max-w-[40ch] text-[15px] leading-relaxed text-text-secondary">
@@ -109,7 +126,17 @@ export default async function ScanPage({ params, searchParams }: Props) {
         </>
       )}
 
-      <footer className="mt-auto pt-4 text-center text-sm text-text-muted">{t('footer')}</footer>
+      <footer className="mt-auto flex flex-col items-center gap-2 pt-4 text-center text-sm text-text-muted">
+        {!mine && (
+          <a
+            href={`/${locale}/login?next=${encodeURIComponent(`/t/${tag.publicTagId}`)}`}
+            className="min-h-11 py-2 font-semibold text-text-secondary underline-offset-4 hover:underline"
+          >
+            {t('signIn')}
+          </a>
+        )}
+        <p>{t('footer')}</p>
+      </footer>
     </main>
   );
 }

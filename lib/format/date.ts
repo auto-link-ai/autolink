@@ -15,6 +15,14 @@ export function formatDateTime(date: Date, locale: Locale): string {
   }).format(date);
 }
 
+/**
+ * A calendar day stored as UTC midnight (car book due dates): formatted in UTC
+ * so it never shows as the day before anywhere.
+ */
+export function formatDay(date: Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], { dateStyle: 'medium', timeZone: 'UTC' }).format(date);
+}
+
 const MINUTE = 60_000;
 const UNITS: readonly [limit: number, size: number, unit: Intl.RelativeTimeFormatUnit][] = [
   [60 * MINUTE, MINUTE, 'minute'],

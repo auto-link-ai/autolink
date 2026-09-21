@@ -53,7 +53,15 @@
       "unavailable": "This AutoLink is not available.",
       "challenge_failed": "The check failed. Try again.",
       "server_error": "Something went wrong. Try again in a moment."
-    }
+    },
+    "owner": {
+      "title": "This is your car",
+      "private": "Only you see this, because you are signed in.",
+      "openBook": "Open my car book",
+      "messages": "My messages",
+      "preview": "See what others see"
+    },
+    "signIn": "Is this your car? Sign in"
   },
   "notFound": {
     "title": "Page not found",
@@ -1017,7 +1025,9 @@
       "reactivateHint": "The sticker will receive messages again.",
       "preview": "See what someone who scans it sees",
       "deactivateConfirm": "Once it is off, anyone who scans this sticker sees \"not available\" and cannot write to you. You can switch it back on at any time.",
-      "deactivateYes": "Yes, switch it off"
+      "deactivateYes": "Yes, switch it off",
+      "book": "My car book",
+      "nextDue": "{item}: {when}"
     },
     "inbox": {
       "title": "Messages",
@@ -1078,6 +1088,139 @@
     "confirm": {
       "title": "Notifications are on",
       "body": "This is how AutoLink will tell you when someone writes about your car."
+    },
+    "care": {
+      "titles": {
+        "OIL_CHANGE": "Oil change due — {car}",
+        "INSURANCE": "Insurance to renew — {car}",
+        "INSPECTION": "Contrôle technique due — {car}",
+        "VIGNETTE": "Vignette due — {car}"
+      },
+      "dueOn": "Due on {date}.",
+      "overdue": "It was due on {date}."
+    }
+  },
+  "care": {
+    "metaTitle": "Car book",
+    "title": "Car book",
+    "back": "My stickers",
+    "private": "Private: only you see this, when you are signed in.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "add": "Add",
+    "adding": "Adding…",
+    "added": "Added.",
+    "checkFields": "Check these fields:",
+    "due": {
+      "title": "Coming up",
+      "hint": "With notifications on, you are reminded {days, plural, one {# day} other {# days}} before.",
+      "kinds": {
+        "OIL_CHANGE": "Oil change",
+        "INSURANCE": "Insurance",
+        "INSPECTION": "Contrôle technique",
+        "VIGNETTE": "Vignette"
+      },
+      "status": {
+        "overdue": "Overdue",
+        "soon": "Due soon",
+        "ok": "OK",
+        "km": "By km",
+        "unset": "Not set"
+      },
+      "today": "Today",
+      "inDays": "{count, plural, one {In # day} other {In # days}}",
+      "lateDays": "{count, plural, one {# day late} other {# days late}}",
+      "atKm": "At {km} km",
+      "notSet": "Add it below"
+    },
+    "profile": {
+      "title": "Car profile",
+      "year": "Year",
+      "fuel": "Fuel",
+      "fuelNone": "Choose…",
+      "fuels": {
+        "PETROL": "Petrol",
+        "DIESEL": "Diesel",
+        "LPG": "LPG (Sirghaz)",
+        "HYBRID": "Hybrid",
+        "ELECTRIC": "Electric"
+      },
+      "engine": "Engine",
+      "engineHint": "For example 1.6 HDi",
+      "vin": "Chassis number (VIN)",
+      "registrationNumber": "Carte grise number"
+    },
+    "oil": {
+      "title": "Oil change (vidange)",
+      "add": "Log an oil change",
+      "date": "Date of the change",
+      "km": "Km at the change",
+      "oilType": "Oil",
+      "oilTypeHint": "For example 5W-30",
+      "garage": "Garage",
+      "cost": "Price ({currency})",
+      "nextDate": "Next change: date",
+      "nextKm": "Next change: km",
+      "nextHint": "Fill in one or both, as your garage told you.",
+      "note": "Note",
+      "history": "Past oil changes",
+      "empty": "No oil change logged yet."
+    },
+    "insurance": {
+      "title": "Insurance",
+      "company": "Company",
+      "policyNumber": "Policy number",
+      "startDate": "Start date",
+      "expiryDate": "Expiry date"
+    },
+    "inspection": {
+      "title": "Contrôle technique",
+      "lastDate": "Last inspection",
+      "nextDueDate": "Next inspection due",
+      "centre": "Inspection centre"
+    },
+    "vignette": {
+      "title": "Vignette (yearly car tax)",
+      "paidDate": "Paid on",
+      "nextDueDate": "Next one due"
+    },
+    "repairs": {
+      "title": "Repairs & service",
+      "add": "Log work done",
+      "date": "Date",
+      "km": "Km",
+      "work": "What was done",
+      "workHint": "Tyres, brakes, battery, filters…",
+      "garage": "Garage",
+      "cost": "Cost ({currency})",
+      "note": "Note",
+      "history": "Past work",
+      "empty": "Nothing logged yet."
+    },
+    "notes": {
+      "title": "Notes",
+      "hint": "Anything else you want to remember about this car."
+    },
+    "record": {
+      "km": "{km} km",
+      "next": "Next: {value}",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this entry for good?",
+      "deleteYes": "Yes, delete it"
+    },
+    "errors": {
+      "required": "Required.",
+      "too_long": "Too long.",
+      "too_short": "Too short.",
+      "invalid_date": "Not a valid date.",
+      "invalid_number": "Use a whole number.",
+      "invalid_year": "Not a valid year.",
+      "invalid_vin": "Letters and digits only, 5 to 20 of them.",
+      "before_start": "Cannot come before the first date.",
+      "below_km": "Must be more than the km at the change.",
+      "invalid": "Check this value.",
+      "server_error": "Could not save. Try again."
     }
   }
 }

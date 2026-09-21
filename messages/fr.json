@@ -53,7 +53,15 @@
       "unavailable": "Cet AutoLink n’est pas disponible.",
       "challenge_failed": "La vérification a échoué. Réessayez.",
       "server_error": "Une erreur est survenue. Réessayez dans un instant."
-    }
+    },
+    "owner": {
+      "title": "C’est votre voiture",
+      "private": "Vous seul voyez ceci, car vous êtes connecté.",
+      "openBook": "Ouvrir le carnet de la voiture",
+      "messages": "Mes messages",
+      "preview": "Voir ce que voient les autres"
+    },
+    "signIn": "C’est votre voiture ? Connectez-vous"
   },
   "notFound": {
     "title": "Page introuvable",
@@ -1017,7 +1025,9 @@
       "reactivateHint": "L’autocollant recommencera à recevoir des messages.",
       "preview": "Voir ce que voit la personne qui scanne",
       "deactivateConfirm": "Une fois désactivé, qui scanne cet autocollant verra « non disponible » et ne pourra plus vous écrire. Vous pouvez le réactiver à tout moment.",
-      "deactivateYes": "Oui, désactiver"
+      "deactivateYes": "Oui, désactiver",
+      "book": "Carnet de la voiture",
+      "nextDue": "{item} : {when}"
     },
     "inbox": {
       "title": "Messages reçus",
@@ -1078,6 +1088,139 @@
     "confirm": {
       "title": "Notifications activées",
       "body": "C’est ainsi qu’AutoLink vous préviendra quand quelqu’un vous écrit au sujet de votre voiture."
+    },
+    "care": {
+      "titles": {
+        "OIL_CHANGE": "Vidange à prévoir — {car}",
+        "INSURANCE": "Assurance à renouveler — {car}",
+        "INSPECTION": "Contrôle technique à prévoir — {car}",
+        "VIGNETTE": "Vignette à payer — {car}"
+      },
+      "dueOn": "Prévu le {date}.",
+      "overdue": "C’était prévu le {date}."
+    }
+  },
+  "care": {
+    "metaTitle": "Carnet de la voiture",
+    "title": "Carnet de la voiture",
+    "back": "Mes autocollants",
+    "private": "Privé : vous seul le voyez, une fois connecté.",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "saved": "Enregistré.",
+    "add": "Ajouter",
+    "adding": "Ajout…",
+    "added": "Ajouté.",
+    "checkFields": "Vérifiez ces champs :",
+    "due": {
+      "title": "À venir",
+      "hint": "Avec les notifications activées, vous êtes prévenu {days, plural, one {# jour} other {# jours}} avant.",
+      "kinds": {
+        "OIL_CHANGE": "Vidange",
+        "INSURANCE": "Assurance",
+        "INSPECTION": "Contrôle technique",
+        "VIGNETTE": "Vignette"
+      },
+      "status": {
+        "overdue": "En retard",
+        "soon": "Bientôt",
+        "ok": "OK",
+        "km": "Au kilométrage",
+        "unset": "Non renseigné"
+      },
+      "today": "Aujourd’hui",
+      "inDays": "{count, plural, one {Dans # jour} other {Dans # jours}}",
+      "lateDays": "{count, plural, one {# jour de retard} other {# jours de retard}}",
+      "atKm": "À {km} km",
+      "notSet": "À renseigner plus bas"
+    },
+    "profile": {
+      "title": "Fiche de la voiture",
+      "year": "Année",
+      "fuel": "Carburant",
+      "fuelNone": "Choisir…",
+      "fuels": {
+        "PETROL": "Essence",
+        "DIESEL": "Diesel",
+        "LPG": "GPL (Sirghaz)",
+        "HYBRID": "Hybride",
+        "ELECTRIC": "Électrique"
+      },
+      "engine": "Moteur",
+      "engineHint": "Par exemple 1.6 HDi",
+      "vin": "Numéro de châssis (VIN)",
+      "registrationNumber": "Numéro de carte grise"
+    },
+    "oil": {
+      "title": "Vidange",
+      "add": "Noter une vidange",
+      "date": "Date de la vidange",
+      "km": "Kilométrage à la vidange",
+      "oilType": "Huile",
+      "oilTypeHint": "Par exemple 5W-30",
+      "garage": "Garage",
+      "cost": "Prix ({currency})",
+      "nextDate": "Prochaine vidange : date",
+      "nextKm": "Prochaine vidange : km",
+      "nextHint": "Remplissez l’un ou les deux, comme votre garagiste vous l’a indiqué.",
+      "note": "Remarque",
+      "history": "Vidanges précédentes",
+      "empty": "Aucune vidange notée pour l’instant."
+    },
+    "insurance": {
+      "title": "Assurance",
+      "company": "Compagnie",
+      "policyNumber": "Numéro de police",
+      "startDate": "Date de début",
+      "expiryDate": "Date d’expiration"
+    },
+    "inspection": {
+      "title": "Contrôle technique",
+      "lastDate": "Dernier contrôle",
+      "nextDueDate": "Prochain contrôle",
+      "centre": "Centre de contrôle"
+    },
+    "vignette": {
+      "title": "Vignette automobile",
+      "paidDate": "Payée le",
+      "nextDueDate": "Prochaine à payer avant le"
+    },
+    "repairs": {
+      "title": "Réparations et entretien",
+      "add": "Noter une intervention",
+      "date": "Date",
+      "km": "Kilométrage",
+      "work": "Travaux effectués",
+      "workHint": "Pneus, freins, batterie, filtres…",
+      "garage": "Garage",
+      "cost": "Coût ({currency})",
+      "note": "Remarque",
+      "history": "Interventions précédentes",
+      "empty": "Rien de noté pour l’instant."
+    },
+    "notes": {
+      "title": "Notes",
+      "hint": "Tout ce que vous voulez retenir sur cette voiture."
+    },
+    "record": {
+      "km": "{km} km",
+      "next": "Prochaine : {value}",
+      "delete": "Supprimer",
+      "deleteConfirm": "Supprimer définitivement cette entrée ?",
+      "deleteYes": "Oui, supprimer"
+    },
+    "errors": {
+      "required": "Obligatoire.",
+      "too_long": "Trop long.",
+      "too_short": "Trop court.",
+      "invalid_date": "Date invalide.",
+      "invalid_number": "Nombre entier attendu.",
+      "invalid_year": "Année invalide.",
+      "invalid_vin": "Lettres et chiffres uniquement, de 5 à 20.",
+      "before_start": "Ne peut pas précéder la première date.",
+      "below_km": "Doit dépasser le kilométrage de la vidange.",
+      "invalid": "Vérifiez cette valeur.",
+      "server_error": "Enregistrement impossible. Réessayez."
     }
   }
 }

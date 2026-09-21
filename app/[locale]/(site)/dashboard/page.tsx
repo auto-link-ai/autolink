@@ -8,6 +8,9 @@ import { PageHero } from '@/components/site/sections/SectionHeading';
 import { buttonClasses } from '@/components/ui/Button';
 import { routing } from '@/i18n/routing';
 import { requireOwner } from '@/lib/auth/session';
+import { algiersToday, dueItems, mostUrgent } from '@/lib/care/due';
+import { getSettings } from '@/lib/config/settings';
+import { carBookRepository } from '@/lib/db/repositories/carBook';
 import { messagesRepository } from '@/lib/db/repositories/messages';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
 import { cx } from '@/lib/cx';
@@ -47,12 +50,19 @@ export default async function DashboardPage({ params, searchParams }: Props) {
   const raw = await searchParams;
   const activated = first(raw.activated);
   const result = first(raw.result);
-  const [tags, messages, unreadByTag] = await Promise.all([
+  const [tags, messages, unreadByTag, dueByTag, settings] = await Promise.all([
     ownerTagsRepository.listForOwner(session.actor),
     messagesRepository.listForOwner(session.actor),
     messagesRepository.unreadByTag(session.actor),
+    carBookRepository.dueForOwner(session.actor),
+    getSettings(),
   ]);
   const pushKey = pushPublicKey();
+  const today = algiersToday();
+  const nextDue = (publicTagId: string) => {
+    const due = dueByTag.get(publicTagId);
+    return due ? mostUrgent(dueItems(due, today, settings.careReminderDays)) : null;
+  };
 
   return (
     <>
@@ -128,8 +138,10 @@ export default async function DashboardPage({ params, searchParams }: Props) {
                     key={tag.publicTagId}
                     tag={tag}
                     locale={locale}
-                    scanUrl={`/t/${tag.publicTagId}`}
+                    // The stranger's view, even though the owner is signed in.
+                    scanUrl={`/t/${tag.publicTagId}?view=public`}
                     unread={unreadByTag.get(tag.publicTagId) ?? 0}
+                    nextDue={nextDue(tag.publicTagId)}
                   />
                 ))}
               </ul>

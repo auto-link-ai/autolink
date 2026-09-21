@@ -34,6 +34,8 @@ export interface Setting {
   rateLimitActivationPerIpPerHour: number;
   deliveryFees: DeliveryFee[];
   maxOrderQuantity: number;
+  /** Car book: how many days before a due date the owner is reminded. */
+  careReminderDays: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -66,6 +68,7 @@ const settingSchema = new Schema<Setting>(
     rateLimitActivationPerIpPerHour: { type: Number, default: 20, min: 1 },
     deliveryFees: { type: [deliveryFeeSchema], default: [] },
     maxOrderQuantity: { type: Number, default: 10, min: 1 },
+    careReminderDays: { type: Number, default: 7, min: 1, max: 60 },
   },
   { timestamps: true, collection: 'settings' },
 );

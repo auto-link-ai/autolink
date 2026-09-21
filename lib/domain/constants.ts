@@ -83,6 +83,38 @@ export const STORAGE_LIMITS = {
   orderQuantity: 100,
 } as const;
 
+/** The owner's private car book (only ever shown to the signed-in owner). */
+export const CAR_FUELS = ['PETROL', 'DIESEL', 'LPG', 'HYBRID', 'ELECTRIC'] as const;
+export type CarFuel = (typeof CAR_FUELS)[number];
+
+/** Log entries in the car book. */
+export const SERVICE_RECORD_KINDS = ['OIL_CHANGE', 'REPAIR'] as const;
+export type ServiceRecordKind = (typeof SERVICE_RECORD_KINDS)[number];
+
+/** The due dates the car book tracks, and reminds about. */
+export const CARE_DUE_KINDS = ['OIL_CHANGE', 'INSURANCE', 'INSPECTION', 'VIGNETTE'] as const;
+export type CareDueKind = (typeof CARE_DUE_KINDS)[number];
+
+/** Car book field limits (characters, or the largest number accepted). */
+export const CARE_FIELD_LIMITS = {
+  engine: 40,
+  vin: { min: 5, max: 20 },
+  registrationNumber: 30,
+  company: 60,
+  policyNumber: 40,
+  centre: 60,
+  oilType: 40,
+  garage: 60,
+  work: { min: 2, max: 120 },
+  note: 300,
+  notes: 2000,
+  km: 2_000_000,
+  costDzd: 100_000_000,
+  firstYear: 1950,
+  /** Storage ceiling: log entries kept for one car. */
+  recordsPerCar: 500,
+} as const;
+
 /** Algeria has 58 wilayas (codes 1–58). */
 export const WILAYA_CODE_MIN = 1;
 export const WILAYA_CODE_MAX = 58;

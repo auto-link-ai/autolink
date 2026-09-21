@@ -1,6 +1,9 @@
 import { getTranslations } from 'next-intl/server';
-import { Button } from '@/components/ui/Button';
+import Link from 'next/link';
+import { dueSentence } from '@/components/care/DueList';
+import { Button, buttonClasses } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
+import type { DueItem } from '@/lib/care/due';
 import { cx } from '@/lib/cx';
 import type { OwnerTagRow } from '@/lib/db/repositories/tagsOwner';
 import { formatDateTime } from '@/lib/format/date';
@@ -18,14 +21,18 @@ export async function StickerCard({
   locale,
   scanUrl,
   unread,
+  nextDue,
 }: {
   tag: OwnerTagRow;
   locale: Locale;
   scanUrl: string;
   /** Messages received through this sticker that the owner has not read. */
   unread: number;
+  /** From the car book: something late or due soon, if anything. */
+  nextDue: DueItem | null;
 }) {
   const t = await getTranslations('dashboard');
+  const tDue = await getTranslations('care.due');
   const live = tag.status === 'ACTIVE';
 
   return (
@@ -60,6 +67,22 @@ export async function StickerCard({
       <p className="mt-3 text-sm text-text-muted">
         {tag.activatedAt ? t('card.activatedOn', { date: formatDateTime(tag.activatedAt, locale) }) : ''}
       </p>
+
+      {tag.vehicle && (
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <Link href={`/${locale}/dashboard/car/${tag.publicTagId}`} className={buttonClasses('primary', 'sm')}>
+            {t('card.book')}
+          </Link>
+          {nextDue && (
+            <p className={cx('text-sm font-bold', nextDue.status === 'overdue' ? 'text-danger' : 'text-accent')}>
+              {t('card.nextDue', {
+                item: tDue(`kinds.${nextDue.kind}`),
+                when: await dueSentence(nextDue, locale),
+              })}
+            </p>
+          )}
+        </div>
+      )}
       {/* The owner's own view of the page a stranger reaches — worth more than its address. */}
       <a
         href={scanUrl}
