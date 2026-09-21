@@ -149,6 +149,28 @@ export const usersRepository = {
     return { ok: result.matchedCount === 1 };
   },
 
+  /**
+   * The owner's own password hash, so the change-password action can verify
+   * the current password. Owner-scoped: this is the only read of the hash
+   * besides `findForLogin`, and it can only return the caller's own.
+   */
+  async passwordHashFor(owner: OwnerActor): Promise<string | null> {
+    const objectId = toObjectId(owner.userId);
+    if (!objectId) return null;
+    await connectToDatabase();
+    const doc = await UserModel.findById(objectId).select('+passwordHash').lean();
+    return doc?.passwordHash ?? null;
+  },
+
+  /** The owner replacing their own password, after proving the current one. */
+  async setOwnPasswordHash(owner: OwnerActor, passwordHash: string): Promise<{ ok: boolean }> {
+    const objectId = toObjectId(owner.userId);
+    if (!objectId) return { ok: false };
+    await connectToDatabase();
+    const result = await UserModel.updateOne({ _id: objectId }, { $set: { passwordHash } });
+    return { ok: result.matchedCount === 1 };
+  },
+
   async touchLastLogin(id: string): Promise<void> {
     const objectId = toObjectId(id);
     if (!objectId) return;

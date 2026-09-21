@@ -405,7 +405,8 @@
       "closeMenu": "Close menu",
       "skipToContent": "Skip to content",
       "signIn": "Sign in",
-      "myStickers": "My stickers"
+      "myStickers": "My stickers",
+      "unreadMessages": "{count} unread message(s)"
     },
     "hero": {
       "trust": {
@@ -992,7 +993,6 @@
     "card": {
       "noVehicle": "No car details",
       "activatedOn": "Activated on {date}",
-      "scanUrl": "QR address",
       "edit": "Edit the car",
       "brand": "Make",
       "model": "Model",
@@ -1001,9 +1001,11 @@
       "showDetails": "Show the make, model and colour to whoever scans",
       "save": "Save",
       "deactivate": "Switch off",
-      "deactivateHint": "Nobody will be able to message you through this sticker.",
       "reactivate": "Switch back on",
-      "reactivateHint": "The sticker will receive messages again."
+      "reactivateHint": "The sticker will receive messages again.",
+      "preview": "See what someone who scans it sees",
+      "deactivateConfirm": "Once it is off, anyone who scans this sticker sees \"not available\" and cannot write to you. You can switch it back on at any time.",
+      "deactivateYes": "Yes, switch it off"
     },
     "inbox": {
       "title": "Messages",
@@ -1028,6 +1030,28 @@
       "denied": "Notifications are blocked in your browser. Allow them in its settings.",
       "unsupported": "This browser cannot show notifications. Your messages still appear here.",
       "failed": "Could not turn them on. Try again."
+    },
+    "account": {
+      "title": "My account",
+      "changePassword": "Change my password",
+      "current": "Current password",
+      "next": "New password",
+      "nextHint": "At least 10 characters.",
+      "submit": "Save the new password",
+      "working": "Saving…",
+      "done": "Password changed. Use it the next time you sign in.",
+      "show": "Show",
+      "hide": "Hide",
+      "errors": {
+        "invalid": "Check this field.",
+        "required": "This field is required.",
+        "too_long": "That is too long.",
+        "password_too_short": "At least 10 characters.",
+        "same_password": "Choose a password different from the current one.",
+        "wrong_current": "That is not your current password.",
+        "rate_limited": "Too many attempts. Try again in an hour.",
+        "server_error": "Something went wrong. Try again in a moment."
+      }
     }
   },
   "notifications": {

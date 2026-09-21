@@ -167,6 +167,14 @@ export const messagesRepository = {
     }));
   },
 
+  /** How many messages wait unread — the badge in the site header. */
+  async countUnread(owner: OwnerActor): Promise<number> {
+    const ownerId = toObjectId(owner.userId);
+    if (!ownerId) return 0;
+    await connectToDatabase();
+    return MessageModel.countDocuments({ ownerId, status: 'UNREAD' });
+  },
+
   /** Unread messages per sticker, for the badges on the dashboard. */
   async unreadByTag(owner: OwnerActor): Promise<Map<string, number>> {
     const ownerId = toObjectId(owner.userId);

@@ -11,10 +11,10 @@ import { requireOwner } from '@/lib/auth/session';
 import { messagesRepository } from '@/lib/db/repositories/messages';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
 import { cx } from '@/lib/cx';
-import { siteOrigin } from '@/lib/site/seo';
 import { isValidTagIdShape } from '@/lib/validation/tagId';
 import { signOutAction } from '../_auth/actions';
 import { pushPublicKey } from '@/lib/notifications/push';
+import { ChangePassword } from './_components/ChangePassword';
 import { Inbox } from './_components/Inbox';
 import { NotifyToggle } from './_components/NotifyToggle';
 import { StickerCard } from './_components/StickerCard';
@@ -52,7 +52,6 @@ export default async function DashboardPage({ params, searchParams }: Props) {
     messagesRepository.listForOwner(session.actor),
     messagesRepository.unreadByTag(session.actor),
   ]);
-  const origin = siteOrigin().toString().replace(/\/$/, '');
   const pushKey = pushPublicKey();
 
   return (
@@ -124,7 +123,7 @@ export default async function DashboardPage({ params, searchParams }: Props) {
                     key={tag.publicTagId}
                     tag={tag}
                     locale={locale}
-                    scanUrl={`${origin}/t/${tag.publicTagId}`}
+                    scanUrl={`/t/${tag.publicTagId}`}
                     unread={unreadByTag.get(tag.publicTagId) ?? 0}
                   />
                 ))}
@@ -134,6 +133,36 @@ export default async function DashboardPage({ params, searchParams }: Props) {
               </Link>
             </>
           )}
+
+          <section aria-labelledby="account" className="mt-12">
+            <h2 id="account" className="mb-4 text-h3 text-text">
+              {t('account.title')}
+            </h2>
+            <ChangePassword
+              locale={locale}
+              labels={{
+                title: t('account.changePassword'),
+                current: t('account.current'),
+                next: t('account.next'),
+                nextHint: t('account.nextHint'),
+                submit: t('account.submit'),
+                working: t('account.working'),
+                done: t('account.done'),
+                show: t('account.show'),
+                hide: t('account.hide'),
+                errors: {
+                  invalid: t('account.errors.invalid'),
+                  required: t('account.errors.required'),
+                  too_long: t('account.errors.too_long'),
+                  password_too_short: t('account.errors.password_too_short'),
+                  same_password: t('account.errors.same_password'),
+                  wrong_current: t('account.errors.wrong_current'),
+                  rate_limited: t('account.errors.rate_limited'),
+                  server_error: t('account.errors.server_error'),
+                },
+              }}
+            />
+          </section>
         </div>
       </section>
     </>

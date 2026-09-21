@@ -4,6 +4,7 @@ import { Wordmark } from '@/components/Wordmark';
 import { buttonClasses } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
 import { getOwnerSession } from '@/lib/auth/session';
+import { messagesRepository } from '@/lib/db/repositories/messages';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { href } from './links';
 import { MobileMenu, type NavItem } from './MobileMenu';
@@ -13,6 +14,8 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
   const t = await getTranslations('site.nav');
   const common = await getTranslations('common');
   const session = await getOwnerSession();
+  // Shown on every page, so a new message is noticed without opening the dashboard.
+  const unread = session ? await messagesRepository.countUnread(session.actor).catch(() => 0) : 0;
 
   const items: NavItem[] = [
     { href: href(locale, '/how-it-works'), label: t('howItWorks') },
@@ -49,9 +52,15 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             {session ? (
               <Link
                 href={href(locale, '/dashboard')}
-                className="hidden h-11 items-center rounded-full px-4 text-[15px] font-bold text-text hover:bg-surface-3 sm:inline-flex"
+                className="hidden h-11 items-center gap-2 rounded-full px-4 text-[15px] font-bold text-text hover:bg-surface-3 sm:inline-flex"
               >
                 {t('myStickers')}
+                {unread > 0 && (
+                  <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-accent-ink">
+                    <span aria-hidden="true">{unread}</span>
+                    <span className="sr-only">{t('unreadMessages', { count: unread })}</span>
+                  </span>
+                )}
               </Link>
             ) : (
               <Link
@@ -68,7 +77,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
               items={[
                 ...items,
                 session
-                  ? { href: href(locale, '/dashboard'), label: t('myStickers') }
+                  ? { href: href(locale, '/dashboard'), label: t('myStickers'), badge: unread }
                   : { href: href(locale, '/login'), label: t('signIn') },
               ]}
               openLabel={t('menu')}

@@ -9,6 +9,8 @@ import { CrossIcon, MenuIcon } from './icons';
 export interface NavItem {
   href: string;
   label: string;
+  /** A count worth noticing, such as unread messages. Hidden at zero. */
+  badge?: number;
 }
 
 /**
@@ -33,6 +35,8 @@ export function MobileMenu({
   const pathname = usePathname();
   const [openedAt, setOpenedAt] = useState<string | null>(null);
   const open = openedAt === pathname;
+  // A dot on the closed menu, so a new message is noticed without opening it.
+  const waiting = items.some((item) => (item.badge ?? 0) > 0);
 
   return (
     <div className="lg:hidden">
@@ -41,10 +45,13 @@ export function MobileMenu({
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={() => setOpenedAt(open ? null : pathname)}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-surface-3 text-text transition-colors hover:bg-accent-soft"
+        className="relative inline-flex h-11 w-11 items-center justify-center rounded-full bg-surface-3 text-text transition-colors hover:bg-accent-soft"
       >
         {open ? <CrossIcon /> : <MenuIcon />}
         <span className="sr-only">{open ? closeLabel : openLabel}</span>
+        {waiting && !open && (
+          <span aria-hidden="true" className="absolute inset-e-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-white" />
+        )}
       </button>
 
       <div
@@ -62,6 +69,11 @@ export function MobileMenu({
               className="flex h-12 items-center rounded-2xl px-4 text-base font-semibold text-text hover:bg-surface-3 aria-[current=page]:text-accent"
             >
               {item.label}
+              {(item.badge ?? 0) > 0 && (
+                <span className="ms-auto rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold text-accent-ink">
+                  {item.badge}
+                </span>
+              )}
             </Link>
           ))}
           <Link href={orderHref} className={buttonClasses('primary', 'md', 'mt-2 w-full')}>

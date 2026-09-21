@@ -159,7 +159,10 @@ test.describe('scanning a sticker', () => {
   test('a switched-off sticker looks exactly like one that never existed', async ({ browser }) => {
     test.setTimeout(180_000);
     const owner = await ownerPage(browser);
-    await owner.getByRole('button', { name: 'Switch off' }).click();
+    // It asks first: switching off makes the owner unreachable.
+    await owner.locator('summary', { hasText: 'Switch off' }).click();
+    await expect(owner.getByText('cannot write to you')).toBeVisible();
+    await owner.getByRole('button', { name: 'Yes, switch it off' }).click();
     await expect(owner.getByRole('status')).toHaveText('Change saved.');
 
     const street = await browser.newContext();

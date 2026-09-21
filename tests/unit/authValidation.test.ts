@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { fieldErrors, loginSchema, registerSchema, PASSWORD_MIN_LENGTH } from '@/lib/validation/auth';
+import {
+  changePasswordSchema,
+  fieldErrors,
+  loginSchema,
+  registerSchema,
+  PASSWORD_MIN_LENGTH,
+} from '@/lib/validation/auth';
 import { vehicleSchema } from '@/lib/validation/vehicle';
 
 const account = {
@@ -77,5 +83,29 @@ describe('vehicleSchema', () => {
     const parsed = vehicleSchema.parse({ brand: 'Renault', model: 'Clio', color: 'Noir', plateNumber: '' });
     expect(parsed.showDetailsPublicly).toBe(false);
     expect(parsed.plateNumber).toBeNull();
+  });
+});
+
+describe('changePasswordSchema', () => {
+  it('accepts a new password of the usual length', () => {
+    expect(changePasswordSchema.safeParse({ current: 'anything', next: 'a-brand-new-one' }).success).toBe(true);
+  });
+
+  it('holds the new password to the same 10-character rule as registration', () => {
+    const result = changePasswordSchema.safeParse({ current: 'anything', next: 'short' });
+    expect(result.success).toBe(false);
+    if (!result.success) expect(fieldErrors(result.error).next).toBe('password_too_short');
+  });
+
+  it('refuses keeping the same password under a new name', () => {
+    const result = changePasswordSchema.safeParse({ current: 'the-same-password', next: 'the-same-password' });
+    expect(result.success).toBe(false);
+    if (!result.success) expect(fieldErrors(result.error).next).toBe('same_password');
+  });
+
+  it('needs the current password to be given at all', () => {
+    const result = changePasswordSchema.safeParse({ current: '', next: 'a-brand-new-one' });
+    expect(result.success).toBe(false);
+    if (!result.success) expect(fieldErrors(result.error).current).toBe('required');
   });
 });

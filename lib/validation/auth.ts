@@ -49,6 +49,19 @@ export const registerSchema = z.object({
   locale: z.enum(locales).catch('fr'),
 });
 
+/**
+ * An owner changing their own password. No "type it again" field: the new one
+ * can be shown on screen, which catches typos better than typing it twice.
+ */
+export const changePasswordSchema = z
+  .object({
+    current: z.string().min(1, 'required').max(PASSWORD_MAX_LENGTH, 'too_long'),
+    next: passwordSchema,
+  })
+  .refine((value) => value.next !== value.current, { path: ['next'], message: 'same_password' });
+
+export type ChangePasswordField = keyof z.infer<typeof changePasswordSchema>;
+
 /** What an admin may correct on a customer's account. Never the email. */
 export const customerContactSchema = z.object({
   name: nameSchema,

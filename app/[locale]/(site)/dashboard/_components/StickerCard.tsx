@@ -60,9 +60,16 @@ export async function StickerCard({
       <p className="mt-3 text-sm text-text-muted">
         {tag.activatedAt ? t('card.activatedOn', { date: formatDateTime(tag.activatedAt, locale) }) : ''}
       </p>
-      <p className="mt-1 break-all text-sm text-text-secondary">
-        {t('card.scanUrl')}: <span dir="ltr">{scanUrl}</span>
-      </p>
+      {/* The owner's own view of the page a stranger reaches — worth more than its address. */}
+      <a
+        href={scanUrl}
+        target="_blank"
+        rel="noopener"
+        className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-accent hover:underline"
+      >
+        {t('card.preview')}
+        <span aria-hidden="true">↗</span>
+      </a>
 
       {tag.vehicle && tag.vehicleId && (
         <details className="group mt-5 border-t border-border pt-4">
@@ -110,15 +117,36 @@ export async function StickerCard({
         </details>
       )}
 
-      <form action={toggleStickerAction} className="mt-5 border-t border-border pt-4">
-        <input type="hidden" name="locale" value={locale} />
-        <input type="hidden" name="publicTagId" value={tag.publicTagId} />
-        <input type="hidden" name="next" value={live ? 'DEACTIVATED' : 'ACTIVE'} />
-        <Button type="submit" variant={live ? 'danger' : 'secondary'} size="sm">
-          {live ? t('card.deactivate') : t('card.reactivate')}
-        </Button>
-        <span className="ms-3 text-sm text-text-muted">{live ? t('card.deactivateHint') : t('card.reactivateHint')}</span>
-      </form>
+      {live ? (
+        // Switching off makes the owner unreachable, so it asks once. <details>
+        // needs no JavaScript: the first tap opens the question, the second acts.
+        <details className="mt-5 border-t border-border pt-4">
+          <summary className="inline-flex h-10 cursor-pointer list-none items-center rounded-full border border-danger/40 px-4 text-sm font-bold text-danger hover:bg-danger/5">
+            {t('card.deactivate')}
+          </summary>
+          <div className="mt-3 rounded-2xl bg-danger/5 p-4">
+            <p className="text-sm leading-relaxed text-text">{t('card.deactivateConfirm')}</p>
+            <form action={toggleStickerAction} className="mt-3">
+              <input type="hidden" name="locale" value={locale} />
+              <input type="hidden" name="publicTagId" value={tag.publicTagId} />
+              <input type="hidden" name="next" value="DEACTIVATED" />
+              <Button type="submit" variant="danger" size="sm">
+                {t('card.deactivateYes')}
+              </Button>
+            </form>
+          </div>
+        </details>
+      ) : (
+        <form action={toggleStickerAction} className="mt-5 border-t border-border pt-4">
+          <input type="hidden" name="locale" value={locale} />
+          <input type="hidden" name="publicTagId" value={tag.publicTagId} />
+          <input type="hidden" name="next" value="ACTIVE" />
+          <Button type="submit" variant="secondary" size="sm">
+            {t('card.reactivate')}
+          </Button>
+          <span className="ms-3 text-sm text-text-muted">{t('card.reactivateHint')}</span>
+        </form>
+      )}
     </li>
   );
 }
