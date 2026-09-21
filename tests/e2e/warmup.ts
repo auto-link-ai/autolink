@@ -28,6 +28,9 @@ const ROUTES = [
   '/en/admin/login',
   // An unknown sticker: compiles the scan page and its not-available state.
   '/t/AUT-00000000',
+  // Customer pages redirect from inside the page, so this still compiles it.
+  '/en/dashboard/car/AUT-00000000',
+  '/api/cron/care-reminders',
   '/robots.txt',
   '/sitemap.xml',
   // Linked from every page's <head>: compiled mid-run, they race other pages.

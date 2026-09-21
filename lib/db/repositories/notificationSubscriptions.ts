@@ -10,7 +10,7 @@ import 'server-only';
 import { connectToDatabase } from '@/lib/db/connect';
 import { MessageModel } from '@/lib/db/models/message';
 import { NotificationSubscriptionModel } from '@/lib/db/models/notificationSubscription';
-import type { OwnerActor } from './actor';
+import type { OwnerActor, SystemActor } from './actor';
 import { toObjectId } from './objectId';
 
 /** What `web-push` needs to reach one device. */
@@ -67,6 +67,18 @@ export const notificationSubscriptionsRepository = {
 
     const subscriptions = await NotificationSubscriptionModel.find(
       { userId: message.ownerId, isActive: true },
+      { endpoint: 1, p256dh: 1, auth: 1 },
+    ).lean();
+    return subscriptions.map((s) => ({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }));
+  },
+
+  /** SYSTEM ONLY (the daily car book reminders): every live device of one account. */
+  async listForUser(_system: SystemActor, userId: string): Promise<PushTarget[]> {
+    const id = toObjectId(userId);
+    if (!id) return [];
+    await connectToDatabase();
+    const subscriptions = await NotificationSubscriptionModel.find(
+      { userId: id, isActive: true },
       { endpoint: 1, p256dh: 1, auth: 1 },
     ).lean();
     return subscriptions.map((s) => ({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }));
