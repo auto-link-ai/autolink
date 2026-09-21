@@ -10,7 +10,8 @@ import { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_STATE, hasAdminCredentials } from '.
  *    workers starting at once each wait on a different cold compile — some of
  *    those requests come back as errors. Ask for every route once, serially.
  * 2. Sign in as the admin and save the session, so the suite spends one attempt
- *    against the 10-per-hour login limiter instead of a dozen.
+ *    against the 10-per-hour login limiter instead of a dozen — then use it to
+ *    compile the admin pages too.
  */
 const ROUTES = [
   '/fr',
@@ -25,14 +26,24 @@ const ROUTES = [
   '/en/dashboard',
   '/en/activate',
   '/en/admin/login',
-  '/en/admin',
-  '/en/admin/orders',
-  '/en/admin/tags',
-  '/en/admin/customers',
-  '/en/admin/orders?ref=AL-000000',
-  '/en/admin/settings',
+  // An unknown sticker: compiles the scan page and its not-available state.
+  '/t/AUT-00000000',
   '/robots.txt',
   '/sitemap.xml',
+  // Linked from every page's <head>: compiled mid-run, they race other pages.
+  '/manifest.webmanifest',
+  '/apple-icon.png',
+];
+
+// Behind the admin session: asked for without it, the middleware answers with a
+// redirect and the page itself is never compiled — until mid-run.
+const ADMIN_ROUTES = [
+  '/en/admin',
+  '/en/admin/orders',
+  '/en/admin/orders?ref=AL-000000',
+  '/en/admin/tags',
+  '/en/admin/customers',
+  '/en/admin/settings',
 ];
 
 export default async function warmUp(config: FullConfig): Promise<void> {
@@ -58,6 +69,7 @@ export default async function warmUp(config: FullConfig): Promise<void> {
     await page.getByRole('button', { name: 'Sign in' }).click();
     await page.waitForURL(/\/en\/admin\/(tags|orders)$/, { timeout: 60_000 });
     await page.context().storageState({ path: ADMIN_STATE });
+    for (const route of ADMIN_ROUTES) await page.goto(route);
   } finally {
     await browser.close();
   }
