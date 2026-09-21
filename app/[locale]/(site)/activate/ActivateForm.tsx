@@ -19,6 +19,8 @@ export interface ActivateLabels {
   plateHint: string;
   showDetails: string;
   showDetailsHint: string;
+  /** Common colours in the reader's language, offered as suggestions. */
+  colors: string[];
   submit: string;
   submitting: string;
   errors: Record<string, string>;
@@ -26,6 +28,30 @@ export interface ActivateLabels {
 
 const INPUT =
   'h-12 w-full rounded-2xl border border-border bg-white px-4 text-[15px] text-text outline-none placeholder:text-text-muted focus:border-accent';
+
+/** The makes most seen on Algerian roads. Brand names read the same in every language. */
+const COMMON_MAKES = [
+  'Renault',
+  'Peugeot',
+  'Dacia',
+  'Hyundai',
+  'Kia',
+  'Volkswagen',
+  'Toyota',
+  'Citroën',
+  'Chevrolet',
+  'Suzuki',
+  'Fiat',
+  'Seat',
+  'Skoda',
+  'Nissan',
+  'Mercedes-Benz',
+  'BMW',
+  'Audi',
+  'Chery',
+  'Geely',
+  'Mitsubishi',
+] as const;
 
 function Field({
   id,
@@ -106,13 +132,24 @@ export function ActivateForm({
 
       <div className="grid gap-5 border-t border-border pt-6 sm:grid-cols-2">
         <Field id="act-brand" label={labels.brand} error={error('brand')}>
-          <input id="act-brand" name="brand" required maxLength={40} className={INPUT} />
+          <input id="act-brand" name="brand" required maxLength={40} list="act-makes" autoComplete="off" className={INPUT} />
+          {/* Suggestions, not a restriction: any make can still be typed. */}
+          <datalist id="act-makes">
+            {COMMON_MAKES.map((make) => (
+              <option key={make} value={make} />
+            ))}
+          </datalist>
         </Field>
         <Field id="act-model" label={labels.model} error={error('model')}>
           <input id="act-model" name="model" required maxLength={40} className={INPUT} />
         </Field>
         <Field id="act-color" label={labels.color} error={error('color')}>
-          <input id="act-color" name="color" required maxLength={30} className={INPUT} />
+          <input id="act-color" name="color" required maxLength={30} list="act-colors" autoComplete="off" className={INPUT} />
+          <datalist id="act-colors">
+            {labels.colors.map((color) => (
+              <option key={color} value={color} />
+            ))}
+          </datalist>
         </Field>
         <Field id="act-plate" label={labels.plate} hint={labels.plateHint} error={error('plateNumber')}>
           <input id="act-plate" name="plateNumber" maxLength={20} dir="ltr" className={INPUT} />

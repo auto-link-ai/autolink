@@ -7,7 +7,9 @@ import { PageHero } from '@/components/site/sections/SectionHeading';
 import { routing } from '@/i18n/routing';
 import { getOwnerSession } from '@/lib/auth/session';
 import { pageMetadata } from '@/lib/site/seo';
+import { claimTagIdFromNext } from '@/lib/activation/claimLink';
 import { AuthForm, type AuthLabels } from '../_auth/AuthForm';
+import { ClaimWelcome } from '../_auth/ClaimWelcome';
 import { safeNext } from '../_auth/state';
 
 export const dynamic = 'force-dynamic';
@@ -35,9 +37,17 @@ export default async function LoginPage({ params, searchParams }: Props) {
   // Already signed in: go where they were heading.
   if (await getOwnerSession()) redirect(safeNext(next, locale));
 
+  const claimTagId = claimTagIdFromNext(next);
+  const registerHref = `${href(locale, '/register')}${next ? `?next=${encodeURIComponent(next)}` : ''}`;
+
   const labels: AuthLabels = {
     email: t('fields.email'),
     password: t('fields.password'),
+    show: t('fields.show'),
+    hide: t('fields.hide'),
+    forgot: t('login.forgot'),
+    forgotLink: t('login.forgotLink'),
+    forgotHref: href(locale, '/contact'),
     submit: t('login.submit'),
     submitting: t('login.submitting'),
     switchText: t('login.switchText'),
@@ -54,14 +64,16 @@ export default async function LoginPage({ params, searchParams }: Props) {
     <>
       <PageHero eyebrow={t('login.eyebrow')} title={t('login.title')} subtitle={t('login.subtitle')} />
       <section className="pb-16 md:pb-24">
-        <div className="container-page max-w-[520px]">
-          <AuthForm
-            mode="login"
-            locale={locale}
-            next={next}
-            labels={labels}
-            switchHref={`${href(locale, '/register')}${next ? `?next=${encodeURIComponent(next)}` : ''}`}
-          />
+        <div className="container-page max-w-130">
+          {claimTagId && (
+            <ClaimWelcome
+              tagId={claimTagId}
+              title={t('claim.loginTitle')}
+              body={t('claim.loginBody')}
+              cta={{ label: t('claim.loginCta'), href: registerHref, secondary: t('claim.loginSecondary') }}
+            />
+          )}
+          <AuthForm mode="login" locale={locale} next={next} labels={labels} switchHref={registerHref} />
         </div>
       </section>
     </>

@@ -54,6 +54,7 @@ export default async function ActivatePage({ params, searchParams }: Props) {
     plateHint: t('fields.plateHint'),
     showDetails: t('fields.showDetails'),
     showDetailsHint: t('fields.showDetailsHint'),
+    colors: t.raw('fields.colors') as string[],
     submit: t('submit'),
     submitting: t('submitting'),
     errors: {

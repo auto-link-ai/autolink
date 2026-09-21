@@ -7,7 +7,9 @@ import { PageHero } from '@/components/site/sections/SectionHeading';
 import { routing } from '@/i18n/routing';
 import { getOwnerSession } from '@/lib/auth/session';
 import { pageMetadata } from '@/lib/site/seo';
+import { claimTagIdFromNext } from '@/lib/activation/claimLink';
 import { AuthForm, type AuthLabels } from '../_auth/AuthForm';
+import { ClaimWelcome } from '../_auth/ClaimWelcome';
 import { safeNext } from '../_auth/state';
 
 export const dynamic = 'force-dynamic';
@@ -34,6 +36,8 @@ export default async function RegisterPage({ params, searchParams }: Props) {
 
   if (await getOwnerSession()) redirect(safeNext(next, locale));
 
+  const claimTagId = claimTagIdFromNext(next);
+
   const labels: AuthLabels = {
     name: t('fields.name'),
     email: t('fields.email'),
@@ -41,6 +45,8 @@ export default async function RegisterPage({ params, searchParams }: Props) {
     phoneHint: t('fields.phoneHint'),
     password: t('fields.password'),
     passwordHint: t('fields.passwordHint'),
+    show: t('fields.show'),
+    hide: t('fields.hide'),
     submit: t('register.submit'),
     submitting: t('register.submitting'),
     switchText: t('register.switchText'),
@@ -62,7 +68,10 @@ export default async function RegisterPage({ params, searchParams }: Props) {
     <>
       <PageHero eyebrow={t('register.eyebrow')} title={t('register.title')} subtitle={t('register.subtitle')} />
       <section className="pb-16 md:pb-24">
-        <div className="container-page max-w-[520px]">
+        <div className="container-page max-w-130">
+          {claimTagId && (
+            <ClaimWelcome tagId={claimTagId} title={t('claim.registerTitle')} body={t('claim.registerBody')} />
+          )}
           <AuthForm
             mode="register"
             locale={locale}

@@ -871,7 +871,9 @@
       "phone": "Phone (optional)",
       "phoneHint": "So we can reach you about an order.",
       "password": "Password",
-      "passwordHint": "At least 10 characters."
+      "passwordHint": "At least 10 characters.",
+      "show": "Show",
+      "hide": "Hide"
     },
     "errors": {
       "invalid": "That value is not valid.",
@@ -894,7 +896,9 @@
       "submit": "Sign in",
       "submitting": "Signing in…",
       "switchText": "No account yet?",
-      "switchLink": "Create one"
+      "switchLink": "Create one",
+      "forgot": "Forgot your password?",
+      "forgotLink": "Write to us and we will reset it."
     },
     "register": {
       "metaTitle": "Create an account — AutoLink",
@@ -906,6 +910,14 @@
       "submitting": "Creating…",
       "switchText": "Already have an account?",
       "switchLink": "Sign in"
+    },
+    "claim": {
+      "loginTitle": "You are about to link your sticker",
+      "loginBody": "Create your account — it takes 30 seconds — and we bring you straight back here to finish. Your sticker is waiting.",
+      "loginCta": "Create my account",
+      "loginSecondary": "Already have an account? Sign in below.",
+      "registerTitle": "Next, we link this sticker to your account",
+      "registerBody": "As soon as your account exists you land on the activation page, with the sticker already filled in."
     }
   },
   "activate": {
@@ -927,7 +939,19 @@
       "plate": "Plate (optional)",
       "plateHint": "Kept private: never shown to the person scanning.",
       "showDetails": "Show the make, model and colour",
-      "showDetailsHint": "Helps whoever scans check they are at the right car. You can turn this off at any time."
+      "showDetailsHint": "Helps whoever scans check they are at the right car. You can turn this off at any time.",
+      "colors": [
+        "White",
+        "Black",
+        "Grey",
+        "Silver",
+        "Blue",
+        "Red",
+        "Green",
+        "Beige",
+        "Brown",
+        "Yellow"
+      ]
     },
     "errors": {
       "invalid": "Wrong sticker id or code.",

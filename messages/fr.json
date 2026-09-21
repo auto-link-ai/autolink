@@ -871,7 +871,9 @@
       "phone": "Téléphone (facultatif)",
       "phoneHint": "Pour qu’on puisse vous joindre au sujet d’une commande.",
       "password": "Mot de passe",
-      "passwordHint": "Au moins 10 caractères."
+      "passwordHint": "Au moins 10 caractères.",
+      "show": "Afficher",
+      "hide": "Masquer"
     },
     "errors": {
       "invalid": "Cette valeur n’est pas valide.",
@@ -894,7 +896,9 @@
       "submit": "Se connecter",
       "submitting": "Connexion…",
       "switchText": "Pas encore de compte ?",
-      "switchLink": "Créer un compte"
+      "switchLink": "Créer un compte",
+      "forgot": "Mot de passe oublié ?",
+      "forgotLink": "Écrivez-nous, nous le réinitialisons."
     },
     "register": {
       "metaTitle": "Créer un compte — AutoLink",
@@ -906,6 +910,14 @@
       "submitting": "Création…",
       "switchText": "Vous avez déjà un compte ?",
       "switchLink": "Se connecter"
+    },
+    "claim": {
+      "loginTitle": "Vous êtes sur le point de lier votre autocollant",
+      "loginBody": "Créez votre compte — cela prend 30 secondes — et nous vous ramenons ici pour terminer. Votre autocollant vous attend.",
+      "loginCta": "Créer mon compte",
+      "loginSecondary": "Vous avez déjà un compte ? Connectez-vous ci-dessous.",
+      "registerTitle": "Ensuite, nous lions cet autocollant à votre compte",
+      "registerBody": "Dès que votre compte est créé, vous arrivez sur la page d’activation, l’autocollant déjà rempli."
     }
   },
   "activate": {
@@ -927,7 +939,19 @@
       "plate": "Plaque (facultatif)",
       "plateHint": "Gardée privée : jamais affichée à la personne qui scanne.",
       "showDetails": "Afficher la marque, le modèle et la couleur",
-      "showDetailsHint": "Aide la personne qui scanne à vérifier qu’elle est devant la bonne voiture. Vous pouvez le désactiver à tout moment."
+      "showDetailsHint": "Aide la personne qui scanne à vérifier qu’elle est devant la bonne voiture. Vous pouvez le désactiver à tout moment.",
+      "colors": [
+        "Blanc",
+        "Noir",
+        "Gris",
+        "Argent",
+        "Bleu",
+        "Rouge",
+        "Vert",
+        "Beige",
+        "Marron",
+        "Jaune"
+      ]
     },
     "errors": {
       "invalid": "Identifiant ou code incorrect.",

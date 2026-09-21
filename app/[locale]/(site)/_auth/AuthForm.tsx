@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useActionState } from 'react';
 import { Button } from '@/components/ui/Button';
+import { PasswordInput } from '@/components/ui/PasswordInput';
 import type { Locale } from '@/i18n/locales';
 import { cx } from '@/lib/cx';
 import { registerAction, signInAction } from './actions';
@@ -15,6 +16,13 @@ export interface AuthLabels {
   phoneHint?: string;
   password: string;
   passwordHint?: string;
+  /** The Show / Hide switch on the password field. */
+  show: string;
+  hide: string;
+  /** Login only: what to do about a forgotten password. */
+  forgot?: string;
+  forgotLink?: string;
+  forgotHref?: string;
   submit: string;
   submitting: string;
   errors: Record<string, string>;
@@ -112,15 +120,26 @@ export function AuthForm({
           hint={mode === 'register' ? labels.passwordHint : undefined}
           error={error('password')}
         >
-          <input
+          <PasswordInput
             id="auth-password"
             name="password"
-            type="password"
             required
             autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
             className={INPUT}
+            showLabel={labels.show}
+            hideLabel={labels.hide}
           />
         </Field>
+
+        {/* No self-service reset (yet): say so, rather than leave people guessing. */}
+        {mode === 'login' && labels.forgot && labels.forgotHref && (
+          <p className="-mt-2 text-sm text-text-secondary">
+            {labels.forgot}{' '}
+            <Link href={labels.forgotHref} className="font-bold text-accent hover:underline">
+              {labels.forgotLink}
+            </Link>
+          </p>
+        )}
 
         {state.formError && (
           <p role="alert" className={cx('rounded-2xl bg-danger/10 px-4 py-3 text-sm font-medium text-danger')}>
