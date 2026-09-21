@@ -3,6 +3,7 @@ import { DueList } from '@/components/care/DueList';
 import { buttonClasses } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
 import type { DueItem } from '@/lib/care/due';
+import { carBookPath, SECTION_FOR_DUE } from '@/lib/care/sections';
 import type { CarSummaryDTO } from '@/lib/db/repositories/carBook';
 
 /**
@@ -38,12 +39,16 @@ export async function OwnerPanel({
           {tDue('title')}
         </h2>
         <div className="mt-2">
-          <DueList items={items} locale={locale} />
+          <DueList
+            items={items}
+            locale={locale}
+            hrefFor={(kind) => carBookPath(locale, publicTagId, SECTION_FOR_DUE[kind])}
+          />
         </div>
       </section>
 
       <div className="flex flex-col gap-3">
-        <a href={`/${locale}/dashboard/car/${publicTagId}`} className={buttonClasses('primary', 'md', 'w-full')}>
+        <a href={carBookPath(locale, publicTagId)} className={buttonClasses('primary', 'md', 'w-full')}>
           {t('openBook')}
         </a>
         <a href={`/${locale}/dashboard`} className={buttonClasses('secondary', 'md', 'w-full')}>

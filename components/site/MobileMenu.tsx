@@ -16,6 +16,8 @@ export interface NavItem {
 /**
  * Small-screen menu. It remembers the path it was opened on, so any
  * navigation closes it without an effect. Escape closes it too.
+ * `always` keeps it on wide screens as well (a signed-in owner's header has
+ * their own links to show, so the public pages move in here).
  */
 export function MobileMenu({
   items,
@@ -24,6 +26,7 @@ export function MobileMenu({
   orderHref,
   orderLabel,
   footer,
+  always = false,
 }: {
   items: NavItem[];
   openLabel: string;
@@ -31,6 +34,7 @@ export function MobileMenu({
   orderHref: string;
   orderLabel: string;
   footer: ReactNode;
+  always?: boolean;
 }) {
   const pathname = usePathname();
   const [openedAt, setOpenedAt] = useState<string | null>(null);
@@ -39,7 +43,7 @@ export function MobileMenu({
   const waiting = items.some((item) => (item.badge ?? 0) > 0);
 
   return (
-    <div className="lg:hidden">
+    <div className={always ? undefined : 'lg:hidden'}>
       <button
         type="button"
         aria-expanded={open}
@@ -58,7 +62,7 @@ export function MobileMenu({
         id="mobile-menu"
         hidden={!open}
         onKeyDown={(event) => event.key === 'Escape' && setOpenedAt(null)}
-        className="absolute inset-x-0 top-[calc(100%+0.5rem)] rounded-3xl bg-white p-3 shadow-card-lg"
+        className="absolute inset-x-0 top-[calc(100%+0.5rem)] rounded-3xl bg-white p-3 shadow-card-lg lg:inset-x-auto lg:inset-e-0 lg:w-80"
       >
         <nav className="flex flex-col">
           {items.map((item) => (

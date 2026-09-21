@@ -33,10 +33,14 @@ describe('oil change', () => {
     expect(parsed).toMatchObject({ date: day('2026-09-01'), km: null, nextDueDate: null, nextDueKm: null, note: null });
   });
 
-  it('accepts "85 000" as a number, but not decimals or negatives', () => {
-    expect(oilChangeSchema.parse({ ...blankOil, km: '85 000' }).km).toBe(85000);
-    expect(oilChangeSchema.safeParse({ ...blankOil, km: '85.5' }).success).toBe(false);
-    expect(oilChangeSchema.safeParse({ ...blankOil, costDzd: '-1' }).success).toBe(false);
+  it('reads thousands however people group them, but refuses decimals and negatives', () => {
+    for (const km of ['85000', '85 000', '85 000', '85.000', '85,000']) {
+      expect(oilChangeSchema.parse({ ...blankOil, km }).km).toBe(85000);
+    }
+    expect(oilChangeSchema.parse({ ...blankOil, km: '1 234 567' }).km).toBe(1234567);
+    for (const km of ['85.5', '85,5', '8 50', 'abc', '-1']) {
+      expect(oilChangeSchema.safeParse({ ...blankOil, km }).error?.issues[0]?.message).toBe('invalid_number');
+    }
   });
 
   it('needs its date', () => {

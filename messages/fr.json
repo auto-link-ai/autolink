@@ -425,7 +425,8 @@
       "skipToContent": "Aller au contenu",
       "signIn": "Se connecter",
       "myStickers": "Mes autocollants",
-      "unreadMessages": "{count} message(s) non lu(s)"
+      "unreadMessages": "{count} message(s) non lu(s)",
+      "carBook": "Carnet"
     },
     "hero": {
       "trust": {
@@ -1107,11 +1108,8 @@
     "private": "Privé : vous seul le voyez, une fois connecté.",
     "save": "Enregistrer",
     "saving": "Enregistrement…",
-    "saved": "Enregistré.",
     "add": "Ajouter",
     "adding": "Ajout…",
-    "added": "Ajouté.",
-    "checkFields": "Vérifiez ces champs :",
     "due": {
       "title": "À venir",
       "hint": "Avec les notifications activées, vous êtes prévenu {days, plural, one {# jour} other {# jours}} avant.",
@@ -1132,7 +1130,7 @@
       "inDays": "{count, plural, one {Dans # jour} other {Dans # jours}}",
       "lateDays": "{count, plural, one {# jour de retard} other {# jours de retard}}",
       "atKm": "À {km} km",
-      "notSet": "À renseigner plus bas"
+      "notSet": "À renseigner"
     },
     "profile": {
       "title": "Fiche de la voiture",
@@ -1165,7 +1163,11 @@
       "nextHint": "Remplissez l’un ou les deux, comme votre garagiste vous l’a indiqué.",
       "note": "Remarque",
       "history": "Vidanges précédentes",
-      "empty": "Aucune vidange notée pour l’instant."
+      "empty": "Aucune vidange notée pour l’instant.",
+      "next": "Prochaine vidange",
+      "last": "Dernière vidange",
+      "addFirst": "Noter ma première vidange",
+      "emptyBody": "Gardez ici chaque vidange : date, kilométrage, huile et garage. La prochaine est celle dont AutoLink vous prévient."
     },
     "insurance": {
       "title": "Assurance",
@@ -1196,7 +1198,9 @@
       "cost": "Coût ({currency})",
       "note": "Remarque",
       "history": "Interventions précédentes",
-      "empty": "Rien de noté pour l’instant."
+      "empty": "Rien de noté pour l’instant.",
+      "addFirst": "Noter ma première intervention",
+      "emptyBody": "Pneus, freins, batterie… gardez la trace de ce qui a été fait, et quand."
     },
     "notes": {
       "title": "Notes",
@@ -1207,7 +1211,8 @@
       "next": "Prochaine : {value}",
       "delete": "Supprimer",
       "deleteConfirm": "Supprimer définitivement cette entrée ?",
-      "deleteYes": "Oui, supprimer"
+      "deleteYes": "Oui, supprimer",
+      "deleteLabel": "Supprimer l’entrée du {date}"
     },
     "errors": {
       "required": "Obligatoire.",
@@ -1221,6 +1226,36 @@
       "below_km": "Doit dépasser le kilométrage de la vidange.",
       "invalid": "Vérifiez cette valeur.",
       "server_error": "Enregistrement impossible. Réessayez."
-    }
+    },
+    "edit": "Modifier",
+    "cancel": "Annuler",
+    "required": "(obligatoire)",
+    "notFilled": "Non renseigné",
+    "fixBelow": "Corrigez les champs ci-dessous :",
+    "banner": {
+      "saved": "Enregistré.",
+      "added": "Ajouté.",
+      "deleted": "Entrée supprimée."
+    },
+    "choose": {
+      "title": "Choisissez une voiture",
+      "subtitle": "Chaque autocollant a son propre carnet."
+    },
+    "empty": {
+      "title": "Pas encore de voiture",
+      "body": "Le carnet de votre voiture commence quand vous activez un autocollant.",
+      "cta": "Activer un autocollant"
+    },
+    "overview": {
+      "noDates": "Ajoutez les dates de votre assurance, du contrôle technique et de la vignette pour être prévenu à temps.",
+      "everything": "Tout sur la voiture"
+    },
+    "summary": {
+      "next": "Prochaine : {when}",
+      "last": "Dernière : {when}",
+      "repairs": "{count, plural, =0 {Rien de noté pour l’instant} one {# intervention} other {# interventions}}",
+      "notesWritten": "Rédigées"
+    },
+    "breadcrumb": "Où vous êtes"
   }
 }

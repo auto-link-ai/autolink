@@ -4,8 +4,9 @@ import JSZip from 'jszip';
 import { adminContext, hasAdminCredentials } from './adminSession';
 
 /**
- * The owner's private car book: filled in from the dashboard, opened by
- * scanning their own sticker — and invisible to everyone else.
+ * The owner's private car book: an overview, one page per section, read
+ * first and edited on request; opened from the menu or by scanning their own
+ * sticker — and invisible to everyone else.
  */
 
 const run = Date.now().toString(36);
@@ -40,7 +41,8 @@ async function register(browser: Browser, who: { email: string; password: string
 
 async function expectNothingPrivate(page: Page) {
   const text = await page.locator('body').innerText();
-  for (const word of [...Object.values(PRIVATE), 'This is your car', 'Car book']) expect(text).not.toContain(word);
+  // Not 'Car book': it is a menu entry for every signed-in owner. The book's own words are what must not leak.
+  for (const word of [...Object.values(PRIVATE), 'This is your car']) expect(text).not.toContain(word);
 }
 
 test.describe('the car book', () => {
@@ -54,7 +56,7 @@ test.describe('the car book', () => {
   let tagId = '';
   test.afterAll(async () => owner?.close());
 
-  test('an owner opens the car book from their sticker', async ({ browser }) => {
+  test('the menu opens the car book: an overview, every section still to fill in', async ({ browser }) => {
     test.setTimeout(180_000);
     const office = await adminContext(browser);
     const admin = await office.newPage();
@@ -77,72 +79,136 @@ test.describe('the car book', () => {
     await page.getByRole('button', { name: 'Activate the sticker' }).click();
     await expect(page).toHaveURL(/\/en\/dashboard\?activated=/, { timeout: 60_000 });
 
-    await page.getByRole('link', { name: 'My car book' }).click();
+    // One car: "Car book" in the menu goes straight to it.
+    await page.getByRole('link', { name: 'Car book', exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/en/dashboard/car/${tagId}$`));
     await expect(page.getByRole('heading', { name: 'Car book', level: 1 })).toBeVisible();
-    const due = page.getByRole('region', { name: 'Coming up' });
-    await expect(due.getByText('Not set')).toHaveCount(4);
+    await expect(page.getByRole('navigation', { name: 'Where you are' })).toContainText('My stickers');
+
+    await expect(page.getByRole('region', { name: 'Coming up' })).toContainText('Add your insurance');
+    const sections = page.getByRole('heading', { name: 'Everything about the car' }).locator('..').getByRole('link');
+    await expect(sections).toHaveCount(7);
+    await expect(sections.filter({ hasText: 'To fill in' })).toHaveCount(6);
+    await expect(sections.filter({ hasText: 'Repairs & service' })).toContainText('Nothing logged yet');
+    await page.close();
   });
 
-  test('filling it in, and a mistake that keeps what was typed', async () => {
-    test.setTimeout(180_000);
+  test('a section never filled in opens on its form, then reads back as plain text', async () => {
+    test.setTimeout(120_000);
     const page = await owner.newPage();
     await page.goto(`/en/dashboard/car/${tagId}`);
+    await page.getByRole('link', { name: /^Insurance/ }).click();
+    await expect(page).toHaveURL(new RegExp(`/car/${tagId}/insurance$`));
+    await expect(page.getByRole('heading', { name: 'Insurance', level: 1 })).toBeVisible();
 
-    const profile = page.getByRole('region', { name: 'Car profile' });
-    await profile.getByLabel('Year').fill('2019');
-    await profile.getByLabel('Fuel').selectOption('DIESEL');
-    await profile.getByLabel('Chassis number (VIN)').fill('vf1 rb000-1234567');
-    await profile.getByRole('button', { name: 'Save' }).click();
-    await expect(profile.getByRole('status')).toHaveText('Saved.');
+    await page.getByLabel('Company').fill(PRIVATE.insurer);
+    await page.getByLabel('Expiry date').fill(inDays(-10));
+    await page.getByRole('button', { name: 'Save' }).click();
 
-    const oil = page.getByRole('region', { name: 'Oil change (vidange)' });
-    await oil.getByLabel('Km at the change').fill('85000');
-    await oil.getByLabel('Oil', { exact: true }).fill(PRIVATE.oil);
-    await oil.getByLabel('Next change: date').fill(inDays(3));
-    await oil.getByLabel('Next change: km').fill('95000');
-    await oil.getByRole('button', { name: 'Add' }).click();
-    await expect(oil.getByRole('status')).toHaveText('Added.');
-    await expect(oil.getByRole('listitem').filter({ hasText: PRIVATE.oil })).toContainText('85 000 km');
-    // Ready for the next one.
-    await expect(oil.getByLabel('Km at the change')).toHaveValue('');
+    await expect(page).toHaveURL(/\/insurance\?saved=1$/);
+    await expect(page.getByRole('status')).toHaveText('Saved.');
+    const expiry = page.locator('dt', { hasText: 'Expiry date' }).locator('xpath=following-sibling::dd');
+    await expect(expiry).toContainText('days late');
+    await expect(expiry).toContainText('Overdue');
+    await expect(page.locator('dt', { hasText: 'Company' }).locator('xpath=following-sibling::dd')).toHaveText(PRIVATE.insurer);
+    await expect(page.locator('dt', { hasText: 'Policy number' }).locator('xpath=following-sibling::dd')).toHaveText('Not filled in');
 
-    await oil.getByLabel('Km at the change').fill('90000');
-    await oil.getByLabel('Next change: km').fill('80000');
-    await oil.getByRole('button', { name: 'Add' }).click();
-    await expect(oil.getByRole('alert')).toContainText('Next change: km — Must be more than the km at the change.');
-    await expect(oil.getByLabel('Km at the change')).toHaveValue('90000');
+    // Edit shows what is saved; Cancel changes nothing.
+    await page.getByRole('link', { name: 'Edit' }).click();
+    await expect(page.getByLabel('Company')).toHaveValue(PRIVATE.insurer);
+    await page.getByLabel('Company').fill('Something else');
+    await page.getByRole('link', { name: 'Cancel' }).click();
+    await expect(page).toHaveURL(new RegExp(`/car/${tagId}/insurance$`));
+    await expect(page.getByText(PRIVATE.insurer)).toBeVisible();
+    await page.close();
+  });
 
-    const insurance = page.getByRole('region', { name: 'Insurance' });
-    await insurance.getByLabel('Company').fill(PRIVATE.insurer);
-    await insurance.getByLabel('Expiry date').fill(inDays(-10));
-    await insurance.getByRole('button', { name: 'Save' }).click();
-    await expect(insurance.getByRole('status')).toHaveText('Saved.');
+  test('logging an oil change: an error sits under its field, and nothing typed is lost', async () => {
+    test.setTimeout(120_000);
+    const page = await owner.newPage();
+    await page.goto(`/en/dashboard/car/${tagId}/oil`);
+    await page.getByRole('link', { name: 'Log your first oil change' }).click();
 
-    const repairs = page.getByRole('region', { name: 'Repairs & service' });
-    await repairs.getByLabel('What was done').fill('Front brake pads');
-    await repairs.getByRole('button', { name: 'Add' }).click();
-    await expect(repairs.getByRole('listitem').filter({ hasText: 'Front brake pads' })).toBeVisible();
-    // Deleting asks first.
-    const entry = repairs.getByRole('listitem').filter({ hasText: 'Front brake pads' });
-    await entry.locator('summary', { hasText: 'Delete' }).click();
-    await entry.getByRole('button', { name: 'Yes, delete it' }).click();
-    await expect(repairs.getByText('Front brake pads')).toHaveCount(0);
+    await page.getByLabel('Km at the change').fill('90 000');
+    await page.getByLabel('Oil', { exact: true }).fill(PRIVATE.oil);
+    await page.getByLabel('Next change: km').fill('80000');
+    await page.getByRole('button', { name: 'Add' }).click();
 
-    const notes = page.getByRole('region', { name: 'Notes' });
-    await notes.getByLabel('Notes').fill(PRIVATE.notes);
-    await notes.getByRole('button', { name: 'Save' }).click();
-    await expect(notes.getByRole('status')).toHaveText('Saved.');
+    const nextKm = page.getByLabel('Next change: km');
+    await expect(nextKm).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.locator('#care-oil-nextDueKm-error')).toHaveText('Must be more than the km at the change.');
+    // Focus goes to the list of what to correct; each item leads to its field.
+    await expect(page.locator(':focus')).toContainText('Please correct the fields below:');
+    await expect(page.getByRole('link', { name: 'Next change: km — Must be more than the km at the change.' })).toHaveAttribute(
+      'href',
+      '#care-oil-nextDueKm',
+    );
+    await expect(page.getByLabel('Km at the change')).toHaveValue('90 000');
 
-    // A fresh load: everything was kept, and "Coming up" reflects it.
-    await page.reload();
-    await expect(page.getByLabel('Chassis number (VIN)')).toHaveValue('VF1RB0001234567');
+    await nextKm.fill('95000');
+    await page.getByLabel('Next change: date').fill(inDays(3));
+    await page.getByRole('button', { name: 'Add' }).click();
+    await expect(page).toHaveURL(/\/oil\?added=1$/);
+    await expect(page.getByRole('status')).toHaveText('Added.');
+    const next = page.locator('dt', { hasText: 'Next oil change' }).locator('xpath=following-sibling::dd');
+    await expect(next).toContainText('In 3 days');
+    await expect(next).toContainText('95 000 km');
+    await expect(next).toContainText('Due soon');
+    await expect(page.getByRole('region', { name: 'Past oil changes' })).toContainText(PRIVATE.oil);
+    // The delete control says which entry it deletes.
+    await expect(page.locator('summary', { hasText: 'Delete' })).toHaveAttribute('aria-label', /^Delete the entry of \d{1,2} \S+ \d{4}$/);
+    await page.close();
+  });
+
+  test('repairs, the car profile and notes: add, read, delete', async () => {
+    test.setTimeout(120_000);
+    const page = await owner.newPage();
+    await page.goto(`/en/dashboard/car/${tagId}/repairs`);
+    await page.getByRole('link', { name: 'Log your first repair' }).click();
+    await page.getByLabel('What was done').fill('Front brake pads');
+    await page.getByRole('button', { name: 'Add' }).click();
+    await expect(page.getByRole('status')).toHaveText('Added.');
+    await page.locator('summary', { hasText: 'Delete' }).click();
+    await page.getByRole('button', { name: 'Yes, delete it' }).click();
+    await expect(page).toHaveURL(/\/repairs\?deleted=1$/);
+    await expect(page.getByRole('status')).toHaveText('Entry deleted.');
+    await expect(page.getByRole('link', { name: 'Log your first repair' })).toBeVisible();
+
+    await page.goto(`/en/dashboard/car/${tagId}/profile`);
+    await page.getByLabel('Year').fill('2019');
+    await page.getByLabel('Fuel').selectOption('DIESEL');
+    await page.getByLabel('Chassis number (VIN)').fill('vf1 rb000-1234567');
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(page.getByRole('status')).toHaveText('Saved.');
+    await expect(page.locator('dt', { hasText: 'Chassis number (VIN)' }).locator('xpath=following-sibling::dd')).toHaveText(
+      'VF1RB0001234567',
+    );
+
+    await page.goto(`/en/dashboard/car/${tagId}/notes`);
+    await page.getByLabel('Notes').fill(PRIVATE.notes);
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(page.getByRole('status')).toHaveText('Saved.');
+
+    // An address that is not a section is simply not there.
+    expect((await page.goto(`/en/dashboard/car/${tagId}/engine`))?.status()).toBe(404);
+    await page.close();
+  });
+
+  test('the overview and the dashboard reflect it all, and link to the right place', async () => {
+    const page = await owner.newPage();
+    await page.goto(`/en/dashboard/car/${tagId}`);
     const due = page.getByRole('region', { name: 'Coming up' });
-    await expect(due.getByRole('listitem').first()).toContainText('Insurance');
-    await expect(due.getByRole('listitem').filter({ hasText: 'Insurance' })).toContainText('Overdue');
-    await expect(due.getByRole('listitem').filter({ hasText: 'Oil change' })).toContainText('Due soon');
+    await expect(due.getByRole('link').first()).toContainText('Insurance');
+    await expect(due.getByRole('link', { name: /Oil change/ })).toContainText('Due soon');
 
-    // The dashboard names the most urgent thing on the sticker's card.
+    const sections = page.getByRole('heading', { name: 'Everything about the car' }).locator('..');
+    await expect(sections.getByRole('link', { name: /^Oil change/ })).toContainText('Next:');
+    await expect(sections.getByRole('link', { name: /^Car profile/ })).toContainText('Diesel · 2019');
+    await expect(sections.getByRole('link', { name: /^Notes/ })).toContainText(PRIVATE.notes);
+
+    await due.getByRole('link').first().click();
+    await expect(page).toHaveURL(new RegExp(`/car/${tagId}/insurance$`));
+
     await page.goto('/en/dashboard');
     await expect(page.getByText(/Insurance: .*days late/)).toBeVisible();
     await page.close();
@@ -187,6 +253,10 @@ test.describe('the car book', () => {
     const unknown = await page.goto('/en/dashboard/car/AUT-00000000');
     expect(unknown?.status()).toBe(404);
     expect(await page.locator('main').innerText()).toBe(theirsText);
+    for (const section of ['insurance', 'oil', 'notes']) {
+      expect((await page.goto(`/en/dashboard/car/${tagId}/${section}`))?.status()).toBe(404);
+      await expectNothingPrivate(page);
+    }
     await someoneElse.close();
   });
 

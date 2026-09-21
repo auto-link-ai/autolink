@@ -178,16 +178,18 @@ export const carBookRepository = {
     };
   },
 
-  /** Due dates for every sticker the owner has, keyed by sticker id (dashboard hints). */
-  async dueForOwner(owner: OwnerActor): Promise<Map<string, DueInputs>> {
+  /** Every car the owner has a book for, oldest sticker first ("Carnet" in the menu). */
+  async listCars(owner: OwnerActor): Promise<CarSummaryDTO[]> {
     const ownerId = toObjectId(owner.userId);
-    if (!ownerId) return new Map();
+    if (!ownerId) return [];
     await connectToDatabase();
 
-    const tags = await TagModel.find({ ownerId, vehicleId: { $ne: null } }, { publicTagId: 1, vehicleId: 1 }).lean();
+    const tags = await TagModel.find({ ownerId, vehicleId: { $ne: null } }, { publicTagId: 1, vehicleId: 1 })
+      .sort({ createdAt: 1 })
+      .lean();
     const vehicleIds = tags.map((tag) => tag.vehicleId!);
     const [vehicles, latestOils] = await Promise.all([
-      VehicleModel.find({ _id: { $in: vehicleIds }, ownerId }, { care: 1 }).lean(),
+      VehicleModel.find({ _id: { $in: vehicleIds }, ownerId }, { brand: 1, model: 1, color: 1, care: 1 }).lean(),
       ServiceRecordModel.aggregate<{ _id: Types.ObjectId; nextDueDate: Date | null; nextDueKm: number | null }>([
         { $match: { ownerId, kind: 'OIL_CHANGE', vehicleId: { $in: vehicleIds } } },
         { $sort: { vehicleId: 1, date: -1, createdAt: -1 } },
@@ -197,13 +199,24 @@ export const carBookRepository = {
 
     const byVehicle = new Map(vehicles.map((vehicle) => [vehicle._id.toString(), vehicle]));
     const oilByVehicle = new Map(latestOils.map((oil) => [oil._id.toString(), oil]));
-    const out = new Map<string, DueInputs>();
-    for (const tag of tags) {
+    return tags.flatMap((tag) => {
       const key = tag.vehicleId!.toString();
       const vehicle = byVehicle.get(key);
-      if (vehicle) out.set(tag.publicTagId, dueFrom(careOf(vehicle), oilByVehicle.get(key)));
-    }
-    return out;
+      if (!vehicle) return [];
+      return [
+        {
+          publicTagId: tag.publicTagId,
+          car: { brand: vehicle.brand, model: vehicle.model, color: vehicle.color },
+          due: dueFrom(careOf(vehicle), oilByVehicle.get(key)),
+        },
+      ];
+    });
+  },
+
+  /** Due dates for every sticker the owner has, keyed by sticker id (dashboard hints). */
+  async dueForOwner(owner: OwnerActor): Promise<Map<string, DueInputs>> {
+    const cars = await this.listCars(owner);
+    return new Map(cars.map((car) => [car.publicTagId, car.due]));
   },
 
   /** Saves one section of details. Unknown or someone else's sticker: nothing changes. */

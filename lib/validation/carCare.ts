@@ -59,14 +59,21 @@ const optionalText = (max: number) =>
     .max(max, 'too_long')
     .transform((value) => (value === '' ? null : value.replace(/\s+/g, ' ')));
 
-/** Whole numbers only; "85 000" is accepted as 85000. */
+/** Digits in groups of three: "85 000", "85.000", "85,000". */
+const GROUPED = /^\d{1,3}([\s.,]\d{3})+$/;
+
+/**
+ * Whole numbers only (km, dinars, a year). Thousands may be grouped however
+ * people write them; anything else — "85,5", "abc" — is refused, not guessed.
+ */
 const optionalWhole = (max: number) =>
   z
     .string()
     .trim()
     .transform((value, ctx) => {
       if (value === '') return null;
-      const number = Number(value.replace(/\s/g, ''));
+      const digits = GROUPED.test(value) ? value.replace(/[\s.,]/g, '') : value;
+      const number = /^\d+$/.test(digits) ? Number(digits) : Number.NaN;
       if (!Number.isInteger(number) || number < 0 || number > max) {
         ctx.addIssue({ code: 'custom', message: 'invalid_number' });
         return z.NEVER;
@@ -166,17 +173,3 @@ export type InsuranceInput = z.infer<typeof insuranceSchema>;
 export type InspectionInput = z.infer<typeof inspectionSchema>;
 export type VignetteInput = z.infer<typeof vignetteSchema>;
 export type NotesInput = z.infer<typeof notesSchema>;
-
-/** Which form a car book submission belongs to. */
-export const CARE_SECTIONS = ['profile', 'oil', 'repair', 'insurance', 'inspection', 'vignette', 'notes'] as const;
-export type CareSection = (typeof CARE_SECTIONS)[number];
-
-export const CARE_SCHEMAS = {
-  profile: profileSchema,
-  oil: oilChangeSchema,
-  repair: repairSchema,
-  insurance: insuranceSchema,
-  inspection: inspectionSchema,
-  vignette: vignetteSchema,
-  notes: notesSchema,
-} as const;

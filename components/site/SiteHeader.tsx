@@ -32,7 +32,8 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             <Wordmark decorative className="h-11 md:h-13" />
           </Link>
 
-          <nav aria-label={t('label')} className="hidden lg:block">
+          {/* Signed in, the owner's own links take this room; these move into the menu. */}
+          <nav aria-label={t('label')} className={session ? 'hidden' : 'hidden lg:block'}>
             <ul className="flex items-center gap-1">
               {items.map((item) => (
                 <li key={item.href}>
@@ -50,18 +51,27 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
           <div className="flex items-center gap-2">
             <LanguageSwitcher current={locale} label={common('languageSwitcherLabel')} className="hidden md:block" />
             {session ? (
-              <Link
-                href={href(locale, '/dashboard')}
-                className="hidden h-11 items-center gap-2 rounded-full px-4 text-[15px] font-bold text-text hover:bg-surface-3 sm:inline-flex"
-              >
-                {t('myStickers')}
-                {unread > 0 && (
-                  <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-accent-ink">
-                    <span aria-hidden="true">{unread}</span>
-                    <span className="sr-only">{t('unreadMessages', { count: unread })}</span>
-                  </span>
-                )}
-              </Link>
+              <>
+                <Link
+                  href={href(locale, '/dashboard')}
+                  className="hidden h-11 items-center gap-2 rounded-full px-4 text-[15px] font-bold whitespace-nowrap text-text hover:bg-surface-3 sm:inline-flex"
+                >
+                  {t('myStickers')}
+                  {unread > 0 && (
+                    <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-accent-ink">
+                      <span aria-hidden="true">{unread}</span>
+                      <span className="sr-only">{t('unreadMessages', { count: unread })}</span>
+                    </span>
+                  )}
+                </Link>
+                {/* The car book: /dashboard/car opens the right car on its own. */}
+                <Link
+                  href={href(locale, '/dashboard/car')}
+                  className="hidden h-11 items-center rounded-full px-4 text-[15px] font-bold whitespace-nowrap text-text hover:bg-surface-3 sm:inline-flex"
+                >
+                  {t('carBook')}
+                </Link>
+              </>
             ) : (
               <Link
                 href={href(locale, '/login')}
@@ -76,15 +86,19 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             <MobileMenu
               items={[
                 ...items,
-                session
-                  ? { href: href(locale, '/dashboard'), label: t('myStickers'), badge: unread }
-                  : { href: href(locale, '/login'), label: t('signIn') },
+                ...(session
+                  ? [
+                      { href: href(locale, '/dashboard'), label: t('myStickers'), badge: unread },
+                      { href: href(locale, '/dashboard/car'), label: t('carBook') },
+                    ]
+                  : [{ href: href(locale, '/login'), label: t('signIn') }]),
               ]}
               openLabel={t('menu')}
               closeLabel={t('closeMenu')}
               orderHref={href(locale, '/order')}
               orderLabel={t('order')}
               footer={<LanguageSwitcher current={locale} label={common('languageSwitcherLabel')} />}
+              always={Boolean(session)}
             />
           </div>
         </div>

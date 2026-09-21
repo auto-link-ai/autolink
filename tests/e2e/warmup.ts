@@ -29,7 +29,9 @@ const ROUTES = [
   // An unknown sticker: compiles the scan page and its not-available state.
   '/t/AUT-00000000',
   // Customer pages redirect from inside the page, so this still compiles it.
+  '/en/dashboard/car',
   '/en/dashboard/car/AUT-00000000',
+  '/en/dashboard/car/AUT-00000000/oil',
   '/api/cron/care-reminders',
   '/robots.txt',
   '/sitemap.xml',

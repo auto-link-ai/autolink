@@ -425,7 +425,8 @@
       "skipToContent": "Skip to content",
       "signIn": "Sign in",
       "myStickers": "My stickers",
-      "unreadMessages": "{count} unread message(s)"
+      "unreadMessages": "{count} unread message(s)",
+      "carBook": "Car book"
     },
     "hero": {
       "trust": {
@@ -1107,11 +1108,8 @@
     "private": "Private: only you see this, when you are signed in.",
     "save": "Save",
     "saving": "Saving…",
-    "saved": "Saved.",
     "add": "Add",
     "adding": "Adding…",
-    "added": "Added.",
-    "checkFields": "Check these fields:",
     "due": {
       "title": "Coming up",
       "hint": "With notifications on, you are reminded {days, plural, one {# day} other {# days}} before.",
@@ -1132,7 +1130,7 @@
       "inDays": "{count, plural, one {In # day} other {In # days}}",
       "lateDays": "{count, plural, one {# day late} other {# days late}}",
       "atKm": "At {km} km",
-      "notSet": "Add it below"
+      "notSet": "To fill in"
     },
     "profile": {
       "title": "Car profile",
@@ -1165,7 +1163,11 @@
       "nextHint": "Fill in one or both, as your garage told you.",
       "note": "Note",
       "history": "Past oil changes",
-      "empty": "No oil change logged yet."
+      "empty": "No oil change logged yet.",
+      "next": "Next oil change",
+      "last": "Last oil change",
+      "addFirst": "Log your first oil change",
+      "emptyBody": "Keep each oil change here: date, km, oil and garage. The next one is what AutoLink reminds you about."
     },
     "insurance": {
       "title": "Insurance",
@@ -1196,7 +1198,9 @@
       "cost": "Cost ({currency})",
       "note": "Note",
       "history": "Past work",
-      "empty": "Nothing logged yet."
+      "empty": "Nothing logged yet.",
+      "addFirst": "Log your first repair",
+      "emptyBody": "Tyres, brakes, battery… keep track of what was done, and when."
     },
     "notes": {
       "title": "Notes",
@@ -1207,7 +1211,8 @@
       "next": "Next: {value}",
       "delete": "Delete",
       "deleteConfirm": "Delete this entry for good?",
-      "deleteYes": "Yes, delete it"
+      "deleteYes": "Yes, delete it",
+      "deleteLabel": "Delete the entry of {date}"
     },
     "errors": {
       "required": "Required.",
@@ -1221,6 +1226,36 @@
       "below_km": "Must be more than the km at the change.",
       "invalid": "Check this value.",
       "server_error": "Could not save. Try again."
-    }
+    },
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "required": "(required)",
+    "notFilled": "Not filled in",
+    "fixBelow": "Please correct the fields below:",
+    "banner": {
+      "saved": "Saved.",
+      "added": "Added.",
+      "deleted": "Entry deleted."
+    },
+    "choose": {
+      "title": "Choose a car",
+      "subtitle": "Each sticker has its own car book."
+    },
+    "empty": {
+      "title": "No car yet",
+      "body": "Your car book starts when you activate a sticker on your car.",
+      "cta": "Activate a sticker"
+    },
+    "overview": {
+      "noDates": "Add your insurance, contrôle technique and vignette dates to be reminded in time.",
+      "everything": "Everything about the car"
+    },
+    "summary": {
+      "next": "Next: {when}",
+      "last": "Last: {when}",
+      "repairs": "{count, plural, =0 {Nothing logged yet} one {# entry} other {# entries}}",
+      "notesWritten": "Written"
+    },
+    "breadcrumb": "Where you are"
   }
 }
