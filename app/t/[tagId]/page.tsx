@@ -39,6 +39,7 @@ export default async function ScanPage({ params, searchParams }: Props) {
     category: t('form.category'),
     categories: Object.fromEntries(MESSAGE_CATEGORIES.map((key) => [key, t(`categories.${key}`)])),
     body: t('form.body'),
+    bodyHint: t('form.bodyHint'),
     bodyPlaceholder: t('form.bodyPlaceholder'),
     contact: t('form.contact'),
     contactHint: t('form.contactHint'),
@@ -48,7 +49,6 @@ export default async function ScanPage({ params, searchParams }: Props) {
     challenge: t('form.challenge'),
     errors: {
       invalid: t('errors.invalid'),
-      too_short: t('errors.too_short'),
       too_long: t('errors.too_long', { max: settings.maxMessageLength }),
       invalid_category: t('errors.invalid'),
       rate_limited: t('errors.rate_limited'),

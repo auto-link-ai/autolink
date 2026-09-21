@@ -27,14 +27,15 @@
     "footer": "AutoLink · le propriétaire reste anonyme",
     "form": {
       "category": "De quoi s’agit-il ?",
-      "body": "Votre message",
+      "body": "Un détail en plus (facultatif)",
       "bodyPlaceholder": "Exemple : vos phares sont restés allumés, parking Ardis.",
       "contact": "Votre contact (facultatif)",
       "contactHint": "Uniquement si vous voulez une réponse. Visible par le propriétaire seul.",
       "submit": "Envoyer au propriétaire",
       "sending": "Envoi…",
       "privacy": "Nous ne montrons jamais votre numéro ni celui du propriétaire.",
-      "challenge": "Confirmez que vous n’êtes pas un robot."
+      "challenge": "Confirmez que vous n’êtes pas un robot.",
+      "bodyHint": "Choisir ce qui se passe suffit. Ajoutez un mot si cela aide."
     },
     "sent": {
       "title": "Message envoyé",
@@ -47,7 +48,6 @@
     },
     "errors": {
       "invalid": "Vérifiez ce champ.",
-      "too_short": "Écrivez quelques mots de plus.",
       "too_long": "Maximum {max} caractères.",
       "rate_limited": "Trop de messages pour le moment. Réessayez dans une heure.",
       "unavailable": "Cet AutoLink n’est pas disponible.",

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { scannerLocale } from '@/lib/scanner/locale';
-import { messageSchema, MESSAGE_BODY_MIN } from '@/lib/validation/message';
+import { messageSchema } from '@/lib/validation/message';
 import { STORAGE_LIMITS } from '@/lib/domain/constants';
 
 describe('scannerLocale', () => {
@@ -50,13 +50,15 @@ describe('messageSchema', () => {
     if (!result.success) expect(result.error.issues[0]?.message).toBe('invalid_category');
   });
 
-  it.each([
-    ['x'.repeat(MESSAGE_BODY_MIN - 1), 'too_short'],
-    ['x'.repeat(401), 'too_long'],
-  ])('refuses a body of the wrong length (%s…)', (body, code) => {
-    const result = schema.safeParse({ ...valid, body });
+  it('accepts a report with no words at all — the category says it', () => {
+    const parsed = schema.parse({ ...valid, body: '   ' });
+    expect(parsed.body).toBe('');
+  });
+
+  it('refuses a body longer than the setting allows', () => {
+    const result = schema.safeParse({ ...valid, body: 'x'.repeat(401) });
     expect(result.success).toBe(false);
-    if (!result.success) expect(result.error.issues[0]?.message).toBe(code);
+    if (!result.success) expect(result.error.issues[0]?.message).toBe('too_long');
   });
 
   it('never lets a setting raise the limit above what the schema stores', () => {

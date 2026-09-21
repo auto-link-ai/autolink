@@ -8,16 +8,15 @@ import { MESSAGE_CATEGORIES, STORAGE_LIMITS } from '@/lib/domain/constants';
  * The body's real limit is `maxMessageLength` from settings (rule 5), so the
  * schema is built per request; the constant here is only the storage ceiling.
  */
-export const MESSAGE_BODY_MIN = 2;
-
 export function messageSchema(maxBodyLength: number) {
   const max = Math.min(maxBodyLength, STORAGE_LIMITS.messageBody);
   return z.object({
     category: z.enum(MESSAGE_CATEGORIES, { message: 'invalid_category' }),
-    body: z
-      .string()
-      .trim()
-      .pipe(z.string().min(MESSAGE_BODY_MIN, 'too_short').max(max, 'too_long')),
+    /**
+     * Optional. Someone in a hurry taps "Lights are on" and sends — that is a
+     * complete report, and the owner's inbox leads with the category anyway.
+     */
+    body: z.string().trim().max(max, 'too_long'),
     /**
      * Optional: a phone or an email the owner can answer on. Kept as typed —
      * it is the sender's to give, and the owner is the only one who sees it.

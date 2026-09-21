@@ -10,6 +10,7 @@ export interface ReportLabels {
   category: string;
   categories: Record<string, string>;
   body: string;
+  bodyHint: string;
   bodyPlaceholder: string;
   contact: string;
   contactHint: string;
@@ -76,12 +77,15 @@ export function ReportForm({
         <textarea
           id="report-body"
           name="body"
-          required
-          rows={4}
+          rows={3}
           placeholder={labels.bodyPlaceholder}
           className="w-full rounded-2xl border border-border bg-white p-4 text-[15px] text-text outline-none placeholder:text-text-muted focus:border-accent"
         />
-        {error('body') && <p className="text-sm font-medium text-danger">{error('body')}</p>}
+        {error('body') ? (
+          <p className="text-sm font-medium text-danger">{error('body')}</p>
+        ) : (
+          <span className="text-sm text-text-muted">{labels.bodyHint}</span>
+        )}
       </div>
 
       <div className="flex flex-col gap-1.5">

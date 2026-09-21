@@ -27,14 +27,15 @@
     "footer": "AutoLink · the owner stays anonymous",
     "form": {
       "category": "What is it about?",
-      "body": "Your message",
+      "body": "Anything to add? (optional)",
       "bodyPlaceholder": "For example: your lights are still on, Ardis car park.",
       "contact": "Your contact (optional)",
       "contactHint": "Only if you want a reply. The owner alone can see it.",
       "submit": "Send to the owner",
       "sending": "Sending…",
       "privacy": "We never show your number, or theirs.",
-      "challenge": "Confirm you are not a robot."
+      "challenge": "Confirm you are not a robot.",
+      "bodyHint": "Picking what is happening is enough. Add a word if it helps."
     },
     "sent": {
       "title": "Message sent",
@@ -47,7 +48,6 @@
     },
     "errors": {
       "invalid": "Check this field.",
-      "too_short": "Write a few more words.",
       "too_long": "At most {max} characters.",
       "rate_limited": "Too many messages right now. Try again in an hour.",
       "unavailable": "This AutoLink is not available.",

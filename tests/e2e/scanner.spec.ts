@@ -108,12 +108,23 @@ test.describe('scanning a sticker', () => {
     }
 
     await page.getByRole('radio', { name: 'Lights are on' }).check();
-    await page.getByLabel('Your message').fill(REPORT);
+    await page.getByLabel('Anything to add? (optional)').fill(REPORT);
     await page.getByLabel('Your contact (optional)').fill(SENDER_CONTACT);
     await page.getByRole('button', { name: 'Send to the owner' }).click();
 
     await expect(page.getByRole('heading', { name: 'Message sent' })).toBeVisible({ timeout: 60_000 });
     await expect(page.getByText('Your number was not shared.')).toBeVisible();
+    await street.close();
+  });
+
+  test('one tap is a complete report: no words needed', async ({ browser }) => {
+    test.setTimeout(120_000);
+    const street = await browser.newContext();
+    const page = await street.newPage();
+    await page.goto(`/t/${tag.id}`);
+    await page.getByRole('radio', { name: 'Blocking access' }).check();
+    await page.getByRole('button', { name: 'Send to the owner' }).click();
+    await expect(page.getByRole('heading', { name: 'Message sent' })).toBeVisible({ timeout: 60_000 });
     await street.close();
   });
 
@@ -124,12 +135,16 @@ test.describe('scanning a sticker', () => {
     const inbox = page.getByRole('region', { name: 'Messages' });
     await expect(inbox.getByText(REPORT)).toBeVisible();
     await expect(inbox.getByText(SENDER_CONTACT)).toBeVisible();
-    await expect(inbox.getByText(`Received through ${tag.id}`)).toBeVisible();
-    await expect(page.getByText('1 unread').first()).toBeVisible();
+    await expect(inbox.getByText(`Received through ${tag.id}`).first()).toBeVisible();
+    // The one-tap report arrives too, its category standing in for the words.
+    await expect(inbox.getByRole('heading', { name: 'Blocking access' })).toBeVisible();
+    await expect(page.getByText('2 unread').first()).toBeVisible();
+    // And the header says so on every page, not only here.
+    await expect(page.getByRole('banner').getByRole('link', { name: /My stickers/ })).toContainText('2');
 
-    await inbox.getByRole('button', { name: 'Mark as read' }).click();
+    await inbox.getByRole('button', { name: 'Mark as read' }).first().click();
     await expect(page.getByRole('status')).toHaveText('Change saved.');
-    await expect(page.getByText('1 unread')).toHaveCount(0);
+    await expect(page.getByText('1 unread').first()).toBeVisible();
   });
 
   test('the owner is offered notifications, and a refusal is explained', async ({ browser }) => {

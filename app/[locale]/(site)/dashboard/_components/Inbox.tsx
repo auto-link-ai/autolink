@@ -45,7 +45,10 @@ export async function Inbox({ messages, locale }: { messages: MessageDTO[]; loca
                 <span className="text-sm text-text-muted">{formatAge(message.createdAt, locale)}</span>
               </div>
 
-              <p className="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-text">{message.body}</p>
+              {/* A one-tap report has no words: the category above is the message. */}
+              {message.body && (
+                <p className="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-text">{message.body}</p>
+              )}
 
               <p className="mt-3 text-sm text-text-secondary">
                 {message.scannerContact ? (
