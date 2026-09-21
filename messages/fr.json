@@ -386,9 +386,10 @@
         "resetDone": "Nouveau mot de passe :",
         "resetFailed": "La réinitialisation a échoué. Réessayez.",
         "block": "Bloquer le compte",
-        "blockHint": "Le client ne pourra plus se connecter.",
         "unblock": "Débloquer",
-        "unblockHint": "Le client pourra se reconnecter."
+        "unblockHint": "Le client pourra se reconnecter.",
+        "blockConfirm": "{email} ne pourra plus se connecter, et sa session actuelle s’arrête immédiatement. Vous pourrez le débloquer ensuite.",
+        "blockYes": "Oui, bloquer ce compte"
       }
     }
   },

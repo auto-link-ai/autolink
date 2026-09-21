@@ -133,16 +133,33 @@ export async function CustomerDetail({
             }}
           />
 
-          <form action={setCustomerStatusAction}>
-            {hidden}
-            <input type="hidden" name="status" value={blocked ? 'ACTIVE' : 'BLOCKED'} />
-            <Button type="submit" variant={blocked ? 'secondary' : 'danger'} size="sm">
-              {blocked ? t('detail.unblock') : t('detail.block')}
-            </Button>
-            <span className="ms-3 text-sm text-text-muted">
-              {blocked ? t('detail.unblockHint') : t('detail.blockHint')}
-            </span>
-          </form>
+          {blocked ? (
+            <form action={setCustomerStatusAction}>
+              {hidden}
+              <input type="hidden" name="status" value="ACTIVE" />
+              <Button type="submit" variant="secondary" size="sm">
+                {t('detail.unblock')}
+              </Button>
+              <span className="ms-3 text-sm text-text-muted">{t('detail.unblockHint')}</span>
+            </form>
+          ) : (
+            // Blocking locks the customer out on their very next request, so it asks once.
+            <details>
+              <summary className="inline-flex h-10 cursor-pointer list-none items-center rounded-sm border border-danger/40 px-4 text-sm font-bold text-danger hover:bg-danger/5">
+                {t('detail.block')}
+              </summary>
+              <div className="mt-3 rounded-sm border border-danger/30 bg-danger/5 p-4">
+                <p className="text-sm text-text">{t('detail.blockConfirm', { email: customer.email })}</p>
+                <form action={setCustomerStatusAction} className="mt-3">
+                  {hidden}
+                  <input type="hidden" name="status" value="BLOCKED" />
+                  <Button type="submit" variant="danger" size="sm">
+                    {t('detail.blockYes')}
+                  </Button>
+                </form>
+              </div>
+            </details>
+          )}
         </div>
       ) : (
         <p className="mt-6 border-t border-border pt-5 text-sm text-text-secondary">{t('readOnly')}</p>

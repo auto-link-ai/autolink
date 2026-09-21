@@ -386,9 +386,10 @@
         "resetDone": "New password:",
         "resetFailed": "The reset failed. Try again.",
         "block": "Block account",
-        "blockHint": "The customer will not be able to sign in.",
         "unblock": "Unblock",
-        "unblockHint": "The customer can sign in again."
+        "unblockHint": "The customer can sign in again.",
+        "blockConfirm": "{email} will not be able to sign in, and any session they have ends at once. You can unblock them afterwards.",
+        "blockYes": "Yes, block this account"
       }
     }
   },

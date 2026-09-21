@@ -94,7 +94,10 @@ test.describe('an admin looking after a customer', () => {
     const admin = await office.newPage();
     await openCustomer(admin, CUSTOMER);
 
-    await admin.getByRole('button', { name: 'Block account' }).click();
+    // It asks first: blocking locks the customer out on their next request.
+    await admin.locator('summary', { hasText: 'Block account' }).click();
+    await expect(admin.getByText(`${CUSTOMER} will not be able to sign in`)).toBeVisible();
+    await admin.getByRole('button', { name: 'Yes, block this account' }).click();
     await expect(admin.getByRole('status')).toHaveText('Change saved.');
     await expect(admin.getByRole('button', { name: 'Unblock' })).toBeVisible();
 
