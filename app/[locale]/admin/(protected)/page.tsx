@@ -7,6 +7,7 @@ import { ClockIcon, QrIcon, StickerIcon, TruckIcon, UsersIcon } from '@/componen
 import { Card } from '@/components/ui/Card';
 import { routing } from '@/i18n/routing';
 import { requireAdmin } from '@/lib/admin/auth';
+import { missingSiteDetails } from '@/lib/config/site';
 import { orderListSearch } from '@/lib/admin/orderListQuery';
 import { customerListSearch } from '@/lib/admin/customerListQuery';
 import { adminOrdersRepository } from '@/lib/db/repositories/ordersAdmin';
@@ -51,6 +52,8 @@ export default async function AdminOverviewPage({ params }: Props) {
     return w ? (locale === 'ar' ? w.nameAr : locale === 'en' ? w.nameEn : w.nameFr) : String(code);
   };
 
+  // Customers never see a placeholder, so this is the one place it shows up.
+  const missing = missingSiteDetails();
   const ordersPath = `/${locale}/admin/orders`;
   const customersPath = `/${locale}/admin/customers`;
   const queue = pendingOrders.items.slice(0, QUEUE_SIZE);
@@ -62,6 +65,18 @@ export default async function AdminOverviewPage({ params }: Props) {
         <h1 className="text-h2 text-text">{t('title')}</h1>
         <p className="mt-1 text-text-secondary">{t('subtitle')}</p>
       </div>
+
+      {missing.length > 0 && (
+        <div role="note" className="rounded-md border border-accent/40 bg-accent-soft px-5 py-4">
+          <p className="font-bold text-text">{t('placeholders.title')}</p>
+          <p className="mt-1 text-sm text-text-secondary">
+            {t('placeholders.body', { fields: missing.map((key) => t(`placeholders.fields.${key}`)).join(', ') })}
+          </p>
+          <p dir="ltr" className="mt-2 font-mono text-xs text-text-muted">
+            lib/config/site.ts
+          </p>
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard

@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { Wordmark } from '@/components/Wordmark';
 import type { Locale } from '@/i18n/locales';
-import { SITE } from '@/lib/config/site';
+import { publicSite } from '@/lib/config/site';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { href } from './links';
 
@@ -62,7 +62,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
 
           <div className="mt-10 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-[13px] text-text-muted">
-              {t('footer.rights', { year: new Date().getFullYear(), company: SITE.companyName })}
+              {t('footer.rights', { year: new Date().getFullYear(), company: publicSite().companyName })}
             </p>
             <LanguageSwitcher current={locale} label={common('languageSwitcherLabel')} />
           </div>

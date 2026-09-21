@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 import { ClockIcon, MailIcon, PhoneIcon, PinIcon, ScanIcon } from '@/components/site/icons';
 import { PageHero } from '@/components/site/sections/SectionHeading';
 import { routing } from '@/i18n/routing';
-import { SITE } from '@/lib/config/site';
+import { SITE, publicSite } from '@/lib/config/site';
 import { pageMetadata } from '@/lib/site/seo';
 
 type Props = { params: Promise<{ locale: string }> };
@@ -35,6 +35,8 @@ export default async function ContactPage({ params }: Props) {
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const t = await getTranslations('site.pages.contact');
+  // Placeholders never reach this page: an unset channel is simply not listed.
+  const site = publicSite();
 
   return (
     <>
@@ -42,34 +44,41 @@ export default async function ContactPage({ params }: Props) {
       <section className="py-14 md:py-20">
         <div className="container-page grid gap-10 lg:grid-cols-[1.2fr_1fr]">
           <ul className="grid gap-4 sm:grid-cols-2">
-            {SITE.contactEmail && (
+            {site.contactEmail && (
               <Channel icon={<MailIcon />} label={t('email')}>
-                <a href={`mailto:${SITE.contactEmail}`} dir="ltr" className="text-accent hover:underline">
-                  {SITE.contactEmail}
+                <a href={`mailto:${site.contactEmail}`} dir="ltr" className="text-accent hover:underline">
+                  {site.contactEmail}
                 </a>
               </Channel>
             )}
-            {SITE.phone && (
+            {site.phone && (
               <Channel icon={<PhoneIcon />} label={t('phone')}>
-                <a href={`tel:${SITE.phone.replace(/\s/g, '')}`} dir="ltr" className="text-accent hover:underline">
-                  {SITE.phone}
+                <a href={`tel:${site.phone.replace(/\s/g, '')}`} dir="ltr" className="text-accent hover:underline">
+                  {site.phone}
                 </a>
               </Channel>
             )}
-            {SITE.whatsapp && (
+            {site.whatsapp && (
               <Channel icon={<PhoneIcon />} label={t('whatsapp')}>
-                <a href={`https://wa.me/${SITE.whatsapp}`} dir="ltr" className="text-accent hover:underline" rel="noopener noreferrer">
-                  +{SITE.whatsapp}
+                <a href={`https://wa.me/${site.whatsapp}`} dir="ltr" className="text-accent hover:underline" rel="noopener noreferrer">
+                  +{site.whatsapp}
                 </a>
+              </Channel>
+            )}
+            {!site.contactEmail && !site.phone && !site.whatsapp && (
+              <Channel icon={<MailIcon />} label={t('email')}>
+                <span className="font-normal text-text-secondary">{t('comingSoon')}</span>
               </Channel>
             )}
             <Channel icon={<ClockIcon />} label={t('hours')}>
               {SITE.hours[locale]}
             </Channel>
-            <Channel icon={<PinIcon />} label={t('address')}>
-              {SITE.companyName}
-              <span className="block font-normal text-text-secondary">{SITE.address}</span>
-            </Channel>
+            {site.address && (
+              <Channel icon={<PinIcon />} label={t('address')}>
+                {site.companyName}
+                <span className="block font-normal text-text-secondary">{site.address}</span>
+              </Channel>
+            )}
           </ul>
 
           <aside className="h-fit rounded-md border border-border bg-surface-2 p-6">

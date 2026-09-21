@@ -322,6 +322,16 @@
         "title": "New customers",
         "description": "The newest accounts created on the site.",
         "empty": "No account yet."
+      },
+      "placeholders": {
+        "title": "Contact details are still missing",
+        "body": "Your customers do not see them yet — the Contact page shows nothing in their place: {fields}. Fill them in so people can reach you.",
+        "fields": {
+          "companyName": "company name",
+          "address": "address",
+          "contactEmail": "contact email",
+          "phone": "phone"
+        }
       }
     },
     "customers": {
@@ -683,7 +693,8 @@
         "hours": "Hours",
         "address": "Address",
         "ownerNoticeTitle": "Trying to reach a car owner?",
-        "ownerNotice": "Scan the sticker on their window: your message goes straight to them. We cannot pass a message on for you."
+        "ownerNotice": "Scan the sticker on their window: your message goes straight to them. We cannot pass a message on for you.",
+        "comingSoon": "Contact details coming soon."
       }
     }
   },

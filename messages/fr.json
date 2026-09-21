@@ -322,6 +322,16 @@
         "title": "Nouveaux clients",
         "description": "Derniers comptes créés sur le site.",
         "empty": "Aucun compte pour le moment."
+      },
+      "placeholders": {
+        "title": "Des coordonnées manquent encore",
+        "body": "Vos clients ne les voient pas pour l’instant — la page Contact n’affiche rien à leur place : {fields}. Renseignez-les pour qu’on puisse vous joindre.",
+        "fields": {
+          "companyName": "nom de l’entreprise",
+          "address": "adresse",
+          "contactEmail": "e-mail de contact",
+          "phone": "téléphone"
+        }
       }
     },
     "customers": {
@@ -683,7 +693,8 @@
         "hours": "Horaires",
         "address": "Adresse",
         "ownerNoticeTitle": "Vous voulez joindre le propriétaire d'une voiture ?",
-        "ownerNotice": "Scannez l'autocollant collé sur sa vitre : votre message lui arrive directement. Nous ne pouvons pas transmettre de message à sa place."
+        "ownerNotice": "Scannez l'autocollant collé sur sa vitre : votre message lui arrive directement. Nous ne pouvons pas transmettre de message à sa place.",
+        "comingSoon": "Coordonnées bientôt disponibles."
       }
     }
   },

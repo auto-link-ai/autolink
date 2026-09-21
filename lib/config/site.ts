@@ -23,9 +23,36 @@ export const SITE = {
   },
 } as const;
 
+/** A value still set to its `[PLACEHOLDER]` is treated as not set at all. */
+export function isPlaceholder(value: string | null | undefined): boolean {
+  return typeof value === 'string' && /^\[.*\]$/.test(value.trim());
+}
+
+function filled(value: string | null): string | null {
+  return value && !isPlaceholder(value) ? value : null;
+}
+
+/**
+ * What customers may see. A placeholder never reaches a public page: a missing
+ * channel is simply not shown, and a missing company name reads "AutoLink" —
+ * rather than "© 2026 [COMPANY NAME]" in every footer.
+ */
+export function publicSite() {
+  return {
+    companyName: filled(SITE.companyName) ?? SITE.brand,
+    address: filled(SITE.address),
+    contactEmail: filled(SITE.contactEmail),
+    phone: filled(SITE.phone),
+    whatsapp: SITE.whatsapp,
+  };
+}
+
+/** Which details are still placeholders — listed for the admin, never shown publicly. */
+export function missingSiteDetails(): Array<'companyName' | 'address' | 'contactEmail' | 'phone'> {
+  return (['companyName', 'address', 'contactEmail', 'phone'] as const).filter((key) => isPlaceholder(SITE[key]));
+}
+
 /** True while any placeholder is still in place (shown as a banner in the admin). */
 export function sitePlaceholdersRemain(): boolean {
-  return [SITE.companyName, SITE.address, SITE.contactEmail, SITE.phone].some(
-    (value) => typeof value === 'string' && value.startsWith('['),
-  );
+  return missingSiteDetails().length > 0;
 }

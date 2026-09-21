@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { SITE } from '@/lib/config/site';
+import { SITE, publicSite } from '@/lib/config/site';
 import { PageHero } from './sections/SectionHeading';
 
 interface LegalSection {
@@ -20,9 +20,9 @@ export async function LegalDocument({ doc, period }: { doc: 'privacy' | 'terms';
   const t = await getTranslations(`legal.${doc}`);
   const legal = await getTranslations('legal');
   const values = {
-    company: SITE.companyName,
+    company: publicSite().companyName,
     address: SITE.address,
-    email: SITE.contactEmail ?? SITE.companyName,
+    email: publicSite().contactEmail ?? SITE.contactEmail ?? publicSite().companyName,
     period,
   };
   const sections = t.raw('sections') as LegalSection[];
