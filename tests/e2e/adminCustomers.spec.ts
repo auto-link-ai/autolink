@@ -16,6 +16,9 @@ async function openCustomer(page: Page, email: string) {
   await page.goto('/en/admin/customers');
   await page.getByLabel('Search').fill(email);
   await page.getByRole('button', { name: 'Search' }).click();
+  // The newest customer is already on the unfiltered list: wait for the search,
+  // or the click lands on a page that is about to be replaced.
+  await expect(page).toHaveURL(/[?&]q=/);
   await page.getByRole('link', { name: email }).click();
   await expect(page).toHaveURL(/id=USR-[0-9A-HJKMNP-TV-Z]{8}/);
 }
