@@ -1,0 +1,12 @@
+# `vercel deploy` uploads this folder as it is. Secrets reach Vercel only as
+# project environment variables, never as files; local builds and test output
+# stay here.
+.env
+.env.*
+!.env.example
+.next
+.next-*
+node_modules
+test-results
+playwright-report
+tests/e2e/.auth
