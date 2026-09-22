@@ -1,12 +1,11 @@
 import { getTranslations } from 'next-intl/server';
 import { MESSAGE_CATEGORIES } from '@/lib/domain/constants';
-import { cx } from '@/lib/cx';
 import { CategoryIcon } from '../icons';
 
 /**
  * "One sticker, many situations": the six reasons a passer-by can pick,
- * as full-width numbered rows. The third row is highlighted with a sample
- * message chip, the way it arrives on the owner's phone.
+ * as full-width numbered rows. All six look alike: they are a list, not a
+ * choice, so none of them looks selected.
  */
 export async function Scenarios() {
   const t = await getTranslations('site.scenarios');
@@ -22,26 +21,16 @@ export async function Scenarios() {
       </div>
 
       <ol className="mt-12 border-t border-border">
-        {MESSAGE_CATEGORIES.map((category, index) => {
-          const featured = index === 2;
-          return (
-            <li key={category} className={cx('border-b border-border', featured ? 'bg-accent-soft/60' : 'odd:bg-white/40')}>
-              <div className="container-page flex items-center gap-5 py-7 md:py-9">
-                <span className={cx('font-mono text-sm font-bold', featured ? 'text-accent' : 'text-text-muted')}>
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                <CategoryIcon
-                  category={category}
-                  className={cx('h-6 w-6 shrink-0', featured ? 'text-accent' : 'text-text-muted')}
-                />
-                <h3 className={cx('text-h3 md:text-h2', featured ? 'text-accent' : 'text-text')}>{categories(category)}</h3>
-                <p className="ms-auto hidden max-w-[40ch] text-[15px] text-text-secondary lg:block">
-                  {t(`items.${category}`)}
-                </p>
-              </div>
-            </li>
-          );
-        })}
+        {MESSAGE_CATEGORIES.map((category, index) => (
+          <li key={category} className="border-b border-border odd:bg-white/40">
+            <div className="container-page flex items-center gap-5 py-7 md:py-9">
+              <span className="font-mono text-sm font-bold text-text-muted">{String(index + 1).padStart(2, '0')}</span>
+              <CategoryIcon category={category} className="h-6 w-6 shrink-0 text-accent" />
+              <h3 className="text-h3 text-text md:text-h2">{categories(category)}</h3>
+              <p className="ms-auto hidden max-w-[40ch] text-[15px] text-text-secondary lg:block">{t(`items.${category}`)}</p>
+            </div>
+          </li>
+        ))}
       </ol>
     </section>
   );

@@ -107,6 +107,11 @@
   --text-display--line-height: 1.08;
   --text-display--letter-spacing: -0.02em;
   --text-display--font-weight: 700;
+  /* The home hero: two sentences in one headline, so a step below display. */
+  --text-hero: 2.375rem;
+  --text-hero--line-height: 1.1;
+  --text-hero--letter-spacing: -0.02em;
+  --text-hero--font-weight: 700;
   --text-h1: 2rem;
   --text-h1--line-height: 1.12;
   --text-h1--letter-spacing: -0.015em;
@@ -127,6 +132,7 @@
 @media (min-width: 48rem) {
   :root {
     --text-display: 4.5rem;
+    --text-hero: 3.5rem;
     --text-h1: 3rem;
     --text-h2: 2.75rem;
     --text-h3: 1.25rem;

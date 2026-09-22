@@ -429,19 +429,18 @@
       "carBook": "Carnet"
     },
     "hero": {
+      "eyebrow": "Autocollant QR pour votre voiture",
       "trust": {
-        "secure": "Sécurisé",
-        "private": "Numéro privé",
-        "noApp": "Sans application"
+        "private": "Numéro jamais affiché",
+        "fast": "Alerte en quelques secondes",
+        "noApp": "Sans application ni compte"
       },
       "title": "Votre voiture peut recevoir des messages.",
-      "subtitle": "On vous prévient en quelques secondes.",
       "titleAccent": "Votre numéro reste invisible.",
-      "subtitleAccent": "Personne ne le voit, jamais.",
-      "body": "Phares restés allumés, sortie bloquée, vitre ouverte : la personne qui le remarque scanne l'autocollant et vous prévient. Sans application, sans compte, sans votre numéro.",
+      "body": "Phares restés allumés, sortie bloquée, vitre ouverte : la personne qui le remarque scanne l’autocollant et vous prévient.",
       "cta": "Commander mon autocollant",
-      "secondary": "Voir comment ça marche",
-      "price": "{price} — paiement unique, à la livraison",
+      "secondary": "Comment ça marche",
+      "price": "<b>{price}</b> · paiement unique, à la livraison",
       "chips": {
         "scan": {
           "title": "Quelqu'un vous bloque ?",
@@ -469,7 +468,7 @@
         },
         "notify": {
           "title": "Vous êtes prévenu",
-          "body": "Le message arrive sur votre téléphone et par e-mail. Votre numéro n'a jamais été montré."
+          "body": "Le message arrive sur votre téléphone et dans votre espace personnel. Votre numéro n’a jamais été montré."
         }
       },
       "more": "Tout le détail"
@@ -506,7 +505,7 @@
         },
         "notify": {
           "title": "L'alerte vous arrive",
-          "body": "Notification et e-mail en quelques secondes, sans afficher votre numéro."
+          "body": "Une notification en quelques secondes, sans afficher votre numéro."
         }
       }
     },
@@ -538,7 +537,7 @@
         "sticker": "L'autocollant QR résistant, prêt à coller",
         "code": "Le code d'activation privé, sur une fiche séparée",
         "unlimited": "Messages illimités depuis votre autocollant",
-        "notify": "Notifications sur le téléphone et par e-mail",
+        "notify": "Notifications sur votre téléphone",
         "noSubscription": "Aucun abonnement, aucun frais caché"
       },
       "delivery": "Livraison dans les 58 wilayas. Les frais dépendent de votre wilaya et s'affichent avant de confirmer.",
@@ -582,7 +581,7 @@
         },
         "receive": {
           "q": "Comment je reçois les messages ?",
-          "a": "Par notification sur votre téléphone et par e-mail. Ils restent aussi dans votre espace personnel."
+          "a": "Par une notification sur votre téléphone. Ils restent aussi dans votre espace personnel."
         },
         "pay": {
           "q": "Comment je paie ?",

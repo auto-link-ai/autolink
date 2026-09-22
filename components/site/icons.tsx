@@ -41,6 +41,12 @@ export const ArrowIcon = (p: IconProps) => (
     <path d="M5 12h14M13 6l6 6-6 6" />
   </Icon>
 );
+/** Down the page: the same in both reading directions, so it never flips. */
+export const ArrowDownIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 5v14M6 13l6 6 6-6" />
+  </Icon>
+);
 export const MenuIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M4 7h16M4 12h16M4 17h16" />

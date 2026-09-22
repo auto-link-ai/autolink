@@ -15,7 +15,7 @@ export async function HowItWorks({ locale, showMore = true }: { locale: Locale; 
   const t = await getTranslations('site.steps');
 
   return (
-    <section aria-labelledby="steps-title" className="py-14 md:py-20">
+    <section id="how-it-works" aria-labelledby="steps-title" className="scroll-mt-24 py-14 md:py-20">
       <div className="container-page">
         <p className="eyebrow">{t('eyebrow')}</p>
         <h2 id="steps-title" className="mt-3 max-w-[20ch] text-h2 text-text">

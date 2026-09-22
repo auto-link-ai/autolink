@@ -1,9 +1,30 @@
+import QRCode from 'qrcode';
+import { siteOrigin } from '@/lib/site/seo';
+
+/** A real QR code for the site's address, as one SVG path `size` units wide. */
+function qrPath(text: string, size: number): string {
+  const { modules } = QRCode.create(text, { errorCorrectionLevel: 'M' });
+  const unit = size / modules.size;
+  const step = unit.toFixed(3);
+  let d = '';
+  for (let row = 0; row < modules.size; row++) {
+    for (let col = 0; col < modules.size; col++) {
+      if (modules.get(row, col)) d += `M${(col * unit).toFixed(3)} ${(row * unit).toFixed(3)}h${step}v${step}h-${step}z`;
+    }
+  }
+  return d;
+}
+
 /**
- * Original placeholder art: the rear of a car with an AutoLink sticker on the
- * glass, drawn in the brand palette. No photo, no real vehicle, no competitor
- * imagery. Decorative — the surrounding text carries the meaning.
+ * Original art: the rear of a car with an AutoLink sticker on the glass, drawn
+ * in the brand palette. The sticker looks like the one customers receive — the
+ * name, a QR code, the sticker id — and its code is a real one for the site.
+ * No photo, no real vehicle, no competitor imagery. Decorative — the
+ * surrounding text carries the meaning. Drawn on the server: no JavaScript.
  */
 export function CarIllustration({ className = '' }: { className?: string }) {
+  const qr = qrPath(siteOrigin().origin, 48);
+
   return (
     <svg viewBox="0 0 520 420" className={className} aria-hidden="true" focusable="false">
       <defs>
@@ -32,20 +53,25 @@ export function CarIllustration({ className = '' }: { className?: string }) {
       {/* Rear window with the sticker */}
       <path d="M156 186 Q160 152 190 146 L356 128 Q392 124 402 152 L414 206 L156 226 Z" fill="url(#al-glass)" />
 
-      {/* AutoLink sticker */}
-      <g transform="translate(248 150) rotate(-4)">
-        <rect x="0" y="0" width="112" height="60" rx="10" fill="var(--orange)" />
-        <rect x="8" y="8" width="96" height="30" rx="6" fill="var(--white)" />
-        <g fill="var(--ink)">
-          <rect x="14" y="13" width="6" height="6" rx="1" />
-          <rect x="24" y="13" width="6" height="6" rx="1" />
-          <rect x="14" y="23" width="6" height="6" rx="1" />
-          <rect x="24" y="23" width="4" height="4" rx="1" />
-          <rect x="34" y="18" width="4" height="4" rx="1" />
-        </g>
-        <rect x="44" y="16" width="52" height="5" rx="2.5" fill="#d8cfc9" />
-        <rect x="44" y="26" width="34" height="5" rx="2.5" fill="#e6e0dc" />
-        <rect x="14" y="44" width="84" height="6" rx="3" fill="var(--white)" opacity="0.85" />
+      {/* AutoLink sticker: name, QR code, sticker id — as printed */}
+      <g transform="translate(266 141) rotate(-5)">
+        <rect width="70" height="75" rx="7" fill="var(--white)" />
+        <text x="35" y="11" textAnchor="middle" direction="ltr" fontSize="8" fontWeight="700" fill="var(--ink)">
+          Auto<tspan fill="var(--orange)">Link</tspan>
+        </text>
+        <path d={qr} transform="translate(11 14.5)" fill="var(--ink)" />
+        <text
+          x="35"
+          y="70"
+          textAnchor="middle"
+          direction="ltr"
+          fontSize="5.2"
+          fontWeight="600"
+          fill="#7a6a62"
+          style={{ fontFamily: 'var(--app-font-mono)' }}
+        >
+          AUT-7K3M9QXZ
+        </text>
       </g>
 
       {/* Tail light + bumper detail */}

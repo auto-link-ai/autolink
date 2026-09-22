@@ -429,19 +429,18 @@
       "carBook": "Car book"
     },
     "hero": {
+      "eyebrow": "A QR sticker for your car",
       "trust": {
-        "secure": "Secure",
-        "private": "Private number",
-        "noApp": "No app"
+        "private": "Your number never shown",
+        "fast": "Alert within seconds",
+        "noApp": "No app, no account"
       },
       "title": "Your car can receive messages.",
-      "subtitle": "You hear about it within seconds.",
       "titleAccent": "Your number never shows.",
-      "subtitleAccent": "Nobody sees it, ever.",
-      "body": "Lights left on, a blocked exit, an open window: whoever notices scans the sticker and tells you. No app, no account, and never your number.",
+      "body": "Lights left on, a blocked exit, an open window: whoever notices scans the sticker and tells you.",
       "cta": "Order my sticker",
-      "secondary": "See how it works",
-      "price": "{price} — one payment, cash on delivery",
+      "secondary": "How it works",
+      "price": "<b>{price}</b> · one payment, cash on delivery",
       "chips": {
         "scan": {
           "title": "Someone blocking you in?",
@@ -469,7 +468,7 @@
         },
         "notify": {
           "title": "You get the alert",
-          "body": "The message reaches your phone and your email. Your number was never shown."
+          "body": "The message reaches your phone and your dashboard. Your number was never shown."
         }
       },
       "more": "See the full detail"
@@ -506,7 +505,7 @@
         },
         "notify": {
           "title": "The alert reaches you",
-          "body": "A notification and an email within seconds, without showing your number."
+          "body": "A notification within seconds, without showing your number."
         }
       }
     },
@@ -538,7 +537,7 @@
         "sticker": "A hard-wearing QR sticker, ready to stick",
         "code": "The private activation code, on a separate slip",
         "unlimited": "Unlimited messages from your sticker",
-        "notify": "Notifications on your phone and by email",
+        "notify": "Notifications on your phone",
         "noSubscription": "No subscription, no hidden fees"
       },
       "delivery": "Delivery to all 58 wilayas. The fee depends on your wilaya and is shown before you confirm.",
@@ -582,7 +581,7 @@
         },
         "receive": {
           "q": "How do I receive messages?",
-          "a": "By notification on your phone and by email. They also stay in your own dashboard."
+          "a": "By a notification on your phone. They also stay in your own dashboard."
         },
         "pay": {
           "q": "How do I pay?",
