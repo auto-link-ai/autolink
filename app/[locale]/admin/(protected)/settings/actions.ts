@@ -5,8 +5,8 @@ import { toLocale } from '@/i18n/locales';
 import { getAdminSession } from '@/lib/admin/auth';
 import { invalidateSettingsCache } from '@/lib/config/settings';
 import { settingsRepository } from '@/lib/db/repositories/settings';
-import { wilayasRepository } from '@/lib/db/repositories/wilayas';
 import { commerceSettingsSchema, readFeeRows } from '@/lib/validation/settings';
+import { getWilayas } from '@/lib/config/wilayas';
 
 /** Saves price, quantity limit, order rate limit and the per-wilaya fees. */
 export async function saveCommerceSettingsAction(formData: FormData): Promise<void> {
@@ -16,7 +16,7 @@ export async function saveCommerceSettingsAction(formData: FormData): Promise<vo
   // Only a full admin may change what customers are charged.
   if (session.actor.role !== 'ADMIN') redirect(`/${locale}/admin/settings?result=forbidden`);
 
-  const codes = (await wilayasRepository.list()).map((w) => w.code);
+  const codes = (await getWilayas()).map((w) => w.code);
   const parsed = commerceSettingsSchema.safeParse({
     unitPriceDzd: formData.get('unitPriceDzd'),
     currencyLabel: formData.get('currencyLabel'),

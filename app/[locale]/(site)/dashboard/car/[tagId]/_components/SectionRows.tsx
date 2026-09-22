@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { DueChip, dueSentence } from '@/components/care/DueList';
+import { PendingLink } from '@/components/ui/PendingLink';
 import type { Locale } from '@/i18n/locales';
 import type { DueItem } from '@/lib/care/due';
 import { CARE_SECTIONS, carBookPath, type CareSection } from '@/lib/care/sections';
@@ -60,7 +61,7 @@ export async function SectionRows({ book, locale, items }: { book: CarBookDTO; l
     <ul className="flex flex-col gap-3">
       {rows.map(({ section, summary, status }) => (
         <li key={section}>
-          <a
+          <PendingLink
             href={carBookPath(locale, book.publicTagId, section)}
             className="flex min-h-18 items-center gap-3 rounded-2xl border border-border bg-white px-4 py-3 shadow-card-sm transition-colors hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
@@ -72,7 +73,7 @@ export async function SectionRows({ book, locale, items }: { book: CarBookDTO; l
             <span aria-hidden="true" className="inline-block text-2xl leading-none text-text-muted rtl:rotate-180">
               ›
             </span>
-          </a>
+          </PendingLink>
         </li>
       ))}
     </ul>

@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { DueChip, dueSentence } from '@/components/care/DueList';
 import { buttonClasses } from '@/components/ui/Button';
+import { PendingLink } from '@/components/ui/PendingLink';
 import type { Locale } from '@/i18n/locales';
 import { carBookPath } from '@/lib/care/sections';
 import type { CarBookDTO } from '@/lib/db/repositories/carBook';
@@ -73,9 +74,9 @@ export async function DetailsSection({
           </div>
         ))}
       </dl>
-      <a href={`${sectionHref}?edit=1`} className={buttonClasses('primary', 'md', 'mt-5 w-full sm:w-auto')}>
+      <PendingLink href={`${sectionHref}?edit=1`} className={buttonClasses('primary', 'md', 'mt-5 w-full sm:w-auto')}>
         {t('edit')}
-      </a>
+      </PendingLink>
     </BookCard>
   );
 }

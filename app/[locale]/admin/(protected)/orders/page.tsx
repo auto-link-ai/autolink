@@ -12,12 +12,12 @@ import {
   type OrderListQuery,
 } from '@/lib/admin/orderListQuery';
 import { adminOrdersRepository, ADMIN_ORDER_PAGE_SIZE } from '@/lib/db/repositories/ordersAdmin';
-import { wilayasRepository } from '@/lib/db/repositories/wilayas';
 import { ORDER_STATUSES } from '@/lib/domain/constants';
 import { cx } from '@/lib/cx';
 import { formatDzd } from '@/lib/format/currency';
 import { formatDateTime } from '@/lib/format/date';
 import { OrderDetail } from './_components/OrderDetail';
+import { getWilayas } from '@/lib/config/wilayas';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -47,7 +47,7 @@ export default async function AdminOrdersPage({ params, searchParams }: Props) {
         : { status: query.status, orderRef: query.orderRef, phone: query.phone },
       query.page,
     ),
-    wilayasRepository.list(),
+    getWilayas(),
   ]);
   const wilayaName = (code: number) => {
     const w = wilayas.find((x) => x.code === code);

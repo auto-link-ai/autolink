@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import type { ComponentType, ReactNode } from 'react';
 import type { Locale } from '@/i18n/locales';
 import type { DueItem, DueStatus } from '@/lib/care/due';
 import type { CareDueKind } from '@/lib/domain/constants';
@@ -41,20 +42,27 @@ export async function DueChip({ status, locale }: { status: DueStatus; locale: L
 
 /**
  * What is coming up for one car, most urgent first. With `hrefFor`, each row
- * is a link to where that date is kept. Server-rendered plain links: it also
- * runs on the scan page, which has a strict JavaScript budget.
+ * is a link to where that date is kept — a plain one by default, because this
+ * also runs on the scan page, which has a strict JavaScript budget.
  */
 export async function DueList({
   items,
   locale,
   hrefFor,
+  linkAs,
 }: {
   items: DueItem[];
   locale: Locale;
   hrefFor?: (kind: CareDueKind) => string;
+  /**
+   * The car book passes its client link, so a row moves without reloading. The
+   * scan page passes nothing: not a byte of navigation code reaches it.
+   */
+  linkAs?: ComponentType<{ href: string; className?: string; children: ReactNode }>;
 }) {
   const t = await getTranslations({ locale, namespace: 'care.due' });
   const sentences = await Promise.all(items.map((item) => dueSentence(item, locale)));
+  const Row = linkAs ?? 'a';
 
   return (
     <ul className="divide-y divide-border">
@@ -71,7 +79,7 @@ export async function DueList({
         return (
           <li key={item.kind}>
             {hrefFor ? (
-              <a
+              <Row
                 href={hrefFor(item.kind)}
                 className="-mx-2 flex min-h-16 items-center gap-3 rounded-xl px-2 py-3 hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-accent"
               >
@@ -79,7 +87,7 @@ export async function DueList({
                 <span aria-hidden="true" className="inline-block text-xl text-text-muted rtl:rotate-180">
                   ›
                 </span>
-              </a>
+              </Row>
             ) : (
               <div className="flex min-h-16 items-center gap-3 py-3">{body}</div>
             )}

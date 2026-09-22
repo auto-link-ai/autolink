@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound, redirect } from 'next/navigation';
 import { DueChip, dueSentence } from '@/components/care/DueList';
 import { buttonClasses } from '@/components/ui/Button';
+import { PendingLink } from '@/components/ui/PendingLink';
 import { routing } from '@/i18n/routing';
 import { requireOwner } from '@/lib/auth/session';
 import { algiersToday, dueItems, mostUrgent } from '@/lib/care/due';
@@ -62,15 +63,15 @@ export default async function CarBooksPage({ params }: Props) {
         {cars.length === 0 ? (
           <BookCard>
             <p className="text-[16px] leading-relaxed text-text-secondary">{t('empty.body')}</p>
-            <a href={`/${locale}/activate`} className={buttonClasses('primary', 'md', 'mt-5 w-full sm:w-auto')}>
+            <PendingLink href={`/${locale}/activate`} className={buttonClasses('primary', 'md', 'mt-5 w-full sm:w-auto')}>
               {t('empty.cta')}
-            </a>
+            </PendingLink>
           </BookCard>
         ) : (
           <ul className="flex flex-col gap-3">
             {rows.map((car) => (
               <li key={car.publicTagId}>
-                <a
+                <PendingLink
                   href={carBookPath(locale, car.publicTagId)}
                   className="flex min-h-18 items-center gap-3 rounded-2xl border border-border bg-white px-4 py-3 shadow-card-sm transition-colors hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
@@ -88,7 +89,7 @@ export default async function CarBooksPage({ params }: Props) {
                   <span aria-hidden="true" className="inline-block text-2xl leading-none text-text-muted rtl:rotate-180">
                     ›
                   </span>
-                </a>
+                </PendingLink>
               </li>
             ))}
           </ul>

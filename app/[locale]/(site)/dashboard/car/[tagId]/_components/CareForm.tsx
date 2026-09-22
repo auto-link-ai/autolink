@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef } from 'react';
 import { Button, buttonClasses } from '@/components/ui/Button';
+import { PendingLink } from '@/components/ui/PendingLink';
 import { submitKeepingValues } from '@/components/ui/submitKeepingValues';
 import type { Locale } from '@/i18n/locales';
 import type { CareSection } from '@/lib/care/sections';
@@ -162,9 +163,9 @@ export function CareForm({
       </div>
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
-        <a href={cancelHref} className={buttonClasses('secondary', 'md', 'w-full sm:w-auto')}>
+        <PendingLink href={cancelHref} className={buttonClasses('secondary', 'md', 'w-full sm:w-auto')}>
           {labels.cancel}
-        </a>
+        </PendingLink>
         <Button type="submit" disabled={pending} className="w-full sm:w-auto">
           {pending ? labels.working : labels.submit}
         </Button>

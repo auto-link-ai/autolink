@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { routing } from '@/i18n/routing';
 import { requireAdmin } from '@/lib/admin/auth';
 import { getSettings } from '@/lib/config/settings';
-import { wilayasRepository } from '@/lib/db/repositories/wilayas';
+import { getWilayas } from '@/lib/config/wilayas';
 import { cx } from '@/lib/cx';
 import { saveCommerceSettingsAction } from './actions';
 import { FeeTable, type FeeRowInput } from './_components/FeeTable';
@@ -30,7 +30,7 @@ export default async function AdminSettingsPage({ params, searchParams }: Props)
   const resultParam = Array.isArray(raw.result) ? raw.result[0] : raw.result;
   const result = RESULTS.find((code) => code === resultParam) ?? null;
 
-  const [settings, wilayas] = await Promise.all([getSettings(), wilayasRepository.list()]);
+  const [settings, wilayas] = await Promise.all([getSettings(), getWilayas()]);
   const isAdmin = session.actor.role === 'ADMIN';
 
   const feeByCode = new Map(settings.deliveryFees.map((fee) => [fee.wilayaCode, fee]));

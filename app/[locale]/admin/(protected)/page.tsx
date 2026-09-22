@@ -13,10 +13,10 @@ import { customerListSearch } from '@/lib/admin/customerListQuery';
 import { adminOrdersRepository } from '@/lib/db/repositories/ordersAdmin';
 import { tagsRepository } from '@/lib/db/repositories/tags';
 import { usersRepository } from '@/lib/db/repositories/users';
-import { wilayasRepository } from '@/lib/db/repositories/wilayas';
 import { ORDER_STATUSES, TAG_STATUSES } from '@/lib/domain/constants';
 import { formatDzd } from '@/lib/format/currency';
 import { formatAge } from '@/lib/format/date';
+import { getWilayas } from '@/lib/config/wilayas';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -44,7 +44,7 @@ export default async function AdminOverviewPage({ params }: Props) {
       adminOrdersRepository.list(session.actor, { status: 'PENDING' }, 1),
       tagsRepository.recentlyActivated(session.actor, FEED_SIZE),
       usersRepository.listForAdmin(session.actor, {}, 1),
-      wilayasRepository.list(),
+      getWilayas(),
     ]);
 
   const wilayaName = (code: number) => {

@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { CheckIcon } from '@/components/site/icons';
+import { PendingLink } from '@/components/ui/PendingLink';
 import { cx } from '@/lib/cx';
 
 /** One white card of the car book. With a title, it is a named region. */
@@ -45,9 +46,9 @@ export async function BookHeader({
                 </span>
               )}
               {crumb.href ? (
-                <a href={crumb.href} className="inline-flex min-h-11 items-center font-bold text-accent underline-offset-4 hover:underline">
+                <PendingLink href={crumb.href} className="inline-flex min-h-11 items-center font-bold text-accent underline-offset-4 hover:underline">
                   {crumb.label}
-                </a>
+                </PendingLink>
               ) : (
                 <span aria-current="page" className="inline-flex min-h-11 items-center font-semibold text-text-secondary">
                   {crumb.label}

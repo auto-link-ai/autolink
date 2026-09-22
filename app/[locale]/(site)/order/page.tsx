@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { PageHero } from '@/components/site/sections/SectionHeading';
 import { routing } from '@/i18n/routing';
 import { getSettings } from '@/lib/config/settings';
-import { wilayasRepository } from '@/lib/db/repositories/wilayas';
+import { getWilayas } from '@/lib/config/wilayas';
 import { pageMetadata } from '@/lib/site/seo';
 import { OrderForm } from './OrderForm';
 import type { OrderFormLabels } from './orderLabels';
@@ -29,10 +29,10 @@ export default async function OrderPage({ params }: Props) {
   setRequestLocale(locale);
   const t = await getTranslations('order');
 
-  let data: { settings: Awaited<ReturnType<typeof getSettings>>; wilayas: Awaited<ReturnType<typeof wilayasRepository.list>> } | null =
+  let data: { settings: Awaited<ReturnType<typeof getSettings>>; wilayas: Awaited<ReturnType<typeof getWilayas>> } | null =
     null;
   try {
-    const [settings, wilayas] = await Promise.all([getSettings(), wilayasRepository.list()]);
+    const [settings, wilayas] = await Promise.all([getSettings(), getWilayas()]);
     if (wilayas.length > 0) data = { settings, wilayas };
   } catch (error) {
     console.error('[order] cannot load settings:', error instanceof Error ? error.message : error);

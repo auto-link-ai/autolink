@@ -3,6 +3,7 @@ import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { DueList } from '@/components/care/DueList';
+import { PendingLink } from '@/components/ui/PendingLink';
 import { routing } from '@/i18n/routing';
 import { requireOwner } from '@/lib/auth/session';
 import { algiersToday, dueItems } from '@/lib/care/due';
@@ -61,6 +62,7 @@ export default async function CarBookPage({ params }: Props) {
               items={dated}
               locale={locale}
               hrefFor={(kind) => carBookPath(locale, book.publicTagId, SECTION_FOR_DUE[kind])}
+              linkAs={PendingLink}
             />
           ) : (
             <p className="text-[16px] leading-relaxed text-text-secondary">{t('overview.noDates')}</p>

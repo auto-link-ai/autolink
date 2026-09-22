@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
 import { dueSentence } from '@/components/care/DueList';
 import { Button, buttonClasses } from '@/components/ui/Button';
+import { PendingLink } from '@/components/ui/PendingLink';
 import type { Locale } from '@/i18n/locales';
 import type { DueItem } from '@/lib/care/due';
 import { cx } from '@/lib/cx';
@@ -70,9 +70,9 @@ export async function StickerCard({
 
       {tag.vehicle && (
         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <Link href={`/${locale}/dashboard/car/${tag.publicTagId}`} className={buttonClasses('primary', 'sm')}>
+          <PendingLink href={`/${locale}/dashboard/car/${tag.publicTagId}`} className={buttonClasses('primary', 'sm')}>
             {t('card.book')}
-          </Link>
+          </PendingLink>
           {nextDue && (
             <p className={cx('text-sm font-bold', nextDue.status === 'overdue' ? 'text-danger' : 'text-accent')}>
               {t('card.nextDue', {

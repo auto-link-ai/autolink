@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { DueChip, dueSentence } from '@/components/care/DueList';
 import { buttonClasses } from '@/components/ui/Button';
+import { PendingLink } from '@/components/ui/PendingLink';
 import type { Locale } from '@/i18n/locales';
 import { algiersToday, dueItem } from '@/lib/care/due';
 import { carBookPath, type CareLogSection } from '@/lib/care/sections';
@@ -55,9 +56,9 @@ export async function LogSection({
     return (
       <BookCard>
         <p className="text-[16px] leading-relaxed text-text-secondary">{t(`${section}.emptyBody`)}</p>
-        <a href={addHref} className={buttonClasses('primary', 'md', 'mt-5 w-full sm:w-auto')}>
+        <PendingLink href={addHref} className={buttonClasses('primary', 'md', 'mt-5 w-full sm:w-auto')}>
           {t(`${section}.addFirst`)}
-        </a>
+        </PendingLink>
       </BookCard>
     );
   }
@@ -90,9 +91,9 @@ export async function LogSection({
         </BookCard>
       )}
 
-      <a href={addHref} className={buttonClasses('primary', 'md', 'w-full sm:w-auto sm:self-start')}>
+      <PendingLink href={addHref} className={buttonClasses('primary', 'md', 'w-full sm:w-auto sm:self-start')}>
         <span aria-hidden="true">+</span> {t(`${section}.add`)}
-      </a>
+      </PendingLink>
 
       <BookCard title={t(`${section}.history`)}>
         <RecordList records={records} locale={locale} tagId={book.publicTagId} section={section} currency={currency} />

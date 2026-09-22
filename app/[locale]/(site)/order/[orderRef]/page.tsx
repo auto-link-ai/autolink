@@ -9,10 +9,10 @@ import { href } from '@/components/site/links';
 import { buttonClasses } from '@/components/ui/Button';
 import { routing } from '@/i18n/routing';
 import { ordersRepository } from '@/lib/db/repositories/orders';
-import { wilayasRepository } from '@/lib/db/repositories/wilayas';
 import { formatDzd } from '@/lib/format/currency';
 import { isValidOrderRef } from '@/lib/orders/ref';
 import { ORDER_VIEW_COOKIE, isValidOrderViewToken } from '@/lib/orders/viewToken';
+import { getWilayas } from '@/lib/config/wilayas';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,7 +52,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
   const [cookieRef, token] = cookie.split('.');
   const mine = cookieRef === orderRef && isValidOrderViewToken(orderRef, token);
 
-  const wilaya = mine ? (await wilayasRepository.list()).find((w) => w.code === order.wilayaCode) : undefined;
+  const wilaya = mine ? (await getWilayas()).find((w) => w.code === order.wilayaCode) : undefined;
   const wilayaName = wilaya ? (locale === 'ar' ? wilaya.nameAr : locale === 'en' ? wilaya.nameEn : wilaya.nameFr) : '';
 
   return (

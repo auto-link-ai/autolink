@@ -1,8 +1,8 @@
 import 'server-only';
 import { getSettings } from '@/lib/config/settings';
+import { getWilayas } from '@/lib/config/wilayas';
 import { ordersRepository } from '@/lib/db/repositories/orders';
 import { rateLimitsRepository } from '@/lib/db/repositories/rateLimits';
-import { wilayasRepository } from '@/lib/db/repositories/wilayas';
 import { orderFieldErrors, orderInputSchema, type OrderField } from '@/lib/validation/order';
 import { generateOrderRef } from './ref';
 import { computeOrderTotals } from './totals';
@@ -44,7 +44,7 @@ export async function placeOrder(
   if (!parsed.success) return { ok: false, kind: 'invalid', fieldErrors: orderFieldErrors(parsed.error) };
   const input = parsed.data;
 
-  const wilaya = (await wilayasRepository.list()).find((w) => w.code === input.wilayaCode);
+  const wilaya = (await getWilayas()).find((w) => w.code === input.wilayaCode);
   const totals = computeOrderTotals(input, { unitPrice: settings.unitPriceDzd, deliveryFees: settings.deliveryFees });
   if (!wilaya || !totals) return { ok: false, kind: 'no_delivery' };
 
