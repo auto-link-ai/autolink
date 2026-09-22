@@ -805,7 +805,7 @@
       "phone": "Téléphone",
       "phoneHint": "Mobile algérien, ex. 05 12 34 56 78",
       "email": "E-mail (facultatif)",
-      "emailHint": "Pour recevoir la confirmation par écrit.",
+      "emailHint": "Facultatif. Utile si nous n’arrivons pas à vous joindre par téléphone.",
       "wilaya": "Wilaya",
       "wilayaPlaceholder": "Choisissez votre wilaya",
       "commune": "Commune",
@@ -826,7 +826,8 @@
       "cod": "Paiement en espèces à la livraison. Rien à payer maintenant."
     },
     "actions": {
-      "review": "Vérifier ma commande",
+      "continue": "Continuer",
+      "back": "Retour",
       "edit": "Modifier",
       "confirm": "Confirmer la commande",
       "confirming": "Envoi en cours…"
@@ -879,7 +880,14 @@
       "backHome": "Retour à l’accueil",
       "nextTitle": "Et maintenant",
       "activateLink": "Créer mon compte dès maintenant"
-    }
+    },
+    "steps": {
+      "quantity": "Combien d’autocollants ?",
+      "contact": "Vos coordonnées",
+      "delivery": "Livraison",
+      "review": "Vérifier et confirmer"
+    },
+    "progress": "Étape {step} sur {total}"
   },
   "auth": {
     "fields": {

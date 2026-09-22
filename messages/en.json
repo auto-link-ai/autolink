@@ -805,7 +805,7 @@
       "phone": "Phone",
       "phoneHint": "Algerian mobile, e.g. 05 12 34 56 78",
       "email": "Email (optional)",
-      "emailHint": "To receive the confirmation in writing.",
+      "emailHint": "Optional. Useful if we cannot reach you by phone.",
       "wilaya": "Wilaya",
       "wilayaPlaceholder": "Choose your wilaya",
       "commune": "Commune",
@@ -826,7 +826,8 @@
       "cod": "Cash on delivery. Nothing to pay now."
     },
     "actions": {
-      "review": "Review my order",
+      "continue": "Continue",
+      "back": "Back",
       "edit": "Edit",
       "confirm": "Confirm order",
       "confirming": "Sending…"
@@ -879,7 +880,14 @@
       "backHome": "Back to home",
       "nextTitle": "What happens next",
       "activateLink": "Create my account now"
-    }
+    },
+    "steps": {
+      "quantity": "How many stickers?",
+      "contact": "Your details",
+      "delivery": "Delivery",
+      "review": "Check and confirm"
+    },
+    "progress": "Step {step} of {total}"
   },
   "auth": {
     "fields": {

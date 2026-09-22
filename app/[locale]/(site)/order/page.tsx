@@ -7,7 +7,9 @@ import { routing } from '@/i18n/routing';
 import { getSettings } from '@/lib/config/settings';
 import { wilayasRepository } from '@/lib/db/repositories/wilayas';
 import { pageMetadata } from '@/lib/site/seo';
-import { OrderForm, type OrderFormLabels } from './OrderForm';
+import { OrderForm } from './OrderForm';
+import type { OrderFormLabels } from './orderLabels';
+import { ORDER_STEPS } from './orderSteps';
 
 // Price, delivery fees and the wilaya list come from the database.
 export const dynamic = 'force-dynamic';
@@ -63,8 +65,16 @@ export default async function OrderPage({ params }: Props) {
       total: t('summary.total'),
       cod: t('summary.cod'),
     },
+    steps: {
+      quantity: t('steps.quantity'),
+      contact: t('steps.contact'),
+      delivery: t('steps.delivery'),
+      review: t('steps.review'),
+    },
+    progress: ORDER_STEPS.map((_, index) => t('progress', { step: index + 1, total: ORDER_STEPS.length })),
     actions: {
-      review: t('actions.review'),
+      continue: t('actions.continue'),
+      back: t('actions.back'),
       edit: t('actions.edit'),
       confirm: t('actions.confirm'),
       confirming: t('actions.confirming'),

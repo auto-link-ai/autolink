@@ -55,18 +55,40 @@ test.describe('ordering end to end', () => {
   let orderRef = '';
   let tagId = '';
 
-  test('a customer orders in Arabic and gets a confirmation', async ({ page }) => {
+  test('a step will not pass until what it asks for is filled in', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/ar/order');
+    // Straight past the contact step, as a hurried customer does.
+    await page.getByRole('button', { name: 'متابعة' }).click();
+    await expect(page.getByRole('heading', { name: 'معلوماتك' })).toBeVisible();
+
+    await page.getByRole('button', { name: 'متابعة' }).click();
+    // It says what is missing, on the field, and stays on this step.
+    await expect(page.getByText('هذا الحقل مطلوب.').or(page.getByText('النص قصير جدًا.')).first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'معلوماتك' })).toBeVisible();
+    await expect(page.getByLabel('الاسم الكامل')).toBeFocused();
+  });
+
+  test('a customer orders in Arabic, step by step, and gets a confirmation', async ({ page }) => {
     test.setTimeout(120_000);
     await page.goto('/ar/order');
 
+    await page.getByLabel('الكمية').selectOption('2');
+    await page.getByRole('button', { name: 'متابعة' }).click();
+
     await page.getByLabel('الاسم الكامل').fill('أمين بلقاسم');
     await page.getByLabel('رقم الهاتف', { exact: true }).fill(PHONE);
+    await page.getByRole('button', { name: 'متابعة' }).click();
+
     await page.getByLabel('الولاية', { exact: true }).selectOption('16');
     await page.getByLabel('البلدية').fill('باب الزوار');
     await page.getByLabel('العنوان').fill('حي 200 مسكن، عمارة ب');
-    await page.getByLabel('الكمية').selectOption('2');
+    await page.getByRole('button', { name: 'متابعة' }).click();
 
-    await page.getByRole('button', { name: 'مراجعة الطلب' }).click();
+    // The last step repeats everything before it is sent.
+    await expect(page.getByRole('heading', { name: 'التحقّق والتأكيد' })).toBeVisible();
+    await expect(page.getByText('أمين بلقاسم')).toBeVisible();
+    await expect(page.getByText('باب الزوار')).toBeVisible();
     await page.getByRole('button', { name: 'تأكيد الطلب' }).click();
 
     await expect(page).toHaveURL(/\/ar\/order\/AL-[0-9A-HJKMNP-TV-Z]{6}$/, { timeout: 60_000 });
@@ -135,4 +157,22 @@ test.describe('ordering end to end', () => {
     expect(csv).toContain(orderRef);
     expect(csv).toContain(NORMALIZED_PHONE);
   });
+});
+
+test('ordering works without JavaScript: every field at once, one submit', async ({ browser }) => {
+  test.skip(!EMAIL || !PASSWORD, 'Needs a disposable database.');
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto('/fr/order');
+
+  await page.getByLabel('Quantité').selectOption('1');
+  await page.getByLabel('Nom et prénom').fill('Yasmine Haddad');
+  await page.getByLabel('Téléphone', { exact: true }).fill('0661 22 33 44');
+  await page.getByLabel('Wilaya', { exact: true }).selectOption('31');
+  await page.getByLabel('Commune').fill('Bir El Djir');
+  await page.getByLabel('Adresse').fill('Cité des Oliviers, bât. C');
+  await page.getByRole('button', { name: 'Confirmer la commande' }).click();
+
+  await expect(page).toHaveURL(/\/fr\/order\/AL-[0-9A-HJKMNP-TV-Z]{6}$/, { timeout: 60_000 });
+  await context.close();
 });
