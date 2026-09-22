@@ -442,16 +442,12 @@
       "secondary": "How it works",
       "price": "<b>{price}</b> · one payment, cash on delivery",
       "chips": {
-        "scan": {
-          "title": "Someone blocking you in?",
-          "body": "They scan the sticker and you hear about it."
-        },
         "notify": {
           "title": "Something wrong with the car?",
           "body": "The alert reaches you right away."
         }
       },
-      "illustrationLabel": "An AutoLink sticker on the rear window of a car."
+      "illustrationLabel": "A phone scans the AutoLink sticker on a car’s windscreen and opens the page to warn the owner."
     },
     "steps": {
       "eyebrow": "Three steps",

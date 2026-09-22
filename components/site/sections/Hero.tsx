@@ -3,10 +3,12 @@ import Link from 'next/link';
 import { buttonClasses } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
 import type { PublicPricing } from '@/lib/site/pricing';
-import { CarIllustration } from '../illustrations/CarIllustration';
 import { NotificationCard } from '../illustrations/NotificationCard';
 import { ArrowDownIcon, ArrowIcon, BellIcon, BoltIcon, CashIcon, LockIcon, QrIcon, ScanIcon } from '../icons';
 import { href } from '../links';
+
+/** The hero photo's pre-generated widths (public/images/hero-scan-*.webp). */
+const PHOTO_WIDTHS = [640, 960, 1280, 1536] as const;
 
 /** What it promises, in words — never icons alone. */
 const TRUST = [
@@ -80,24 +82,35 @@ export async function Hero({ locale, pricing }: { locale: Locale; pricing: Publi
           </ul>
         </div>
 
-        {/* The sticker on a car, and the two moments it is for. */}
-        <figure className="relative mx-auto w-full max-w-130">
-          <div className="overflow-hidden rounded-xl shadow-card-lg">
-            <CarIllustration className="w-full" />
-          </div>
+        {/*
+          A real scan: the sticker on a windscreen and the page it opens; the
+          card adds the other half, the owner being told. Pre-sized WebP, so a
+          phone downloads ~40 KB, and no JavaScript. A photo is never mirrored,
+          so the card sits bottom-left in every language — clear of the phone.
+        */}
+        <figure className="relative mx-auto w-full max-w-150">
+          <picture>
+            <source
+              type="image/webp"
+              srcSet={PHOTO_WIDTHS.map((w) => `/images/hero-scan-${w}.webp ${w}w`).join(', ')}
+              sizes="(min-width: 1024px) 560px, calc(100vw - 2rem)"
+            />
+            <img
+              src="/images/hero-scan-1280.jpg"
+              alt={t('illustrationLabel')}
+              width={1536}
+              height={1024}
+              fetchPriority="high"
+              decoding="async"
+              className="aspect-3/2 w-full rounded-xl object-cover shadow-card-lg"
+            />
+          </picture>
           <NotificationCard
-            className="absolute -top-5 inset-s-2 w-[min(17rem,88%)] md:-inset-s-6"
-            icon={<ScanIcon className="h-5 w-5" />}
-            title={t('chips.scan.title')}
-            body={t('chips.scan.body')}
-          />
-          <NotificationCard
-            className="absolute -bottom-6 inset-e-2 w-[min(17rem,88%)] md:-inset-e-6"
+            className="absolute -bottom-6 left-3 w-[min(16rem,72%)] md:-left-6"
             icon={<BellIcon className="h-5 w-5" />}
             title={t('chips.notify.title')}
             body={t('chips.notify.body')}
           />
-          <figcaption className="sr-only">{t('illustrationLabel')}</figcaption>
         </figure>
       </div>
     </section>

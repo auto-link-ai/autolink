@@ -442,16 +442,12 @@
       "secondary": "Comment ça marche",
       "price": "<b>{price}</b> · paiement unique, à la livraison",
       "chips": {
-        "scan": {
-          "title": "Quelqu'un vous bloque ?",
-          "body": "Il scanne l'autocollant et vous prévient."
-        },
         "notify": {
           "title": "Un souci sur la voiture ?",
           "body": "Vous recevez l'alerte tout de suite."
         }
       },
-      "illustrationLabel": "Un autocollant AutoLink collé sur la vitre arrière d'une voiture."
+      "illustrationLabel": "Un téléphone scanne l’autocollant AutoLink collé sur le pare-brise d’une voiture et ouvre la page pour prévenir le propriétaire."
     },
     "steps": {
       "eyebrow": "En trois étapes",
