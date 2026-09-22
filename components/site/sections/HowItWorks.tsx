@@ -10,7 +10,7 @@ const STEPS = [
   { key: 'notify', Icon: BellIcon },
 ] as const;
 
-/** Three steps, from the sticker to the owner's phone. */
+/** Three steps, from the sticker to the owner's phone — each with its photo. */
 export async function HowItWorks({ locale, showMore = true }: { locale: Locale; showMore?: boolean }) {
   const t = await getTranslations('site.steps');
 
@@ -25,13 +25,30 @@ export async function HowItWorks({ locale, showMore = true }: { locale: Locale; 
 
         <ol className="mt-10 grid gap-5 md:grid-cols-3">
           {STEPS.map(({ key, Icon }, index) => (
-            <li key={key} className="rounded-lg bg-white p-7 shadow-card-sm">
+            <li key={key} className="flex flex-col rounded-lg bg-white p-5 shadow-card-sm md:p-6">
               <div className="flex items-center justify-between">
                 <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-soft text-accent">
                   <Icon className="h-6 w-6" />
                 </span>
-                <span className="font-mono text-sm font-bold text-text-muted">{String(index + 1).padStart(2, '0')}</span>
+                <span className="font-mono text-sm font-bold text-accent">{String(index + 1).padStart(2, '0')}</span>
               </div>
+              {/* Pre-sized WebP (8–40 KB), loaded only as the steps come into view. */}
+              <picture className="mt-4 block overflow-hidden rounded-2xl bg-surface-3">
+                <source
+                  type="image/webp"
+                  srcSet={`/images/step-${key}-400.webp 400w, /images/step-${key}-800.webp 800w`}
+                  sizes="(min-width: 768px) 360px, calc(100vw - 4.5rem)"
+                />
+                <img
+                  src={`/images/step-${key}-800.jpg`}
+                  alt={t(`items.${key}.imageAlt`)}
+                  width={800}
+                  height={533}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-3/2 w-full object-cover"
+                />
+              </picture>
               <h3 className="mt-5 text-h3 text-text">{t(`items.${key}.title`)}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-text-secondary">{t(`items.${key}.body`)}</p>
             </li>

@@ -456,15 +456,18 @@
       "items": {
         "stick": {
           "title": "Stick it on",
-          "body": "On a window, clearly visible from outside. You activate it once with the private code supplied."
+          "body": "On a window, clearly visible from outside. You activate it once with the private code supplied.",
+          "imageAlt": "Someone sticking the AutoLink sticker on a windscreen."
         },
         "scan": {
           "title": "Someone scans it",
-          "body": "They open their phone camera, pick the reason and add a note if they want."
+          "body": "They open their phone camera, pick the reason and add a note if they want.",
+          "imageAlt": "A phone scanning the sticker and opening the AutoLink page."
         },
         "notify": {
           "title": "You get the alert",
-          "body": "The message reaches your phone and your dashboard. Your number was never shown."
+          "body": "The message reaches your phone and your dashboard. Your number was never shown.",
+          "imageAlt": "The AutoLink notification on a phone’s lock screen: “Lights are on”."
         }
       },
       "more": "See the full detail"

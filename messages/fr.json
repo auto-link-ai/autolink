@@ -456,15 +456,18 @@
       "items": {
         "stick": {
           "title": "Collez l'autocollant",
-          "body": "Sur une vitre, bien visible de l'extérieur. Vous l'activez une seule fois avec le code privé fourni."
+          "body": "Sur une vitre, bien visible de l'extérieur. Vous l'activez une seule fois avec le code privé fourni.",
+          "imageAlt": "Une personne colle l’autocollant AutoLink sur le pare-brise."
         },
         "scan": {
           "title": "On le scanne",
-          "body": "La personne ouvre l'appareil photo de son téléphone, choisit la raison et écrit un mot si elle veut."
+          "body": "La personne ouvre l'appareil photo de son téléphone, choisit la raison et écrit un mot si elle veut.",
+          "imageAlt": "Un téléphone scanne l’autocollant et ouvre la page AutoLink."
         },
         "notify": {
           "title": "Vous êtes prévenu",
-          "body": "Le message arrive sur votre téléphone et dans votre espace personnel. Votre numéro n’a jamais été montré."
+          "body": "Le message arrive sur votre téléphone et dans votre espace personnel. Votre numéro n’a jamais été montré.",
+          "imageAlt": "La notification AutoLink sur l’écran verrouillé d’un téléphone : « Phares allumés »."
         }
       },
       "more": "Tout le détail"
