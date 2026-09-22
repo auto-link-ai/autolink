@@ -517,13 +517,7 @@
         "notify": "Envoi immédiat, sans aucune donnée personnelle affichée."
       },
       "screen": {
-        "heading": "Un problème avec cette voiture ?",
-        "subheading": "Prévenez le propriétaire, il reçoit l'alerte tout de suite.",
-        "vehicle": "Peugeot 208 · Bleu",
-        "question": "Que se passe-t-il ?",
-        "noteLabel": "Message (facultatif)",
-        "notePlaceholder": "Vos phares sont allumés depuis un moment.",
-        "send": "Envoyer l'alerte"
+        "vehicle": "Peugeot 208 · Bleu"
       }
     },
     "pricing": {

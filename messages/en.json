@@ -517,13 +517,7 @@
         "notify": "Sent immediately, with no personal details on screen."
       },
       "screen": {
-        "heading": "Something wrong with this car?",
-        "subheading": "Tell the owner — they get the alert right away.",
-        "vehicle": "Peugeot 208 · Blue",
-        "question": "What is happening?",
-        "noteLabel": "Note (optional)",
-        "notePlaceholder": "Your headlights have been on for a while.",
-        "send": "Send the alert"
+        "vehicle": "Peugeot 208 · Blue"
       }
     },
     "pricing": {
