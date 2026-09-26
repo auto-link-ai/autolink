@@ -101,16 +101,17 @@ export function OwnerBar({ locale, items, label }: { locale: Locale; items: Owne
               <PendingLink
                 href={item.href}
                 aria-current={current}
+                // Orange like the site's other links; the current one also sits on a soft pill.
                 className={cx(
-                  'relative flex min-h-16 flex-col items-center justify-center gap-1 px-2 pt-2 pb-1.5 text-[13px] font-bold',
-                  current ? 'text-text' : 'text-text-secondary',
+                  'relative flex min-h-16 flex-col items-center justify-center gap-1 px-2 pt-2 pb-1.5 text-[13px] text-accent',
+                  current ? 'font-bold' : 'font-semibold',
                 )}
                 spinnerClassName="absolute top-2.5 inset-e-3 h-3.5 w-3.5"
               >
                 <span
                   className={cx(
                     'relative inline-flex h-8 w-16 items-center justify-center rounded-full transition-colors',
-                    current && 'bg-accent-soft text-accent',
+                    current && 'bg-accent-soft',
                   )}
                 >
                   <Icon className="h-6 w-6" />
