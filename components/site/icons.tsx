@@ -71,6 +71,13 @@ export const BookIcon = (p: IconProps) => (
     <path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M14 3v6l-2-1.5L10 9V3" />
   </Icon>
 );
+/** The account: a head and shoulders. */
+export const UserIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4.5 20.5a7.5 7.5 0 0 1 15 0" />
+  </Icon>
+);
 export const ScanIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M4 12h16" />

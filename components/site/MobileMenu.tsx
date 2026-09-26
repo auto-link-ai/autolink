@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import { buttonClasses } from '@/components/ui/Button';
-import { CrossIcon, MenuIcon } from './icons';
+import { CrossIcon, MenuIcon, UserIcon } from './icons';
 
 export interface NavItem {
   href: string;
@@ -13,11 +13,22 @@ export interface NavItem {
   badge?: number;
 }
 
+export interface MenuAccount {
+  /** "Connecté": beside the icon from 1024px, and part of the button's name. */
+  label: string;
+  /** The button's name for a screen reader: "Mon compte". */
+  name: string;
+  /** Who is signed in, and the sign-out form: the top of the menu. */
+  panel: ReactNode;
+}
+
 /**
  * Small-screen menu. It remembers the path it was opened on, so any
  * navigation closes it without an effect. Escape closes it too.
  * `always` keeps it on wide screens as well (a signed-in owner's header has
  * their own links to show, so the public pages move in here).
+ * With `account`, the button becomes the account button: a person with a
+ * green dot, the sign that you are signed in, and the menu opens on who.
  */
 export function MobileMenu({
   items,
@@ -27,6 +38,7 @@ export function MobileMenu({
   orderLabel,
   footer,
   always = false,
+  account,
 }: {
   items: NavItem[];
   openLabel: string;
@@ -35,6 +47,7 @@ export function MobileMenu({
   orderLabel: string;
   footer: ReactNode;
   always?: boolean;
+  account?: MenuAccount;
 }) {
   const pathname = usePathname();
   const [openedAt, setOpenedAt] = useState<string | null>(null);
@@ -49,10 +62,31 @@ export function MobileMenu({
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={() => setOpenedAt(open ? null : pathname)}
-        className="relative inline-flex h-11 w-11 items-center justify-center rounded-full bg-surface-3 text-text transition-colors hover:bg-accent-soft"
+        className={
+          account
+            ? 'relative inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-full bg-surface-3 text-text transition-colors hover:bg-accent-soft lg:px-4'
+            : 'relative inline-flex h-11 w-11 items-center justify-center rounded-full bg-surface-3 text-text transition-colors hover:bg-accent-soft'
+        }
       >
-        {open ? <CrossIcon /> : <MenuIcon />}
-        <span className="sr-only">{open ? closeLabel : openLabel}</span>
+        {open ? (
+          <CrossIcon />
+        ) : account ? (
+          <span className="relative">
+            <UserIcon />
+            <span
+              aria-hidden="true"
+              className="absolute -end-1 -bottom-0.5 h-2.5 w-2.5 rounded-full bg-success ring-2 ring-surface-3"
+            />
+          </span>
+        ) : (
+          <MenuIcon />
+        )}
+        {account && (
+          <span aria-hidden="true" className="hidden text-[15px] font-bold whitespace-nowrap lg:inline">
+            {account.label}
+          </span>
+        )}
+        <span className="sr-only">{open ? closeLabel : account ? `${account.name}, ${account.label}` : openLabel}</span>
         {waiting && !open && (
           <span aria-hidden="true" className="absolute inset-e-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-white" />
         )}
@@ -64,6 +98,12 @@ export function MobileMenu({
         onKeyDown={(event) => event.key === 'Escape' && setOpenedAt(null)}
         className="absolute inset-x-0 top-[calc(100%+0.5rem)] rounded-3xl bg-white p-3 shadow-card-lg lg:inset-x-auto lg:inset-e-0 lg:w-80"
       >
+        {account && (
+          // Signing out closes the menu; the form carries on in the background.
+          <div onSubmit={() => setOpenedAt(null)} className="mb-2 border-b border-border px-4 pt-2 pb-4">
+            {account.panel}
+          </div>
+        )}
         <nav className="flex flex-col">
           {items.map((item) => (
             <Link

@@ -252,6 +252,29 @@ test.describe('the car book', () => {
     await page.close();
   });
 
+  test('the header says who is signed in, and signs them out', async ({ browser }) => {
+    test.setTimeout(120_000);
+    // An account of its own: signing out here must not end the owner's session used after.
+    const who = { email: `e2e-book-out-${run}@example.dz`, password: 'e2e-sign-out-password' };
+    const context = await register(browser, who);
+    const page = await context.newPage();
+    await page.goto('/en/faq');
+
+    const account = page.getByRole('banner').getByRole('button', { name: 'My account, Signed in' });
+    await expect(account).toBeVisible();
+    await account.click();
+    const menu = page.locator('#mobile-menu');
+    await expect(menu).toContainText('Signed in as');
+    await expect(menu).toContainText(who.email);
+
+    await menu.getByRole('button', { name: 'Sign out' }).click();
+    await expect(page).toHaveURL(/\/en$/);
+    await expect(page.getByRole('banner').getByRole('button', { name: 'Open menu' })).toBeVisible();
+    await page.goto('/en/dashboard');
+    await expect(page).toHaveURL(/\/en\/login/);
+    await context.close();
+  });
+
   test('scanning their own sticker shows the owner their car, not the message form', async () => {
     const page = await owner.newPage();
     await page.goto(`/t/${tagId}`);

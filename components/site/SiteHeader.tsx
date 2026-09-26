@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
+import { signOutAction } from '@/app/[locale]/(site)/_auth/actions';
 import { Wordmark } from '@/components/Wordmark';
 import { buttonClasses } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
@@ -11,7 +12,7 @@ import { messagesRepository } from '@/lib/db/repositories/messages';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { href } from './links';
 import { BackButton } from './BackButton';
-import { MobileMenu, type NavItem } from './MobileMenu';
+import { MobileMenu, type MenuAccount, type NavItem } from './MobileMenu';
 import { OwnerBar, OwnerTabs, type OwnerNavItem } from './OwnerNav';
 
 /** The numbers on the owner's two tabs. A failed count shows no badge, never an error. */
@@ -25,13 +26,41 @@ async function ownerCounts(session: OwnerSession) {
   return { unread, due };
 }
 
+/** Top of the menu, signed in: who, and the way out. The email is only ever shown to its owner. */
+async function accountOf(session: OwnerSession, locale: Locale): Promise<MenuAccount> {
+  const [t, tDashboard] = await Promise.all([getTranslations('site.nav'), getTranslations('dashboard')]);
+  return {
+    label: t('signedIn'),
+    name: t('account'),
+    panel: (
+      <>
+        <p className="flex items-center gap-2 text-sm font-semibold text-success">
+          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-success" />
+          {t('signedInAs')}
+        </p>
+        <p dir="ltr" className="mt-0.5 truncate text-[15px] font-bold text-text rtl:text-end">
+          {session.email}
+        </p>
+        <form action={signOutAction} className="mt-3">
+          <input type="hidden" name="locale" value={locale} />
+          <button type="submit" className={buttonClasses('secondary', 'sm', 'w-full')}>
+            {tDashboard('signOut')}
+          </button>
+        </form>
+      </>
+    ),
+  };
+}
+
 /** Floating white pill that stays with the page as it scrolls. */
 export async function SiteHeader({ locale }: { locale: Locale }) {
   const t = await getTranslations('site.nav');
   const common = await getTranslations('common');
   const session = await getOwnerSession();
   // Shown on every page, so a new message or a date coming up is noticed without looking for it.
-  const counts = session ? await ownerCounts(session) : null;
+  const [counts, account] = session
+    ? await Promise.all([ownerCounts(session), accountOf(session, locale)])
+    : [null, undefined];
   const ownerItems: OwnerNavItem[] = counts
     ? [
         {
@@ -121,6 +150,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                 orderLabel={t('order')}
                 footer={<LanguageSwitcher current={locale} label={common('languageSwitcherLabel')} />}
                 always={Boolean(session)}
+                account={account}
               />
             </div>
           </div>
