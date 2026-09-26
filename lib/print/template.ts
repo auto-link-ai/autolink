@@ -14,7 +14,9 @@ import { z } from 'zod';
 const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/);
 
 export const stickerLayoutSchema = z.object({
-  trimMm: z.number().positive().max(300),
+  /** The finished sticker: width × height, in mm. */
+  trimWidthMm: z.number().positive().max(300),
+  trimHeightMm: z.number().positive().max(300),
   bleedMm: z.number().min(0).max(10),
   safeMm: z.number().min(0).max(20),
   qr: z.object({
@@ -49,12 +51,13 @@ export class PrintTemplateError extends Error {}
 /** Geometry checks that don't depend on the QR content. */
 export function validateLayout(layout: StickerLayout): string[] {
   const errors: string[] = [];
-  const { trimMm, safeMm, qr, tagId } = layout;
-  const max = trimMm - safeMm;
-  if (qr.xMm < safeMm || qr.yMm < safeMm || qr.xMm + qr.sizeMm > max || qr.yMm + qr.sizeMm > max) {
-    errors.push(`QR box must sit inside the ${safeMm}mm safe zone of the ${trimMm}mm sticker.`);
+  const { trimWidthMm, trimHeightMm, safeMm, qr, tagId } = layout;
+  const maxX = trimWidthMm - safeMm;
+  const maxY = trimHeightMm - safeMm;
+  if (qr.xMm < safeMm || qr.yMm < safeMm || qr.xMm + qr.sizeMm > maxX || qr.yMm + qr.sizeMm > maxY) {
+    errors.push(`QR box must sit inside the ${safeMm}mm safe zone of the ${trimWidthMm}×${trimHeightMm}mm sticker.`);
   }
-  if (tagId && (tagId.xMm > trimMm || tagId.yMm > max || tagId.yMm < safeMm)) {
+  if (tagId && (tagId.xMm > trimWidthMm || tagId.yMm > maxY || tagId.yMm < safeMm)) {
     errors.push('Tag ID position is outside the safe zone.');
   }
   return errors;

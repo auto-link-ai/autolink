@@ -7,7 +7,8 @@ import {
   type PDFFont,
   type PDFPage,
 } from 'pdf-lib';
-import { loadBrandLogo, type BrandLogo } from './logo';
+import { drawBuiltInDesign, type Rect } from './builtInDesign';
+import { loadBrandMark, loadBrandWordmark, type BrandLogo } from './logo';
 import { QR_QUIET_ZONE_MODULES, qrMatrix } from './qr';
 import { PrintTemplateError, assertModuleSize, type PrintTemplate, type StickerLayout } from './template';
 import { mm } from './units';
@@ -20,8 +21,6 @@ export const CROP_MARK_SPACE_MM = CROP_MARK.offsetMm + CROP_MARK.lengthMm;
 // 100% K for the code and marks: no registration blur between inks.
 const K100 = cmyk(0, 0, 0, 1);
 const PAPER = cmyk(0, 0, 0, 0);
-const NAVY = rgb(11 / 255, 18 / 255, 32 / 255);
-const BLUE = rgb(37 / 255, 99 / 255, 235 / 255);
 
 export interface StickerContent {
   publicTagId: string;
@@ -32,20 +31,19 @@ export interface StickerResources {
   layout: StickerLayout;
   artwork: PDFEmbeddedPage | null;
   bold: PDFFont;
-  /** Null when the artwork file is unreadable; the placeholder then uses type. */
-  logo: BrandLogo | null;
+  /** Null when a logo file is unreadable; the built-in design then uses type. */
+  mark: BrandLogo | null;
+  wordmark: BrandLogo | null;
 }
-
-/** The lockup on the placeholder sticker: width and top margin, in mm. */
-const BUILT_IN_LOGO = { widthMm: 38, topMm: 3 } as const;
 
 export interface Point {
   x: number;
   y: number;
 }
 
-export function artboardMm(layout: StickerLayout): number {
-  return layout.trimMm + 2 * layout.bleedMm;
+/** Trim plus bleed on every side, in mm. */
+export function artboardMm(layout: StickerLayout): { width: number; height: number } {
+  return { width: layout.trimWidthMm + 2 * layout.bleedMm, height: layout.trimHeightMm + 2 * layout.bleedMm };
 }
 
 /** Embeds fonts and the designer artwork (once per document). */
@@ -68,45 +66,33 @@ export async function prepareStickerResources(
     }
     const expected = artboardMm(layout);
     const tolerance = mm(0.5);
-    if (!page || Math.abs(page.width - mm(expected)) > tolerance || Math.abs(page.height - mm(expected)) > tolerance) {
+    if (
+      !page ||
+      Math.abs(page.width - mm(expected.width)) > tolerance ||
+      Math.abs(page.height - mm(expected.height)) > tolerance
+    ) {
       const got = page ? `${(page.width / mm(1)).toFixed(1)}×${(page.height / mm(1)).toFixed(1)}mm` : 'no page';
       throw new PrintTemplateError(
-        `Artwork must be ${expected}×${expected}mm (${layout.trimMm}mm + ${layout.bleedMm}mm bleed each side); got ${got}.`,
+        `Artwork must be ${expected.width}×${expected.height}mm (${layout.trimWidthMm}×${layout.trimHeightMm}mm + ${layout.bleedMm}mm bleed each side); got ${got}.`,
       );
     }
     artwork = page;
   }
-  return { layout, artwork, bold, logo: await loadBrandLogo() };
+  const [mark, wordmark] = await Promise.all([loadBrandMark(), loadBrandWordmark()]);
+  return { layout, artwork, bold, mark, wordmark };
 }
 
 function trimBox(layout: StickerLayout, origin: Point) {
   const left = origin.x + mm(layout.bleedMm);
   const bottom = origin.y + mm(layout.bleedMm);
-  const size = mm(layout.trimMm);
-  return { left, bottom, right: left + size, top: bottom + size };
+  const width = mm(layout.trimWidthMm);
+  const height = mm(layout.trimHeightMm);
+  return { left, bottom, width, height, right: left + width, top: bottom + height };
 }
 
-/** Plain placeholder design used until a designer template is supplied. */
-function drawBuiltInBackground(page: PDFPage, res: StickerResources, origin: Point): void {
-  const art = mm(artboardMm(res.layout));
-  page.drawRectangle({ x: origin.x, y: origin.y, width: art, height: art, color: PAPER });
-
-  const trim = trimBox(res.layout, origin);
-  if (res.logo) {
-    const width = mm(BUILT_IN_LOGO.widthMm);
-    const x = trim.left + (mm(res.layout.trimMm) - width) / 2;
-    res.logo.draw(page, { x, y: trim.top - mm(BUILT_IN_LOGO.topMm), width });
-    return;
-  }
-
-  const size = 20;
-  const auto = 'Auto';
-  const link = 'Link';
-  const width = res.bold.widthOfTextAtSize(auto + link, size);
-  const x = trim.left + (mm(res.layout.trimMm) - width) / 2;
-  const y = trim.top - mm(13);
-  page.drawText(auto, { x, y, size, font: res.bold, color: NAVY });
-  page.drawText(link, { x: x + res.bold.widthOfTextAtSize(auto, size), y, size, font: res.bold, color: BLUE });
+function artboardRect(layout: StickerLayout, origin: Point): Rect {
+  const art = artboardMm(layout);
+  return { left: origin.x, bottom: origin.y, width: mm(art.width), height: mm(art.height) };
 }
 
 function drawQr(page: PDFPage, res: StickerResources, content: StickerContent, origin: Point): void {
@@ -168,10 +154,10 @@ function drawTagId(page: PDFPage, res: StickerResources, content: StickerContent
 /** Draws one sticker with its artboard's bottom-left corner at `origin` (points). */
 export function drawSticker(page: PDFPage, res: StickerResources, content: StickerContent, origin: Point): void {
   if (res.artwork) {
-    const art = mm(artboardMm(res.layout));
-    page.drawPage(res.artwork, { x: origin.x, y: origin.y, width: art, height: art });
+    const art = artboardRect(res.layout, origin);
+    page.drawPage(res.artwork, { x: art.left, y: art.bottom, width: art.width, height: art.height });
   } else {
-    drawBuiltInBackground(page, res, origin);
+    drawBuiltInDesign(page, res, artboardRect(res.layout, origin), trimBox(res.layout, origin));
   }
   drawQr(page, res, content, origin);
   drawTagId(page, res, content, origin);
@@ -204,17 +190,13 @@ export async function renderStickerPdf(template: PrintTemplate, content: Sticker
 
   const margin = CROP_MARK_SPACE_MM + 3;
   const art = artboardMm(template.layout);
-  const page = doc.addPage([mm(art + 2 * margin), mm(art + 2 * margin)]);
+  const page = doc.addPage([mm(art.width + 2 * margin), mm(art.height + 2 * margin)]);
   const origin = { x: mm(margin), y: mm(margin) };
 
   drawSticker(page, res, content, origin);
   drawCropMarks(page, template.layout, origin);
-  page.setBleedBox(origin.x, origin.y, mm(art), mm(art));
-  page.setTrimBox(
-    origin.x + mm(template.layout.bleedMm),
-    origin.y + mm(template.layout.bleedMm),
-    mm(template.layout.trimMm),
-    mm(template.layout.trimMm),
-  );
+  const trim = trimBox(template.layout, origin);
+  page.setBleedBox(origin.x, origin.y, mm(art.width), mm(art.height));
+  page.setTrimBox(trim.left, trim.bottom, trim.width, trim.height);
   return doc.save();
 }

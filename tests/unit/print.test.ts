@@ -12,6 +12,7 @@ import { buildBatchZip } from '@/lib/print/batchZip';
 import { toTagsCsv } from '@/lib/print/csv';
 import { gangGrid, renderPrintSheet } from '@/lib/print/printSheet';
 import { QR_QUIET_ZONE_MODULES, qrMatrix } from '@/lib/print/qr';
+import { cornerRadiusMm } from '@/lib/print/builtInDesign';
 import { CROP_MARK_SPACE_MM, renderStickerPdf } from '@/lib/print/sticker';
 import {
   assertModuleSize,
@@ -45,9 +46,9 @@ describe('QR', () => {
 });
 
 describe('template', () => {
-  it('the repo template is valid: 100mm trim, 3mm bleed, QR modules ≥ 1.2mm', async () => {
+  it('the repo template is valid: 80 × 113mm trim, 3mm bleed, QR modules ≥ 1.2mm', async () => {
     const { layout, artworkPdf } = await repoTemplate();
-    expect(layout.trimMm).toBe(100);
+    expect([layout.trimWidthMm, layout.trimHeightMm]).toEqual([80, 113]);
     expect(layout.bleedMm).toBe(3);
     expect(artworkPdf).toBeNull();
     expect(assertModuleSize(layout, qrMatrix(URL_).size, QR_QUIET_ZONE_MODULES)).toBeGreaterThanOrEqual(1.2);
@@ -66,7 +67,8 @@ describe('template', () => {
 
   it('rejects artwork paths that could escape the folder', () => {
     const parsed = stickerLayoutSchema.safeParse({
-      trimMm: 100,
+      trimWidthMm: 80,
+      trimHeightMm: 113,
       bleedMm: 3,
       safeMm: 4,
       qr: { xMm: 18, yMm: 18, sizeMm: 64 },
@@ -87,7 +89,7 @@ describe('template', () => {
   it('accepts correctly sized artwork', async () => {
     const template = await repoTemplate();
     const art = await PDFDocument.create();
-    art.addPage([mm(106), mm(106)]).drawRectangle({ x: 0, y: 0, width: 10, height: 10 });
+    art.addPage([mm(86), mm(119)]).drawRectangle({ x: 0, y: 0, width: 10, height: 10 });
     const pdf = await renderStickerPdf({ ...template, artworkPdf: await art.save() }, entry(1));
     expect((await PDFDocument.load(pdf)).getPageCount()).toBe(1);
   });
@@ -95,7 +97,7 @@ describe('template', () => {
   it('turns unreadable artwork into a template error, not a crash', async () => {
     const template = await repoTemplate();
     const blank = await PDFDocument.create();
-    blank.addPage([mm(106), mm(106)]); // no content stream
+    blank.addPage([mm(86), mm(119)]); // right size, no content stream
     await expect(renderStickerPdf({ ...template, artworkPdf: await blank.save() }, entry(1))).rejects.toThrow(
       PrintTemplateError,
     );
@@ -106,18 +108,26 @@ describe('template', () => {
 });
 
 describe('PDFs', () => {
-  it('sticker page = artboard + crop-mark margin, with TrimBox 100mm', async () => {
+  it('sticker page = artboard + crop-mark margin, with TrimBox 80 × 113mm', async () => {
     const pdf = await PDFDocument.load(await renderStickerPdf(await repoTemplate(), entry(1)));
     const page = pdf.getPage(0);
-    const expected = mm(106 + 2 * (CROP_MARK_SPACE_MM + 3));
-    expect(page.getWidth()).toBeCloseTo(expected, 1);
-    expect(page.getTrimBox().width).toBeCloseTo(mm(100), 1);
-    expect(page.getBleedBox().width).toBeCloseTo(mm(106), 1);
+    const margin = 2 * (CROP_MARK_SPACE_MM + 3);
+    expect(page.getWidth()).toBeCloseTo(mm(86 + margin), 1);
+    expect(page.getHeight()).toBeCloseTo(mm(119 + margin), 1);
+    expect(page.getTrimBox().width).toBeCloseTo(mm(80), 1);
+    expect(page.getTrimBox().height).toBeCloseTo(mm(113), 1);
+    expect(page.getBleedBox().height).toBeCloseTo(mm(119), 1);
   });
 
-  it('gang sheet fits 2 × 100mm stickers per A4 page', async () => {
-    expect(gangGrid(106).perPage).toBe(2);
-    expect(gangGrid(56).perPage).toBe(6); // a 50mm sticker: 2 × 3
+  it('the rounded corners scale with the sticker: 9.5mm at 80mm wide', () => {
+    expect(cornerRadiusMm(80)).toBe(9.5);
+    expect(cornerRadiusMm(100)).toBe(11.9);
+  });
+
+  it('gang sheet fits 2 of the 80 × 113mm stickers per A4 page', async () => {
+    expect(gangGrid({ width: 86, height: 119 })).toMatchObject({ cols: 1, rows: 2, perPage: 2 });
+    expect(gangGrid({ width: 106, height: 106 }).perPage).toBe(2);
+    expect(gangGrid({ width: 56, height: 56 }).perPage).toBe(6); // a 50mm square: 2 × 3
     const pdf = await PDFDocument.load(await renderPrintSheet(await repoTemplate(), [1, 2, 3].map(entry)));
     expect(pdf.getPageCount()).toBe(2);
   });
@@ -179,6 +189,10 @@ describe('CSV and ZIP', () => {
         'tags.csv',
       ].sort(),
     );
+    // The printer is told the size and the rounded cut.
+    const readme = await zip.file('README.txt')!.async('string');
+    expect(readme).toContain('80×113 mm');
+    expect(readme).toContain('9.5 mm');
     const svg = await zip.file('qr/AUT-7K3M9QX1.svg')!.async('string');
     expect(svg).toContain('<svg');
     // QR content is the public URL only: the activation code must not be in the QR files.

@@ -13,17 +13,18 @@ import { A4_MM, mm } from './units';
 const PAGE_MARGIN_MM = 10;
 
 /** How many stickers fit on an A4 page, with room for every sticker's crop marks. */
-export function gangGrid(artMm: number) {
-  const cell = artMm + 2 * CROP_MARK_SPACE_MM;
-  const cols = Math.floor((A4_MM.width - 2 * PAGE_MARGIN_MM) / cell);
-  const rows = Math.floor((A4_MM.height - 2 * PAGE_MARGIN_MM) / cell);
+export function gangGrid(art: { width: number; height: number }) {
+  const cellWidth = art.width + 2 * CROP_MARK_SPACE_MM;
+  const cellHeight = art.height + 2 * CROP_MARK_SPACE_MM;
+  const cols = Math.floor((A4_MM.width - 2 * PAGE_MARGIN_MM) / cellWidth);
+  const rows = Math.floor((A4_MM.height - 2 * PAGE_MARGIN_MM) / cellHeight);
   if (cols < 1 || rows < 1) {
-    throw new PrintTemplateError(`A ${artMm}mm artboard does not fit on A4 with crop marks.`);
+    throw new PrintTemplateError(`A ${art.width}×${art.height}mm artboard does not fit on A4 with crop marks.`);
   }
   // Centre the grid on the page.
-  const offsetX = (A4_MM.width - cols * cell) / 2 + CROP_MARK_SPACE_MM;
-  const offsetY = (A4_MM.height - rows * cell) / 2 + CROP_MARK_SPACE_MM;
-  return { cols, rows, cell, offsetX, offsetY, perPage: cols * rows };
+  const offsetX = (A4_MM.width - cols * cellWidth) / 2 + CROP_MARK_SPACE_MM;
+  const offsetY = (A4_MM.height - rows * cellHeight) / 2 + CROP_MARK_SPACE_MM;
+  return { cols, rows, cellWidth, cellHeight, offsetX, offsetY, perPage: cols * rows };
 }
 
 /** `print-sheet.pdf`: stickers ganged on A4 for cheap local printing. */
@@ -43,8 +44,8 @@ export async function renderPrintSheet(template: PrintTemplate, contents: Sticke
     const row = Math.floor(slot / grid.cols);
     // Fill top to bottom: PDF y grows upwards.
     const origin = {
-      x: mm(grid.offsetX + col * grid.cell),
-      y: mm(A4_MM.height - grid.offsetY - (row + 1) * grid.cell + 2 * CROP_MARK_SPACE_MM),
+      x: mm(grid.offsetX + col * grid.cellWidth),
+      y: mm(A4_MM.height - grid.offsetY - (row + 1) * grid.cellHeight + 2 * CROP_MARK_SPACE_MM),
     };
     drawSticker(page, res, content, origin);
     drawCropMarks(page, template.layout, origin);
