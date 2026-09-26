@@ -79,7 +79,7 @@ test.describe('the car book', () => {
     await page.getByRole('button', { name: 'Activate the sticker' }).click();
     await expect(page).toHaveURL(/\/en\/dashboard\?activated=/, { timeout: 60_000 });
 
-    // One car: "Car book" in the menu goes straight to it.
+    // One car: the "Car book" tab goes straight to it.
     await page.getByRole('link', { name: 'Car book', exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/en/dashboard/car/${tagId}$`));
     await expect(page.getByRole('heading', { name: 'Car book', level: 1 })).toBeVisible();
@@ -211,6 +211,44 @@ test.describe('the car book', () => {
 
     await page.goto('/en/dashboard');
     await expect(page.getByText(/Insurance: .*days late/)).toBeVisible();
+    await page.close();
+  });
+
+  test('the stickers and the car book are one tap apart: tabs on a computer, a bar on a phone', async () => {
+    test.setTimeout(120_000);
+    const page = await owner.newPage();
+
+    // A computer: two tabs in the header, the current one marked, a badge for what is due.
+    await page.goto('/en/dashboard');
+    const tabs = page.getByRole('navigation', { name: 'My space' });
+    await expect(tabs.getByRole('link', { name: /^My stickers/ })).toHaveAttribute('aria-current', 'page');
+    const bookTab = tabs.getByRole('link', { name: /^Car book\s*\d+ dates? coming up or passed$/ });
+    await expect(bookTab).not.toHaveAttribute('aria-current');
+    await bookTab.click();
+    await expect(page).toHaveURL(new RegExp(`/en/dashboard/car/${tagId}$`));
+    await expect(tabs.getByRole('link', { name: /^Car book/ })).toHaveAttribute('aria-current', 'true');
+    await expect(tabs.getByRole('link', { name: /^My stickers/ })).not.toHaveAttribute('aria-current');
+
+    // A phone: the same two, in a bar at the bottom of the screen, on every page.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`/en/dashboard/car/${tagId}/insurance`);
+    const bar = page.getByRole('navigation', { name: 'My space' });
+    await expect(bar).toBeVisible();
+    expect((await bar.boundingBox())!.y).toBeGreaterThan(844 - 120);
+    await expect(bar.getByRole('link', { name: /^Car book/ })).toHaveAttribute('aria-current', 'true');
+    await bar.getByRole('link', { name: /^My stickers/ }).click();
+    await expect(page).toHaveURL(/\/en\/dashboard$/);
+    await expect(bar.getByRole('link', { name: /^My stickers/ })).toHaveAttribute('aria-current', 'page');
+    await page.goto('/en/faq');
+    await expect(bar).toBeVisible();
+    await expect(bar.getByRole('link', { name: /^Car book/ })).not.toHaveAttribute('aria-current');
+
+    // Typing: the bar steps aside so it never rides on the keyboard, then comes back.
+    await page.goto(`/en/dashboard/car/${tagId}/notes?edit=1`);
+    await page.getByRole('textbox').first().focus();
+    await expect(bar).toBeHidden();
+    await page.getByRole('heading', { level: 1 }).click();
+    await expect(bar).toBeVisible();
     await page.close();
   });
 

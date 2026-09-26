@@ -76,3 +76,23 @@ export function mostUrgent(items: DueItem[]): DueItem | null {
   const first = items[0];
   return first && (first.status === 'overdue' || first.status === 'soon') ? first : null;
 }
+
+/**
+ * How many dates need looking at, across every car: late or due soon. `late`
+ * says whether any of them has already passed — the badge turns red then.
+ */
+export function countDueSoon(
+  dueByCar: Iterable<DueInputs>,
+  today: Date,
+  soonDays: number,
+): { count: number; late: boolean } {
+  let count = 0;
+  let late = false;
+  for (const inputs of dueByCar) {
+    for (const item of dueItems(inputs, today, soonDays)) {
+      if (item.status === 'overdue') late = true;
+      if (item.status === 'overdue' || item.status === 'soon') count++;
+    }
+  }
+  return { count, late };
+}

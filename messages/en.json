@@ -426,7 +426,9 @@
       "signIn": "Sign in",
       "myStickers": "My stickers",
       "unreadMessages": "{count} unread message(s)",
-      "carBook": "Car book"
+      "carBook": "Car book",
+      "carBookDue": "{count, plural, one {# date coming up or passed} other {# dates coming up or passed}}",
+      "owner": "My space"
     },
     "hero": {
       "eyebrow": "A QR sticker for your car",

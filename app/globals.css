@@ -177,6 +177,15 @@
 }
 
 @layer components {
+  /*
+   * The owner's bottom bar (components/site/OwnerNav.tsx) steps aside while a
+   * field is being typed in: on a phone it would otherwise ride on the keyboard.
+   */
+  body:has(:is(input:not([type='checkbox'], [type='radio'], [type='submit'], [type='button']), textarea, select):focus)
+    .owner-bar {
+    display: none;
+  }
+
   /* Page width + gutters (1200px, 16px mobile / 32px from md). */
   .container-page {
     width: 100%;

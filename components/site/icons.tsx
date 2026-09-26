@@ -58,6 +58,13 @@ export const StickerIcon = (p: IconProps) => (
     <path d="M8 8h3v3H8zM13 8h3v3h-3zM8 13h3v3H8zM14 14h2v2h-2z" />
   </Icon>
 );
+/** The car book: a closed notebook with a bookmark ribbon. */
+export const BookIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z" />
+    <path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M14 3v6l-2-1.5L10 9V3" />
+  </Icon>
+);
 export const ScanIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M4 12h16" />

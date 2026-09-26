@@ -16,7 +16,8 @@ export default async function SiteLayout({ children, params }: Props) {
   const t = await getTranslations('site.nav');
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    // Signed in on a phone, the owner's bar is fixed to the bottom: room for it, so it covers nothing.
+    <div className="flex min-h-dvh flex-col has-[[data-owner-bar]]:pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:has-[[data-owner-bar]]:pb-0">
       <a
         href="#main"
         className="sr-only z-50 rounded-sm bg-surface-inverse px-4 py-2 text-text-on-inverse focus:not-sr-only focus:fixed focus:start-4 focus:top-4"

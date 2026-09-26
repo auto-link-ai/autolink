@@ -426,7 +426,9 @@
       "signIn": "Se connecter",
       "myStickers": "Mes autocollants",
       "unreadMessages": "{count} message(s) non lu(s)",
-      "carBook": "Carnet"
+      "carBook": "Carnet",
+      "carBookDue": "{count, plural, one {# date proche ou dépassée} other {# dates proches ou dépassées}}",
+      "owner": "Mon espace"
     },
     "hero": {
       "eyebrow": "Autocollant QR pour votre voiture",
