@@ -41,6 +41,12 @@ export const ArrowIcon = (p: IconProps) => (
     <path d="M5 12h14M13 6l6 6-6 6" />
   </Icon>
 );
+/** Back: points where you came from, so it turns around in Arabic. */
+export const BackIcon = (p: IconProps) => (
+  <Icon {...p} className={`${p.className ?? 'h-5 w-5'} rtl:-scale-x-100`}>
+    <path d="m15 18-6-6 6-6" />
+  </Icon>
+);
 /** Down the page: the same in both reading directions, so it never flips. */
 export const ArrowDownIcon = (p: IconProps) => (
   <Icon {...p}>

@@ -10,6 +10,7 @@ import { carBookRepository } from '@/lib/db/repositories/carBook';
 import { messagesRepository } from '@/lib/db/repositories/messages';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { href } from './links';
+import { BackButton } from './BackButton';
 import { MobileMenu, type NavItem } from './MobileMenu';
 import { OwnerBar, OwnerTabs, type OwnerNavItem } from './OwnerNav';
 
@@ -64,9 +65,12 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
       <header className="sticky top-0 z-50 pt-3 md:pt-5">
         <div className="container-page">
           <div className="relative flex h-16 items-center justify-between gap-3 rounded-full bg-white/95 px-3 shadow-card-md backdrop-blur md:h-18 md:px-5">
-            <Link href={href(locale, '')} className="rounded-full px-1" aria-label={t('home')}>
-              <Wordmark decorative className="h-11 md:h-13" />
-            </Link>
+            <div className="flex items-center gap-2">
+              <BackButton locale={locale} label={t('back')} />
+              <Link href={href(locale, '')} className="rounded-full px-1" aria-label={t('home')}>
+                <Wordmark decorative className="h-11 md:h-13" />
+              </Link>
+            </div>
 
             {/* Signed in, the owner's own links take this room; these move into the menu. */}
             <nav aria-label={t('label')} className={session ? 'hidden' : 'hidden lg:block'}>
@@ -101,7 +105,11 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                   {t('signIn')}
                 </Link>
               )}
-              <Link href={href(locale, '/order')} className={buttonClasses('primary', 'sm', 'hidden sm:inline-flex')}>
+              {/* In the iPhone app the back arrow needs the room; ordering stays in the menu. */}
+              <Link
+                href={href(locale, '/order')}
+                className={buttonClasses('primary', 'sm', 'hidden sm:inline-flex ios-app:hidden!')}
+              >
                 {t('order')}
               </Link>
               <MobileMenu

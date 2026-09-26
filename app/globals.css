@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/*
+ * `ios-app:` — AutoLink opened from an iPhone or iPad Home Screen: the display
+ * mode is standalone (no Safari bar), and -webkit-touch-callout exists only in
+ * iOS WebKit. Pure CSS, so the header is right from the first paint.
+ */
+@custom-variant ios-app {
+  @media (display-mode: standalone) {
+    @supports (-webkit-touch-callout: none) {
+      @slot;
+    }
+  }
+}
+
 /* ==========================================================================
    AutoLink design tokens
    Warm palette: cream/peach surfaces, one orange accent, near-black ink.

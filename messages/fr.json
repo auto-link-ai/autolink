@@ -415,6 +415,7 @@
     "nav": {
       "label": "Navigation principale",
       "home": "AutoLink, accueil",
+      "back": "Retour",
       "howItWorks": "Comment ça marche",
       "pricing": "Tarif",
       "faq": "Questions",
