@@ -18,8 +18,11 @@ const RENAMED = `e2e-renamed-${run}@example.dz`;
 /** The customer's current password: the reset test replaces it. */
 let password = PASSWORD;
 
+let address = 0;
+/** Each sign-in from its own address: the sign-in limiter counts per address. */
 async function signIn(browser: Browser, email: string, secret: string) {
-  const shop = await browser.newContext();
+  address++;
+  const shop = await browser.newContext({ extraHTTPHeaders: { 'x-forwarded-for': `192.0.2.${(Date.now() + address) % 250}` } });
   const page = await shop.newPage();
   await page.goto('/en/login');
   await page.getByLabel('Email').fill(email);

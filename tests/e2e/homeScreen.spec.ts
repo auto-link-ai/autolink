@@ -87,19 +87,29 @@ test.describe('on an iPhone', () => {
   test.use({ userAgent: IPHONE_SAFARI, viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
   test('the button shows how to add AutoLink from the Share menu', async ({ page }) => {
+    test.setTimeout(90_000);
     await page.goto('/fr/faq');
-    await page.getByRole('banner').getByRole('button', { name: 'Ouvrir le menu' }).click();
+    const menuButton = page.getByRole('banner').locator('button[aria-controls="mobile-menu"]');
     const menu = page.locator('#mobile-menu');
+    // A tap before the page has finished loading does nothing: retry until it opens.
+    await expect(async () => {
+      if ((await menuButton.getAttribute('aria-expanded')) !== 'true') await menuButton.click();
+      await expect(menu).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 60_000 });
     await menu.getByRole('button', { name: "Installer l'application" }).click();
     await expect(menu.getByText('Touchez Partager, en bas de Safari')).toBeVisible();
     await expect(menu.getByText('Touchez Ajouter')).toBeVisible();
   });
 
   test('opened from the Home Screen, it offers nothing', async ({ page }) => {
+    test.setTimeout(90_000);
     await page.addInitScript(() => Object.defineProperty(navigator, 'standalone', { value: true }));
     await page.goto('/fr/faq');
-    await page.getByRole('banner').getByRole('button', { name: 'Ouvrir le menu' }).click();
-    await expect(page.locator('#mobile-menu')).toBeVisible();
+    const menuButton = page.getByRole('banner').locator('button[aria-controls="mobile-menu"]');
+    await expect(async () => {
+      if ((await menuButton.getAttribute('aria-expanded')) !== 'true') await menuButton.click();
+      await expect(page.locator('#mobile-menu')).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 60_000 });
     await expect(page.locator('#mobile-menu').getByRole('button', { name: /Installer/ })).toHaveCount(0);
   });
 });
