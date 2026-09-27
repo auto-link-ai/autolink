@@ -434,6 +434,14 @@
       "carBookDue": "{count, plural, one {# date proche ou dépassée} other {# dates proches ou dépassées}}",
       "owner": "Mon espace"
     },
+    "install": {
+      "button": "Installer l'application",
+      "iosTitle": "Ajouter AutoLink à l'écran d'accueil",
+      "iosShare": "Touchez Partager, en bas de Safari",
+      "iosAdd": "Choisissez « Sur l’écran d’accueil »",
+      "iosConfirm": "Touchez Ajouter",
+      "iosDone": "L'icône AutoLink apparaît sur votre écran d'accueil."
+    },
     "hero": {
       "eyebrow": "Autocollant QR pour votre voiture",
       "trust": {

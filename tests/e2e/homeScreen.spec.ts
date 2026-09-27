@@ -42,3 +42,54 @@ test('notifications carry PNG icons, which Android and Windows can show', async 
     expect((await request.get(src)).ok(), src).toBe(true);
   }
 });
+
+const IPHONE_SAFARI =
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1';
+
+test('one button installs the app with the browser’s own install window', async ({ page }) => {
+  await page.goto('/en/faq');
+  await page.waitForLoadState('networkidle');
+  // Phones find it in the menu; a computer, which has no menu when signed out, in the bar.
+  const menuButton = page.getByRole('banner').getByRole('button', { name: 'Open menu' });
+  if (await menuButton.isVisible()) await menuButton.click();
+  // Only the visible button counts: getByRole skips the hidden one.
+  const install = page.getByRole('banner').getByRole('button', { name: 'Install the app' });
+  // Nothing offered yet: a browser that cannot install gets no button.
+  await expect(install).toHaveCount(0);
+
+  // What Chrome and Edge send when the site can be installed.
+  await page.evaluate(() => {
+    const offer = Object.assign(new Event('beforeinstallprompt', { cancelable: true }), {
+      prompt: async () => {
+        (window as unknown as { prompted: boolean }).prompted = true;
+      },
+      userChoice: Promise.resolve({ outcome: 'accepted' as const }),
+    });
+    window.dispatchEvent(offer);
+  });
+  await install.click();
+  await expect.poll(() => page.evaluate(() => (window as unknown as { prompted?: boolean }).prompted)).toBe(true);
+  // Installed: the button goes away.
+  await expect(install).toHaveCount(0);
+});
+
+test.describe('on an iPhone', () => {
+  test.use({ userAgent: IPHONE_SAFARI, viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+
+  test('the button shows how to add AutoLink from the Share menu', async ({ page }) => {
+    await page.goto('/fr/faq');
+    await page.getByRole('banner').getByRole('button', { name: 'Ouvrir le menu' }).click();
+    const menu = page.locator('#mobile-menu');
+    await menu.getByRole('button', { name: "Installer l'application" }).click();
+    await expect(menu.getByText('Touchez Partager, en bas de Safari')).toBeVisible();
+    await expect(menu.getByText('Touchez Ajouter')).toBeVisible();
+  });
+
+  test('opened from the Home Screen, it offers nothing', async ({ page }) => {
+    await page.addInitScript(() => Object.defineProperty(navigator, 'standalone', { value: true }));
+    await page.goto('/fr/faq');
+    await page.getByRole('banner').getByRole('button', { name: 'Ouvrir le menu' }).click();
+    await expect(page.locator('#mobile-menu')).toBeVisible();
+    await expect(page.locator('#mobile-menu').getByRole('button', { name: /Installer/ })).toHaveCount(0);
+  });
+});

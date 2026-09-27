@@ -10,6 +10,7 @@ import { getSettings } from '@/lib/config/settings';
 import { carBookRepository } from '@/lib/db/repositories/carBook';
 import { messagesRepository } from '@/lib/db/repositories/messages';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { InstallApp } from './InstallApp';
 import { href } from './links';
 import { BackButton } from './BackButton';
 import { MobileMenu, type MenuAccount, type NavItem } from './MobileMenu';
@@ -56,6 +57,15 @@ async function accountOf(session: OwnerSession, locale: Locale): Promise<MenuAcc
 export async function SiteHeader({ locale }: { locale: Locale }) {
   const t = await getTranslations('site.nav');
   const common = await getTranslations('common');
+  const tInstall = await getTranslations('site.install');
+  const installLabels = {
+    button: tInstall('button'),
+    iosTitle: tInstall('iosTitle'),
+    iosShare: tInstall('iosShare'),
+    iosAdd: tInstall('iosAdd'),
+    iosConfirm: tInstall('iosConfirm'),
+    iosDone: tInstall('iosDone'),
+  };
   const session = await getOwnerSession();
   // Shown on every page, so a new message or a date coming up is noticed without looking for it.
   const [counts, account] = session
@@ -102,7 +112,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
             </div>
 
             {/* Signed in, the owner's own links take this room; these move into the menu. */}
-            <nav aria-label={t('label')} className={session ? 'hidden' : 'hidden lg:block'}>
+            <nav aria-label={t('label')} className={session ? 'hidden' : 'hidden xl:block'}>
               <ul className="flex items-center gap-1">
                 {items.map((item) => (
                   <li key={item.href}>
@@ -127,12 +137,16 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
               {session ? (
                 <OwnerTabs locale={locale} items={ownerItems} label={t('owner')} />
               ) : (
-                <Link
-                  href={href(locale, '/login')}
-                  className="hidden h-11 items-center rounded-full px-4 text-[15px] font-semibold text-text-secondary hover:bg-surface-3 hover:text-text sm:inline-flex"
-                >
-                  {t('signIn')}
-                </Link>
+                <>
+                  {/* From 1280px a visitor has no menu, so the install button sits in the bar. */}
+                  <InstallApp labels={installLabels} variant="header" />
+                  <Link
+                    href={href(locale, '/login')}
+                    className="hidden h-11 items-center rounded-full px-4 text-[15px] font-semibold text-text-secondary hover:bg-surface-3 hover:text-text sm:inline-flex"
+                  >
+                    {t('signIn')}
+                  </Link>
+                </>
               )}
               {/* In the iPhone app the back arrow needs the room; ordering stays in the menu. */}
               <Link
@@ -151,6 +165,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                 footer={<LanguageSwitcher current={locale} label={common('languageSwitcherLabel')} />}
                 always={Boolean(session)}
                 account={account}
+                install={<InstallApp labels={installLabels} />}
               />
             </div>
           </div>

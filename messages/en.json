@@ -434,6 +434,14 @@
       "carBookDue": "{count, plural, one {# date coming up or passed} other {# dates coming up or passed}}",
       "owner": "My space"
     },
+    "install": {
+      "button": "Install the app",
+      "iosTitle": "Add AutoLink to your Home Screen",
+      "iosShare": "Tap Share, at the bottom of Safari",
+      "iosAdd": "Choose “Add to Home Screen”",
+      "iosConfirm": "Tap Add",
+      "iosDone": "The AutoLink icon appears on your Home Screen."
+    },
     "hero": {
       "eyebrow": "A QR sticker for your car",
       "trust": {

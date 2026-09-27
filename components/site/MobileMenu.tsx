@@ -39,6 +39,7 @@ export function MobileMenu({
   footer,
   always = false,
   account,
+  install,
 }: {
   items: NavItem[];
   openLabel: string;
@@ -48,6 +49,8 @@ export function MobileMenu({
   footer: ReactNode;
   always?: boolean;
   account?: MenuAccount;
+  /** « Installer l'application »: first thing in the menu. Renders nothing once installed. */
+  install?: ReactNode;
 }) {
   const pathname = usePathname();
   const [openedAt, setOpenedAt] = useState<string | null>(null);
@@ -56,7 +59,7 @@ export function MobileMenu({
   const waiting = items.some((item) => (item.badge ?? 0) > 0);
 
   return (
-    <div className={always ? undefined : 'lg:hidden'}>
+    <div className={always ? undefined : 'xl:hidden'}>
       <button
         type="button"
         aria-expanded={open}
@@ -104,6 +107,7 @@ export function MobileMenu({
             {account.panel}
           </div>
         )}
+        {install && <div className="empty:hidden mb-2">{install}</div>}
         <nav className="flex flex-col">
           {items.map((item) => (
             <Link
