@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { locales, type Locale } from '@/i18n/locales';
+import { defaultLocale, locales, type Locale } from '@/i18n/locales';
 
 const OG_LOCALE: Record<Locale, string> = { fr: 'fr_DZ', ar: 'ar_DZ', en: 'en_US' };
 
@@ -16,7 +16,7 @@ export function siteOrigin(): URL {
 export function languageAlternates(path: string): NonNullable<Metadata['alternates']>['languages'] {
   return {
     ...Object.fromEntries(locales.map((l) => [l, `/${l}${path}`])),
-    'x-default': `/fr${path}`,
+    'x-default': `/${defaultLocale}${path}`,
   };
 }
 

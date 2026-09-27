@@ -63,3 +63,28 @@ test('"How it works" in the hero scrolls to the steps on the same page', async (
   await expect(page).toHaveURL(/\/fr#how-it-works$/);
   await expect(page.getByRole('heading', { name: 'Collez-le une fois, restez joignable toujours.' })).toBeInViewport();
 });
+
+test.describe('Arabic first', () => {
+  // A French phone, and nothing chosen yet on this site.
+  test.use({ locale: 'fr-FR', storageState: { cookies: [], origins: [] } });
+
+  test('a French phone opens the site in Arabic', async ({ page }) => {
+    await page.goto('/');
+    await expect(page).toHaveURL(/\/ar$/);
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  });
+
+  test('a language chosen with the switcher is remembered', async ({ page }) => {
+    await page.goto('/ar');
+    await page.getByRole('link', { name: 'Français' }).first().click();
+    await expect(page).toHaveURL(/\/fr$/);
+    await page.goto('/');
+    await expect(page).toHaveURL(/\/fr$/);
+  });
+
+  test('the scan page opens in Arabic on a French phone', async ({ page }) => {
+    await page.goto('/t/AUT-ZZZZZZZZ');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  });
+});

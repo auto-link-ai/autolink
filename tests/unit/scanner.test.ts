@@ -4,29 +4,20 @@ import { messageSchema } from '@/lib/validation/message';
 import { STORAGE_LIMITS } from '@/lib/domain/constants';
 
 describe('scannerLocale', () => {
-  it('follows the phone when no choice was made', () => {
-    expect(scannerLocale('ar-DZ,ar;q=0.9,fr;q=0.8')).toBe('ar');
-    expect(scannerLocale('fr-FR,fr;q=0.9')).toBe('fr');
-    expect(scannerLocale('en-GB,en;q=0.9')).toBe('en');
+  it('opens in Arabic until the person chooses another language', () => {
+    expect(scannerLocale(null)).toBe('ar');
+    expect(scannerLocale(undefined)).toBe('ar');
   });
 
-  it('respects the quality order rather than the written order', () => {
-    expect(scannerLocale('de;q=1.0,en;q=0.9,fr;q=0.5')).toBe('en');
-    expect(scannerLocale('es,fr;q=0.2,ar;q=0.9')).toBe('ar');
+  it('keeps the language chosen with the switcher on the page', () => {
+    expect(scannerLocale('fr')).toBe('fr');
+    expect(scannerLocale('en')).toBe('en');
+    expect(scannerLocale('ar')).toBe('ar');
   });
 
-  it('falls back to French for anything unknown or missing', () => {
-    expect(scannerLocale(null)).toBe('fr');
-    expect(scannerLocale('')).toBe('fr');
-    expect(scannerLocale('de,es;q=0.8')).toBe('fr');
-    expect(scannerLocale('!!! garbage ;;;')).toBe('fr');
-  });
-
-  it('lets an explicit choice win over the phone', () => {
-    expect(scannerLocale('fr-FR,fr;q=0.9', 'ar')).toBe('ar');
-    // An unknown choice is ignored rather than trusted.
-    expect(scannerLocale('ar,fr;q=0.8', 'de')).toBe('ar');
-    expect(scannerLocale('ar,fr;q=0.8', null)).toBe('ar');
+  it('ignores an unknown choice rather than trusting it', () => {
+    expect(scannerLocale('de')).toBe('ar');
+    expect(scannerLocale('!!! garbage ;;;')).toBe('ar');
   });
 });
 

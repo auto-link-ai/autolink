@@ -2,10 +2,11 @@
  * Locale constants. Plain data with no next-intl import, so models, validation
  * and scripts can use them without pulling in the i18n runtime.
  */
-export const locales = ['fr', 'ar', 'en'] as const;
+// Arabic first: it is the default, and the switcher lists the languages in this order.
+export const locales = ['ar', 'fr', 'en'] as const;
 export type Locale = (typeof locales)[number];
 
-export const defaultLocale: Locale = 'fr';
+export const defaultLocale: Locale = 'ar';
 
 const RTL_LOCALES: ReadonlySet<Locale> = new Set(['ar']);
 

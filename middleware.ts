@@ -1,5 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
+import { withoutPhoneLanguage } from './i18n/firstVisit';
 import { locales } from './i18n/locales';
 import { routing } from './i18n/routing';
 import { ADMIN_COOKIE_NAME } from './lib/admin/cookie';
@@ -24,7 +25,7 @@ export default async function middleware(request: NextRequest) {
       if (!session) return NextResponse.redirect(new URL(`/${locale}/admin/login`, request.url));
     }
   }
-  return handleI18n(request);
+  return handleI18n(withoutPhoneLanguage(request));
 }
 
 export const config = {

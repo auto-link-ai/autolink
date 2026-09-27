@@ -25,6 +25,15 @@ export default defineConfig({
   use: {
     baseURL,
     trace: 'retain-on-failure',
+    // The scan page opens in Arabic unless the person picks a language on it. The
+    // specs read it in English, so every browser starts having picked English there
+    // (as the page's own switcher would). Tests of the Arabic default start empty.
+    storageState: {
+      cookies: [
+        { name: 'autolink_scan_lang', value: 'en', domain: 'localhost', path: '/', expires: -1, httpOnly: false, secure: false, sameSite: 'Lax' },
+      ],
+      origins: [],
+    },
   },
   projects: [
     { name: 'mobile-chromium', use: { ...devices['Pixel 7'], channel } },

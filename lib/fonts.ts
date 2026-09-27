@@ -1,24 +1,16 @@
-import { IBM_Plex_Mono, IBM_Plex_Sans, IBM_Plex_Sans_Arabic } from 'next/font/google';
+import { Cairo, IBM_Plex_Mono } from 'next/font/google';
 
 /**
- * One family across all three scripts: IBM Plex Sans (Latin), IBM Plex Sans
- * Arabic (with system "Noto Sans Arabic" as fallback, see globals.css), and
- * IBM Plex Mono for eyebrow labels. Self-hosted by next/font — no third-party
- * request at runtime. Only the Latin face is preloaded; the others load on demand.
+ * Cairo for everything people read, in all three languages: it draws Arabic and
+ * Latin as one family, so the site looks the same in ar, fr and en. IBM Plex
+ * Mono stays for tag IDs, codes and eyebrow labels — in a code, 0/O and 1/I must
+ * never be confused, and Cairo has no monospaced cut. Both are self-hosted by
+ * next/font: no third-party request at runtime. Cairo is the one preloaded.
  */
-const plexSans = IBM_Plex_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-plex-sans',
+const cairo = Cairo({
+  subsets: ['arabic', 'latin'],
+  variable: '--font-cairo',
   display: 'swap',
-});
-
-const plexArabic = IBM_Plex_Sans_Arabic({
-  subsets: ['arabic'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-plex-arabic',
-  display: 'swap',
-  preload: false,
 });
 
 const plexMono = IBM_Plex_Mono({
@@ -29,4 +21,4 @@ const plexMono = IBM_Plex_Mono({
   preload: false,
 });
 
-export const fontVariables = [plexSans.variable, plexArabic.variable, plexMono.variable].join(' ');
+export const fontVariables = [cairo.variable, plexMono.variable].join(' ');

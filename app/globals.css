@@ -61,15 +61,9 @@
     radial-gradient(1200px 520px at 50% -180px, #fcdcc9 0%, rgb(252 220 201 / 0) 70%),
     linear-gradient(180deg, #fdece3 0%, var(--cream) 38%, var(--cream) 100%);
 
-  /* Type families (next/font provides the --font-plex-* variables) */
-  --app-font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Type families (lib/fonts.ts: Cairo for Arabic and Latin alike, Plex Mono for codes) */
+  --app-font-sans: var(--font-cairo), "Noto Sans Arabic", ui-sans-serif, system-ui, sans-serif;
   --app-font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
-}
-
-:root:lang(ar) {
-  --app-font-sans:
-    var(--font-plex-arabic), "Noto Sans Arabic", var(--font-plex-sans), ui-sans-serif, system-ui,
-    sans-serif;
 }
 
 @theme inline {
