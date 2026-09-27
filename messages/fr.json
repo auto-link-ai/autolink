@@ -497,6 +497,26 @@
         "unavailable": "Cet autocollant n’est plus actif : le message ne peut pas être délivré.",
         "not_found": "Message introuvable.",
         "forbidden": "Seul un compte administrateur peut délivrer ou supprimer."
+      },
+      "usage": {
+        "title": "Utilisation de Gemini",
+        "on": "Vérification active",
+        "off": "Vérification désactivée : aucune clé GEMINI_API_KEY.",
+        "today": "Aujourd’hui",
+        "week": "7 derniers jours",
+        "month": "30 derniers jours",
+        "checks": "{count, plural, one {# vérification} other {# vérifications}}",
+        "split": "{stopped} bloqués · {passed} passés · {failed} sans réponse",
+        "tokens": "{total} jetons (entrée {prompt} · sortie {output})",
+        "day": "Jour",
+        "colChecks": "Vérifications",
+        "colStopped": "Bloqués",
+        "colPassed": "Passés",
+        "colFailed": "Sans réponse",
+        "colIn": "Jetons entrée",
+        "colOut": "Jetons sortie",
+        "costNote": "Le coût exact est dans Google AI Studio, rubrique Facturation. « Sans réponse » : le message a été transmis sans vérification.",
+        "empty": "Aucune vérification sur les 30 derniers jours."
       }
     }
   },

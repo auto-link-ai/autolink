@@ -7,10 +7,13 @@ import { routing } from '@/i18n/routing';
 import { requireAdmin } from '@/lib/admin/auth';
 import { getSettings } from '@/lib/config/settings';
 import { cx } from '@/lib/cx';
+import { algiersToday } from '@/lib/care/due';
+import { apiUsageRepository } from '@/lib/db/repositories/apiUsage';
 import { blockedMessagesRepository } from '@/lib/db/repositories/blockedMessages';
 import { MESSAGE_CATEGORIES, type MessageCategory } from '@/lib/domain/constants';
 import { formatDateTime } from '@/lib/format/date';
 import { deleteBlockedAction, deliverBlockedAction } from './actions';
+import { UsagePanel } from './_components/UsagePanel';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -36,12 +39,14 @@ export default async function AdminBlockedPage({ params, searchParams }: Props) 
   setRequestLocale(locale);
   const session = await requireAdmin(locale);
   const isAdmin = session.actor.role === 'ADMIN';
-  const [t, tCategory, settings, rows, raw] = await Promise.all([
+  const today = algiersToday().toISOString().slice(0, 10);
+  const [t, tCategory, settings, rows, raw, usage] = await Promise.all([
     getTranslations('admin.blocked'),
     getTranslations('scanner.categories'),
     getSettings(),
     blockedMessagesRepository.listForAdmin(session.actor),
     searchParams,
+    apiUsageRepository.geminiDays(session.actor, today),
   ]);
   const result = RESULTS.find((r) => r === raw.result) ?? null;
 
@@ -51,6 +56,8 @@ export default async function AdminBlockedPage({ params, searchParams }: Props) 
         <h1 className="text-h2 text-text">{t('title')}</h1>
         <p className="mt-1 max-w-[70ch] text-text-secondary">{t('subtitle', { days: settings.messageRetentionDays })}</p>
       </div>
+
+      <UsagePanel rows={usage} today={today} locale={locale} enabled={Boolean(process.env.GEMINI_API_KEY?.trim())} />
 
       {result && (
         <p

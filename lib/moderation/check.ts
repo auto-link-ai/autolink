@@ -1,4 +1,7 @@
 import 'server-only';
+import { algiersToday } from '@/lib/care/due';
+import { apiUsageRepository } from '@/lib/db/repositories/apiUsage';
+import { readUsage, type CheckOutcome, type Tokens } from './usage';
 import { MODERATION_INSTRUCTIONS, MODERATION_MODEL, readVerdict, VERDICT_SCHEMA, type Verdict } from './verdict';
 
 const GOOGLE = 'https://generativelanguage.googleapis.com';
@@ -19,6 +22,18 @@ const SAFETY_OFF = ['HARM_CATEGORY_HARASSMENT', 'HARM_CATEGORY_HATE_SPEECH', 'HA
 export interface CheckOptions {
   key?: string;
   fetchImpl?: typeof fetch;
+  /** Where each check is counted (Admin → Messages bloqués). Tests pass their own. */
+  record?: (outcome: CheckOutcome, tokens: Tokens) => Promise<void>;
+}
+
+/** Counts one check for today. Counting never gets in the way of the check itself. */
+async function recordUsage(outcome: CheckOutcome, tokens: Tokens): Promise<void> {
+  try {
+    const day = algiersToday().toISOString().slice(0, 10);
+    await apiUsageRepository.recordGeminiCheck({ kind: 'system' }, day, outcome, tokens);
+  } catch (error) {
+    console.warn('[moderation] usage not counted:', error instanceof Error ? error.message : 'error');
+  }
 }
 
 /** Worth one more try: rate limits, Google's server errors, and the odd one-off 403. */
@@ -36,6 +51,8 @@ export async function checkMessage(text: string, options: CheckOptions = {}): Pr
   const key = (options.key ?? process.env.GEMINI_API_KEY)?.trim();
   if (!key) return { kind: 'unknown' };
   const send = options.fetchImpl ?? fetch;
+  const record = options.record ?? recordUsage;
+  let tokens: Tokens = { prompt: 0, output: 0 };
   const body = JSON.stringify({
     systemInstruction: { parts: [{ text: MODERATION_INSTRUCTIONS }] },
     contents: [{ role: 'user', parts: [{ text }] }],
@@ -56,8 +73,14 @@ export async function checkMessage(text: string, options: CheckOptions = {}): Pr
         signal: AbortSignal.timeout(Math.min(ATTEMPT_MS, left)),
       });
       if (response.ok) {
-        const verdict = readVerdict(await response.json());
-        if (verdict.kind !== 'unknown') return verdict;
+        const json: unknown = await response.json();
+        const used = readUsage(json);
+        tokens = { prompt: tokens.prompt + used.prompt, output: tokens.output + used.output };
+        const verdict = readVerdict(json);
+        if (verdict.kind !== 'unknown') {
+          await record(verdict.kind, tokens);
+          return verdict;
+        }
       } else {
         console.warn(`[moderation] Gemini answered ${response.status} (attempt ${attempt})`);
         if (!temporary(response.status)) break;
@@ -67,5 +90,6 @@ export async function checkMessage(text: string, options: CheckOptions = {}): Pr
       console.warn(`[moderation] Gemini unreachable (attempt ${attempt}):`, error instanceof Error ? error.name : 'error');
     }
   }
+  await record('failed', tokens);
   return { kind: 'unknown' };
 }

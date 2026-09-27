@@ -497,6 +497,26 @@
         "unavailable": "This sticker is no longer active: the message cannot be delivered.",
         "not_found": "Message not found.",
         "forbidden": "Only an administrator account can deliver or delete."
+      },
+      "usage": {
+        "title": "Gemini usage",
+        "on": "Check on",
+        "off": "Check off: no GEMINI_API_KEY.",
+        "today": "Today",
+        "week": "Last 7 days",
+        "month": "Last 30 days",
+        "checks": "{count, plural, one {# check} other {# checks}}",
+        "split": "{stopped} stopped · {passed} passed · {failed} no answer",
+        "tokens": "{total} tokens (in {prompt} · out {output})",
+        "day": "Day",
+        "colChecks": "Checks",
+        "colStopped": "Stopped",
+        "colPassed": "Passed",
+        "colFailed": "No answer",
+        "colIn": "Tokens in",
+        "colOut": "Tokens out",
+        "costNote": "The exact cost is in Google AI Studio, under Billing. “No answer”: the message was delivered without a check.",
+        "empty": "No checks in the last 30 days."
       }
     }
   },

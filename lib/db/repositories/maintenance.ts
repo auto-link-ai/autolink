@@ -8,6 +8,7 @@ import 'server-only';
 import type { Model } from 'mongoose';
 import { connectToDatabase } from '@/lib/db/connect';
 import { AdminUserModel } from '@/lib/db/models/adminUser';
+import { ApiUsageModel } from '@/lib/db/models/apiUsage';
 import { AuditLogModel } from '@/lib/db/models/auditLog';
 import { BlockedMessageModel } from '@/lib/db/models/blockedMessage';
 import { MessageModel } from '@/lib/db/models/message';
@@ -36,6 +37,7 @@ const ALL_MODELS: ReadonlyArray<Pick<Model<unknown>, 'syncIndexes' | 'collection
   AdminUserModel,
   AuditLogModel,
   RateLimitModel,
+  ApiUsageModel,
   ServiceRecordModel,
   SettingModel,
   WilayaModel,

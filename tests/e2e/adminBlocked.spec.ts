@@ -88,6 +88,13 @@ test.describe('messages stopped for abusive words', () => {
     const office = await adminContext(browser);
     const admin = await office.newPage();
     await admin.goto('/en/admin/blocked');
+    // Usage: the check is on, and today counts at least this test's two messages, one stopped.
+    const usage = admin.getByRole('region', { name: 'Gemini usage' });
+    await expect(usage).toContainText('Check on');
+    const today = usage.locator('div', { hasText: /^Today/ }).first();
+    await expect(today).not.toContainText('0 checks');
+    await expect(today).not.toContainText(/^Today0 stopped/);
+
     const entry = admin.locator('li').filter({ hasText: INSULT });
     await expect(entry).toContainText('Reason: Insulte (e2e).');
     await expect(entry).toContainText('0550 00 11 22');
