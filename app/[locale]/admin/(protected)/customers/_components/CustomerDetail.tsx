@@ -5,6 +5,7 @@ import { cx } from '@/lib/cx';
 import type { OwnerTagRow } from '@/lib/db/repositories/tagsOwner';
 import type { AdminCustomerRow } from '@/lib/db/repositories/users';
 import { formatDateTime } from '@/lib/format/date';
+import { deleteCustomerAction } from '../accountActions';
 import { setCustomerStatusAction, updateCustomerContactAction } from '../actions';
 import { ResetPasswordForm } from './ResetPasswordForm';
 
@@ -101,11 +102,23 @@ export async function CustomerDetail({
 
       {canEdit ? (
         <div className="mt-6 flex flex-col gap-5 border-t border-border pt-5">
-          <form action={updateCustomerContactAction} className="grid gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+          <form action={updateCustomerContactAction} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto] lg:items-end">
             {hidden}
             <label className="flex flex-col gap-1.5 text-sm font-semibold text-text">
               {t('detail.name')}
               <input name="name" defaultValue={customer.name ?? ''} maxLength={80} required className={INPUT} />
+            </label>
+            <label className="flex flex-col gap-1.5 text-sm font-semibold text-text">
+              {t('detail.email')}
+              <input
+                name="email"
+                type="email"
+                defaultValue={customer.email}
+                maxLength={254}
+                required
+                dir="ltr"
+                className={`${INPUT} rtl:text-end`}
+              />
             </label>
             <label className="flex flex-col gap-1.5 text-sm font-semibold text-text">
               {t('detail.phone')}
@@ -160,6 +173,22 @@ export async function CustomerDetail({
               </div>
             </details>
           )}
+
+          {/* Delete: two taps, the second one says what disappears */}
+          <details>
+            <summary className="inline-flex h-10 cursor-pointer list-none items-center rounded-sm border border-danger/40 px-4 text-sm font-bold text-danger hover:bg-danger/5">
+              {t('detail.delete')}
+            </summary>
+            <div className="mt-3 rounded-sm border border-danger/30 bg-danger/5 p-4">
+              <p className="text-sm text-text">{t('detail.deleteConfirm', { email: customer.email, count: stickers.length })}</p>
+              <form action={deleteCustomerAction} className="mt-3">
+                {hidden}
+                <Button type="submit" variant="danger" size="sm">
+                  {t('detail.deleteYes')}
+                </Button>
+              </form>
+            </div>
+          </details>
         </div>
       ) : (
         <p className="mt-6 border-t border-border pt-5 text-sm text-text-secondary">{t('readOnly')}</p>

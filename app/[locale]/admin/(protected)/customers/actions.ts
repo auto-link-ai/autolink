@@ -5,10 +5,11 @@ import { z } from 'zod';
 import { toLocale } from '@/i18n/locales';
 import { getAdminSession } from '@/lib/admin/auth';
 import { customerListReturnPath } from '@/lib/admin/customerListQuery';
+import { adminCustomersRepository } from '@/lib/db/repositories/customersAdmin';
 import { usersRepository } from '@/lib/db/repositories/users';
 import { USER_STATUSES } from '@/lib/domain/constants';
 import { generateReadablePassword, hashSecret } from '@/lib/security/password';
-import { customerContactSchema } from '@/lib/validation/auth';
+import { customerContactSchema, emailSchema } from '@/lib/validation/auth';
 import { isValidPublicUserId } from '@/lib/validation/publicUserId';
 import { RESET_PASSWORD_INITIAL, type ResetPasswordState } from './state';
 
@@ -41,7 +42,7 @@ export async function setCustomerStatusAction(formData: FormData): Promise<void>
   redirect(customerListReturnPath(locale, returnSearch, result.ok ? 'ok' : 'not_found'));
 }
 
-/** Fix a mistyped name or phone. The email is the account's identity and stays put. */
+/** Fix a mistyped name, phone or email. The email must stay unique. */
 export async function updateCustomerContactAction(formData: FormData): Promise<void> {
   const locale = toLocale(formData.get('locale'));
   const session = await requireAdminRole(locale);
@@ -53,12 +54,15 @@ export async function updateCustomerContactAction(formData: FormData): Promise<v
     name: formData.get('name') ?? '',
     phone: formData.get('phone') ?? '',
   });
-  if (!isValidPublicUserId(publicUserId) || !contact.success) {
+  const email = emailSchema.safeParse(formData.get('email') ?? '');
+  if (!isValidPublicUserId(publicUserId) || !contact.success || !email.success) {
     redirect(customerListReturnPath(locale, returnSearch, 'invalid'));
   }
 
   const result = await usersRepository.updateContact(session.actor, publicUserId, contact.data);
-  redirect(customerListReturnPath(locale, returnSearch, result.ok ? 'ok' : 'not_found'));
+  if (!result.ok) redirect(customerListReturnPath(locale, returnSearch, 'not_found'));
+  const changed = await adminCustomersRepository.updateEmail(session.actor, publicUserId, email.data);
+  redirect(customerListReturnPath(locale, returnSearch, changed.ok ? 'ok' : changed.reason));
 }
 
 /**

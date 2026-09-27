@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { routing } from '@/i18n/routing';
 import { requireAdmin } from '@/lib/admin/auth';
 import {
+  CUSTOMER_SUCCESS_RESULTS,
   customerListSearch,
   parseCustomerListQuery,
   parseCustomerResult,
@@ -17,6 +18,9 @@ import { USER_STATUSES } from '@/lib/domain/constants';
 import { cx } from '@/lib/cx';
 import { formatDateTime } from '@/lib/format/date';
 import { CustomerDetail } from './_components/CustomerDetail';
+import { NewCustomerForm } from './_components/NewCustomerForm';
+import { newCustomerLabels } from './_components/newCustomerLabels';
+import { buttonClasses } from '@/components/ui/Button';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -52,19 +56,32 @@ export default async function AdminCustomersPage({ params, searchParams }: Props
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-h2 text-text">{t('title')}</h1>
-        <p className="mt-1 text-text-secondary">
-          {t('subtitle', { total: summary.total, blocked: summary.blocked, recent: summary.newLast7Days })}
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-h2 text-text">{t('title')}</h1>
+          <p className="mt-1 text-text-secondary">
+            {t('subtitle', { total: summary.total, blocked: summary.blocked, recent: summary.newLast7Days })}
+          </p>
+        </div>
+        {session.actor.role === 'ADMIN' && (
+          <NextLink href={`${listPath}?new=1`} className={buttonClasses('primary', 'sm')}>
+            + {t('new.button')}
+          </NextLink>
+        )}
       </div>
+
+      {raw.new === '1' && session.actor.role === 'ADMIN' && (
+        <Card title={t('new.title')} description={t('new.hint')}>
+          <NewCustomerForm locale={locale} listHref={listPath} labels={await newCustomerLabels()} />
+        </Card>
+      )}
 
       {result && (
         <p
           role="status"
           className={cx(
             'rounded-sm border px-3 py-2 text-sm',
-            result === 'ok' ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/5 text-danger',
+            CUSTOMER_SUCCESS_RESULTS.has(result) ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/5 text-danger',
           )}
         >
           {t(`results.${result}`)}

@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Browser, type Page } from '@playwright/test';
 import JSZip from 'jszip';
 import { adminContext, hasAdminCredentials } from './adminSession';
 
@@ -11,6 +11,22 @@ import { adminContext, hasAdminCredentials } from './adminSession';
 const PASSWORD = 'e2e-customer-password';
 const run = Date.now().toString(36);
 const CUSTOMER = `e2e-customer-${run}@example.dz`;
+/** Made by hand by the admin, for a customer who called. */
+const BY_PHONE = `e2e-by-phone-${run}@example.dz`;
+/** CUSTOMER's email after the admin fixes a typo. */
+const RENAMED = `e2e-renamed-${run}@example.dz`;
+/** The customer's current password: the reset test replaces it. */
+let password = PASSWORD;
+
+async function signIn(browser: Browser, email: string, secret: string) {
+  const shop = await browser.newContext();
+  const page = await shop.newPage();
+  await page.goto('/en/login');
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Password').fill(secret);
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  return { shop, page };
+}
 
 async function openCustomer(page: Page, email: string) {
   await page.goto('/en/admin/customers');
@@ -142,6 +158,7 @@ test.describe('an admin looking after a customer', () => {
     expect(fresh).toMatch(/^[0-9A-HJKMNP-TV-Z]{5}(-[0-9A-HJKMNP-TV-Z]{5}){3}$/);
     // It is shown, never put in the URL.
     expect(admin.url()).not.toContain(fresh);
+    password = fresh;
 
     const shop = await browser.newContext();
     const customer = await shop.newPage();
@@ -152,6 +169,71 @@ test.describe('an admin looking after a customer', () => {
     await expect(customer).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
 
     await shop.close();
+    await office.close();
+  });
+
+  test('an account is made by hand, and its one-time password works', async ({ browser }) => {
+    test.setTimeout(180_000);
+    const office = await adminContext(browser);
+    const admin = await office.newPage();
+    await admin.goto('/en/admin/customers');
+    await admin.getByRole('link', { name: '+ New customer' }).click();
+    await admin.getByLabel('Email').fill(BY_PHONE);
+    await admin.getByLabel('Name', { exact: true }).fill('Nadia Haddad');
+    await admin.getByLabel('Phone (optional)').fill('0770 11 22 33');
+    await admin.getByRole('button', { name: 'Create the account' }).click();
+
+    const done = admin.getByRole('status').filter({ hasText: 'Account created.' });
+    await expect(done).toBeVisible();
+    const temporary = (await done.locator('p[dir="ltr"]').innerText()).trim();
+    expect(temporary.length).toBeGreaterThan(10);
+    expect(admin.url()).not.toContain(temporary);
+
+    const { shop, page } = await signIn(browser, BY_PHONE, temporary);
+    await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
+    await shop.close();
+    await office.close();
+  });
+
+  test('a mistyped email is corrected; one already in use is refused', async ({ browser }) => {
+    test.setTimeout(180_000);
+    const office = await adminContext(browser);
+    const admin = await office.newPage();
+    await openCustomer(admin, CUSTOMER);
+    const detail = admin.getByRole('region', { name: 'Amine Belkacem' });
+
+    await detail.getByLabel('Email').fill(BY_PHONE);
+    await detail.getByRole('button', { name: 'Save' }).click();
+    await expect(admin.getByRole('status')).toHaveText('This email is already used by another account.');
+
+    await detail.getByLabel('Email').fill(RENAMED);
+    await detail.getByRole('button', { name: 'Save' }).click();
+    await expect(admin.getByRole('status')).toHaveText('Change saved.');
+
+    const { shop, page } = await signIn(browser, RENAMED, password);
+    await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
+    await shop.close();
+    await office.close();
+  });
+
+  test('deleting an account removes it, and its sticker goes back to unassigned', async ({ browser }) => {
+    test.setTimeout(180_000);
+    const office = await adminContext(browser);
+    const admin = await office.newPage();
+    await openCustomer(admin, RENAMED);
+
+    await admin.locator('summary', { hasText: 'Delete the account' }).click();
+    await expect(admin.getByText(`The account ${RENAMED} will be deleted for good`)).toBeVisible();
+    await expect(admin.getByText('Its sticker goes back to “Unassigned”')).toBeVisible();
+    await admin.getByRole('button', { name: 'Yes, delete this account' }).click();
+    await expect(admin.getByRole('status')).toHaveText('Account deleted.');
+
+    const { shop, page } = await signIn(browser, RENAMED, password);
+    await expect(page.locator('form p[role="alert"]')).toHaveText('Wrong email or password.');
+    await shop.close();
+
+    await admin.goto(`/en/admin/tags?q=${tag.id}`);
+    await expect(admin.getByRole('row', { name: new RegExp(tag.id) })).toContainText('Unassigned');
     await office.close();
   });
 });

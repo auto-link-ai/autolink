@@ -376,7 +376,9 @@
         "ok": "Modification enregistrée.",
         "not_found": "Compte introuvable.",
         "not_allowed": "Votre rôle ne permet pas cette action.",
-        "invalid": "Vérifiez les champs."
+        "invalid": "Vérifiez les champs.",
+        "deleted": "Compte supprimé.",
+        "email_taken": "Cette adresse e-mail est déjà utilisée par un autre compte."
       },
       "status": {
         "ACTIVE": "Actif",
@@ -433,7 +435,33 @@
         "unblock": "Débloquer",
         "unblockHint": "Le client pourra se reconnecter.",
         "blockConfirm": "{email} ne pourra plus se connecter, et sa session actuelle s’arrête immédiatement. Vous pourrez le débloquer ensuite.",
-        "blockYes": "Oui, bloquer ce compte"
+        "blockYes": "Oui, bloquer ce compte",
+        "delete": "Supprimer le compte",
+        "deleteConfirm": "Le compte {email} sera supprimé définitivement, avec ses voitures, leurs carnets, ses messages et ses notifications. {count, plural, =0 {Il n'a aucune étiquette.} one {Son étiquette redevient « Non attribuée »} other {Ses # étiquettes redeviennent « Non attribuées »}} : son papier d'activation fonctionnera encore s'il crée un nouveau compte. Les commandes sont conservées.",
+        "deleteYes": "Oui, supprimer ce compte"
+      },
+      "new": {
+        "button": "Nouveau client",
+        "title": "Nouveau client",
+        "hint": "Pour un client qui a demandé par téléphone. Un mot de passe temporaire est créé et affiché une seule fois.",
+        "email": "E-mail",
+        "name": "Nom",
+        "phone": "Téléphone (facultatif)",
+        "submit": "Créer le compte",
+        "working": "Création…",
+        "cancel": "Annuler",
+        "done": "Compte créé. Mot de passe temporaire, affiché une seule fois — donnez-le au client :",
+        "open": "Ouvrir la fiche du client",
+        "errors": {
+          "required": "Ce champ est obligatoire.",
+          "invalid_email": "Cette adresse e-mail n'est pas valide.",
+          "too_short": "C'est un peu trop court.",
+          "too_long": "C'est trop long.",
+          "invalid_phone": "Entrez un mobile algérien valide (05, 06 ou 07).",
+          "email_taken": "Cette adresse e-mail est déjà utilisée par un autre compte.",
+          "not_allowed": "Seul un compte administrateur peut créer un compte.",
+          "server_error": "La création a échoué. Réessayez."
+        }
       }
     },
     "blocked": {

@@ -15,7 +15,9 @@ export interface CustomerListQuery {
   id?: string;
 }
 
-export const CUSTOMER_RESULTS = ['ok', 'not_found', 'not_allowed', 'invalid'] as const;
+export const CUSTOMER_RESULTS = ['ok', 'not_found', 'not_allowed', 'invalid', 'deleted', 'email_taken'] as const;
+/** The results that report something done, shown in green. */
+export const CUSTOMER_SUCCESS_RESULTS: ReadonlySet<string> = new Set(['ok', 'deleted']);
 export type CustomerResultCode = (typeof CUSTOMER_RESULTS)[number];
 
 type RawParams = Record<string, string | string[] | undefined>;
