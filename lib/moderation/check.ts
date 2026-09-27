@@ -1,7 +1,13 @@
 import 'server-only';
 import { MODERATION_INSTRUCTIONS, MODERATION_MODEL, readVerdict, VERDICT_SCHEMA, type Verdict } from './verdict';
 
-const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODERATION_MODEL}:generateContent`;
+const GOOGLE = 'https://generativelanguage.googleapis.com';
+
+/** Google's address, unless GEMINI_API_BASE points elsewhere (the e2e run's local stand-in). */
+function endpoint(): string {
+  const base = process.env.GEMINI_API_BASE?.trim() || GOOGLE;
+  return `${base.replace(/\/+$/, '')}/v1beta/models/${MODERATION_MODEL}:generateContent`;
+}
 /** The sender is waiting: never longer than this, retries included. */
 const DEADLINE_MS = 5000;
 const ATTEMPT_MS = 3500;
@@ -42,7 +48,7 @@ export async function checkMessage(text: string, options: CheckOptions = {}): Pr
     const left = deadline - Date.now();
     if (left < 500) break;
     try {
-      const response = await send(ENDPOINT, {
+      const response = await send(endpoint(), {
         method: 'POST',
         // In a header, not the address: addresses end up in logs.
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },

@@ -75,6 +75,7 @@ export async function sendReportAction(_prev: ReportFormState, formData: FormDat
           publicTagId,
           category: parsed.data.category,
           body: parsed.data.body,
+          scannerContact: parsed.data.scannerContact,
           reason: verdict.reason,
           locale,
           retentionDays: settings.messageRetentionDays,

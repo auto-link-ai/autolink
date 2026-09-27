@@ -483,7 +483,21 @@
       "title": "Blocked messages",
       "subtitle": "Messages stopped by Gemini for insults or threats, newest first. The owner never receives them. Deleted automatically after {days, plural, one {# day} other {# days}}.",
       "empty": "No blocked messages yet.",
-      "reason": "Reason:"
+      "reason": "Reason:",
+      "contact": "Contact left:",
+      "deliver": "Deliver to the owner",
+      "deliverConfirm": "This message will be sent to the owner of {tagId}, with the usual notification, as if it had not been blocked.",
+      "deliverYes": "Yes, deliver",
+      "delete": "Delete",
+      "deleteConfirm": "This message will be removed from the list for good.",
+      "deleteYes": "Yes, delete",
+      "results": {
+        "deleted": "Message removed from the list.",
+        "delivered": "Message delivered to the owner.",
+        "unavailable": "This sticker is no longer active: the message cannot be delivered.",
+        "not_found": "Message not found.",
+        "forbidden": "Only an administrator account can deliver or delete."
+      }
     }
   },
   "site": {

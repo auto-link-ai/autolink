@@ -46,7 +46,8 @@ export default defineConfig({
     timeout: 180_000,
     // Its own build directory: a `pnpm dev` you already have open writes to
     // .next, and two dev servers sharing one build corrupt each other.
-    // No message check in tests: they must never call Google, or depend on it.
-    env: { NEXT_DIST_DIR: '.next-e2e', GEMINI_API_KEY: '' },
+    // The message check runs against a local stand-in (tests/e2e/geminiMock.ts,
+    // started by the warm-up): tests never call Google, or depend on it.
+    env: { NEXT_DIST_DIR: '.next-e2e', GEMINI_API_KEY: 'e2e-stand-in', GEMINI_API_BASE: 'http://127.0.0.1:3199' },
   },
 });

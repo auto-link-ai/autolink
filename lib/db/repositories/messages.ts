@@ -13,7 +13,6 @@
  * Returned objects never include `_id`, `ipHash`, or `scannerSessionId`.
  */
 import 'server-only';
-import { randomBytes } from 'node:crypto';
 import { connectToDatabase } from '@/lib/db/connect';
 import { MessageModel } from '@/lib/db/models/message';
 import { TagModel } from '@/lib/db/models/tag';
@@ -21,7 +20,7 @@ import { UserModel } from '@/lib/db/models/user';
 import { VehicleModel } from '@/lib/db/models/vehicle';
 import type { Locale } from '@/i18n/locales';
 import type { MessageCategory, MessageStatus } from '@/lib/domain/constants';
-import { encodeCrockford } from '@/lib/tags/generate';
+import { generateMessagePublicId } from '@/lib/tags/generate';
 import { isValidTagIdShape } from '@/lib/validation/tagId';
 import type { OwnerActor, ScannerActor } from './actor';
 import { toObjectId } from './objectId';
@@ -64,11 +63,6 @@ export interface AdminMessageMeta {
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-
-/** 'MSG-' + 10 Crockford characters: the owner's handle for one message. */
-function generateMessagePublicId(): string {
-  return 'MSG-' + encodeCrockford(randomBytes(7), 10);
-}
 
 function vehicleLabel(vehicle: { brand: string; model: string; color: string } | null): string | null {
   return vehicle ? `${vehicle.brand} ${vehicle.model} · ${vehicle.color}` : null;

@@ -53,3 +53,13 @@ export function generateUniqueTagIds(count: number): string[] {
   while (ids.size < count) ids.add(generateTagId());
   return [...ids];
 }
+
+/** 'MSG-' + 10 Crockford characters: the owner's handle for one message. */
+export function generateMessagePublicId(): string {
+  return 'MSG-' + encodeCrockford(randomBytes(7), 10);
+}
+
+/** 'BLK-' + 10 Crockford characters: the admin's handle for a blocked message. */
+export function generateBlockedMessageId(): string {
+  return 'BLK-' + encodeCrockford(randomBytes(7), 10);
+}

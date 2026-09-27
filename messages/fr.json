@@ -483,7 +483,21 @@
       "title": "Messages bloqués",
       "subtitle": "Messages arrêtés par Gemini pour insultes ou menaces, du plus récent au plus ancien. Le propriétaire ne les reçoit jamais. Supprimés automatiquement après {days, plural, one {# jour} other {# jours}}.",
       "empty": "Aucun message bloqué pour l'instant.",
-      "reason": "Raison :"
+      "reason": "Raison :",
+      "contact": "Contact laissé :",
+      "deliver": "Délivrer au propriétaire",
+      "deliverConfirm": "Ce message sera envoyé au propriétaire de {tagId}, avec la notification habituelle, comme s’il n’avait pas été bloqué.",
+      "deliverYes": "Oui, délivrer",
+      "delete": "Supprimer",
+      "deleteConfirm": "Ce message sera retiré de la liste pour de bon.",
+      "deleteYes": "Oui, supprimer",
+      "results": {
+        "deleted": "Message retiré de la liste.",
+        "delivered": "Message délivré au propriétaire.",
+        "unavailable": "Cet autocollant n’est plus actif : le message ne peut pas être délivré.",
+        "not_found": "Message introuvable.",
+        "forbidden": "Seul un compte administrateur peut délivrer ou supprimer."
+      }
     }
   },
   "site": {

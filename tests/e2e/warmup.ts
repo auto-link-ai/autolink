@@ -2,6 +2,7 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { chromium, type FullConfig } from '@playwright/test';
 import { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_STATE, hasAdminCredentials } from './adminSession';
+import { startGeminiMock } from './geminiMock';
 
 /**
  * Runs once, before any worker starts:
@@ -51,8 +52,10 @@ const ADMIN_ROUTES = [
   '/en/admin/settings',
 ];
 
-export default async function warmUp(config: FullConfig): Promise<void> {
+/** Returns the teardown: the Gemini stand-in stops when the run ends. */
+export default async function warmUp(config: FullConfig): Promise<() => Promise<void>> {
   const baseURL = config.projects[0]?.use.baseURL ?? 'http://localhost:3100';
+  const stopGemini = await startGeminiMock();
 
   for (const route of ROUTES) {
     try {
@@ -62,7 +65,7 @@ export default async function warmUp(config: FullConfig): Promise<void> {
     }
   }
 
-  if (!hasAdminCredentials) return;
+  if (!hasAdminCredentials) return stopGemini;
 
   await mkdir(path.dirname(ADMIN_STATE), { recursive: true });
   const browser = await chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || undefined });
@@ -78,4 +81,5 @@ export default async function warmUp(config: FullConfig): Promise<void> {
   } finally {
     await browser.close();
   }
+  return stopGemini;
 }
