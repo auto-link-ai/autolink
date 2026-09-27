@@ -29,10 +29,16 @@ function useCurrent(locale: Locale) {
     item.section !== section ? undefined : pathname === item.href ? ('page' as const) : ('true' as const);
 }
 
-function Badge({ item, className }: { item: OwnerNavItem; className?: string }) {
+/**
+ * The count on a tab. `announce: false` when the badge sits before the label
+ * (on the icon, in the bar): the link then says it after its name instead,
+ * so a screen reader hears "Car book, 2 dates coming up" — name first.
+ */
+function Badge({ item, className, announce = true }: { item: OwnerNavItem; className?: string; announce?: boolean }) {
   if (item.badge <= 0) return null;
   return (
     <span
+      aria-hidden={announce ? undefined : true}
       className={cx(
         'inline-block min-w-5 rounded-full px-1.5 text-center text-xs leading-5 font-bold',
         item.urgent ? 'bg-danger text-white' : 'bg-accent text-accent-ink',
@@ -40,7 +46,7 @@ function Badge({ item, className }: { item: OwnerNavItem; className?: string }) 
       )}
     >
       <span aria-hidden="true">{item.badge}</span>
-      <span className="sr-only">{item.badgeLabel}</span>
+      {announce && <span className="sr-only">{item.badgeLabel}</span>}
     </span>
   );
 }
@@ -115,9 +121,10 @@ export function OwnerBar({ locale, items, label }: { locale: Locale; items: Owne
                   )}
                 >
                   <Icon className="h-6 w-6" />
-                  <Badge item={item} className="absolute -top-1.5 inset-e-0.5 ring-2 ring-white" />
+                  <Badge item={item} announce={false} className="absolute -top-1.5 inset-e-0.5 ring-2 ring-white" />
                 </span>
                 {item.label}
+                {item.badge > 0 && <span className="sr-only">{item.badgeLabel}</span>}
               </PendingLink>
             </li>
           );

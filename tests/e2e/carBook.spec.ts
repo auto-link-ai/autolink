@@ -269,7 +269,9 @@ test.describe('the car book', () => {
 
     await menu.getByRole('button', { name: 'Sign out' }).click();
     await expect(page).toHaveURL(/\/en$/);
-    await expect(page.getByRole('banner').getByRole('button', { name: 'Open menu' })).toBeVisible();
+    // Signed out: « Sign in » is back, and the account button is gone.
+    await expect(page.getByRole('banner').getByRole('link', { name: 'Sign in' })).toBeVisible();
+    await expect(page.getByRole('banner').getByRole('button', { name: 'My account, Signed in' })).toHaveCount(0);
     await page.goto('/en/dashboard');
     await expect(page).toHaveURL(/\/en\/login/);
     await context.close();
