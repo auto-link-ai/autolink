@@ -26,7 +26,13 @@ export const ORDER_RESULTS = [
   'wrong_count',
   'unavailable',
   'invalid',
+  'created',
+  'deleted',
+  'no_delivery',
+  'forbidden',
 ] as const;
+/** The results that report something done, shown in green. */
+export const ORDER_SUCCESS_RESULTS: ReadonlySet<string> = new Set(['ok', 'created', 'deleted']);
 export type OrderResultCode = (typeof ORDER_RESULTS)[number];
 
 type RawParams = Record<string, string | string[] | undefined>;

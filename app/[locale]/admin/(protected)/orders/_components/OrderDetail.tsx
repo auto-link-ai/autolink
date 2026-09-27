@@ -3,26 +3,39 @@ import { Button } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
 import { formatDzd } from '@/lib/format/currency';
 import { formatDateTime } from '@/lib/format/date';
-import { availableOrderActions, canAssignTags } from '@/lib/orders/transitions';
+import { availableOrderActions, canAssignTags, canDeleteOrder, canEditOrder } from '@/lib/orders/transitions';
 import type { AdminOrderDTO } from '@/lib/db/repositories/ordersAdmin';
 import { assignOrderTagsAction, changeOrderStatusAction, updateOrderShippingAction } from '../actions';
+import { deleteOrderAction } from '../editActions';
+import { OrderForm, type OrderFormLabels } from './OrderForm';
 
 const INPUT = 'h-11 w-full rounded-sm border border-border-strong bg-surface px-3 text-sm text-text focus:border-accent';
 
-/** The order opened from the list: details, workflow, tag assignment, courier. */
+/**
+ * The order opened from the list: details, workflow, tag assignment, courier —
+ * and correcting it (until it ships) or deleting it (new or cancelled, ADMIN only).
+ */
 export async function OrderDetail({
   order,
   locale,
   returnSearch,
   wilayaName,
+  wilayas,
+  formLabels,
+  canDelete,
 }: {
   order: AdminOrderDTO;
   locale: Locale;
   returnSearch: string;
   wilayaName: string;
+  wilayas: { code: number; name: string }[];
+  formLabels: OrderFormLabels;
+  /** The signed-in account may delete (ADMIN role). */
+  canDelete: boolean;
 }) {
   const t = await getTranslations('admin.orders');
   const actions = availableOrderActions(order.status);
+  const listHref = `/${locale}/admin/orders${returnSearch}`;
 
   const hidden = (
     <>
@@ -121,6 +134,49 @@ export async function OrderDetail({
           </Button>
         </div>
       </form>
+
+      {/* Correct the order, until it ships */}
+      {canEditOrder(order.status) && (
+        <details className="group mt-6 border-t border-border pt-5">
+          <summary className="cursor-pointer list-none text-[15px] font-bold text-accent">{t('form.edit')}</summary>
+          <p className="mt-2 text-sm text-text-muted">{t('form.editHint')}</p>
+          <div className="mt-4">
+            <OrderForm
+              locale={locale}
+              orderRef={order.orderRef}
+              returnSearch={returnSearch}
+              values={{
+                customerName: order.customerName,
+                phone: order.phone,
+                email: order.email ?? '',
+                wilayaCode: String(order.wilayaCode),
+                commune: order.commune,
+                address: order.address,
+                deliveryType: order.deliveryType,
+                deliveryNotes: order.deliveryNotes ?? '',
+                quantity: String(order.quantity),
+              }}
+              wilayas={wilayas}
+              labels={formLabels}
+              cancelHref={listHref}
+            />
+          </div>
+        </details>
+      )}
+
+      {/* Delete: two taps, the second one says what disappears */}
+      {canDelete && canDeleteOrder(order.status) && (
+        <details className="mt-6 border-t border-border pt-5">
+          <summary className="cursor-pointer list-none text-[15px] font-bold text-danger">{t('form.delete')}</summary>
+          <form action={deleteOrderAction} className="mt-3 flex flex-col items-start gap-3 rounded-sm border border-danger/30 bg-danger/5 p-4">
+            {hidden}
+            <p className="text-sm text-text">{t('form.deleteConfirm', { orderRef: order.orderRef })}</p>
+            <Button type="submit" variant="danger" size="sm">
+              {t('form.deleteYes')}
+            </Button>
+          </form>
+        </details>
+      )}
     </section>
   );
 }

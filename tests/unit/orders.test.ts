@@ -1,9 +1,17 @@
 import { describe, expect, it } from 'vitest';
+import { ORDER_STATUSES } from '@/lib/domain/constants';
 import { orderListReturnPath, parseOrderListQuery } from '@/lib/admin/orderListQuery';
 import { csvCell, csvRow } from '@/lib/format/csv';
 import { generateOrderRef, isValidOrderRef, normalizeOrderRefInput } from '@/lib/orders/ref';
 import { computeOrderTotals } from '@/lib/orders/totals';
-import { availableOrderActions, canApplyOrderAction, canAssignTags, orderTargetStatus } from '@/lib/orders/transitions';
+import {
+  availableOrderActions,
+  canApplyOrderAction,
+  canAssignTags,
+  canDeleteOrder,
+  canEditOrder,
+  orderTargetStatus,
+} from '@/lib/orders/transitions';
 import { orderFieldErrors, orderInputSchema } from '@/lib/validation/order';
 
 describe('order reference', () => {
@@ -136,5 +144,15 @@ describe('csv escaping', () => {
     expect(csvCell('@handle')).toBe("'@handle");
     expect(csvCell(null)).toBe('');
     expect(csvRow(['a', 1, null])).toBe('a,1,');
+  });
+});
+
+describe('editing and deleting an order', () => {
+  it('lets details be corrected until the parcel leaves', () => {
+    expect(ORDER_STATUSES.filter(canEditOrder)).toEqual(['PENDING', 'CONFIRMED', 'PREPARING']);
+  });
+
+  it('deletes only an order that never went anywhere', () => {
+    expect(ORDER_STATUSES.filter(canDeleteOrder)).toEqual(['PENDING', 'CANCELLED']);
   });
 });

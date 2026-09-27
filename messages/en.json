@@ -187,7 +187,11 @@
         "tags_missing": "Assign all of the order’s tags first.",
         "wrong_count": "The number of tags must match the quantity ordered.",
         "unavailable": "Some tags are not available (already assigned or activated).",
-        "invalid": "Invalid input."
+        "invalid": "Invalid input.",
+        "created": "Order created.",
+        "deleted": "Order deleted.",
+        "no_delivery": "No delivery fee for this wilaya: add it in Settings.",
+        "forbidden": "Only an administrator account can delete."
       },
       "status": {
         "PENDING": "Received",
@@ -248,6 +252,26 @@
         "courier": "Courier",
         "tracking": "Tracking number",
         "saveShipping": "Save delivery details"
+      },
+      "form": {
+        "edit": "Edit the order",
+        "newOrder": "New order",
+        "newTitle": "New order (taken by phone)",
+        "newHint": "Saved as “Pending”, with today’s price and delivery fees.",
+        "editHint": "The unit price stays as ordered; the delivery fee and total follow the wilaya and delivery type chosen.",
+        "submitEdit": "Save",
+        "submitNew": "Create the order",
+        "working": "Saving…",
+        "cancel": "Cancel",
+        "delete": "Delete the order",
+        "deleteConfirm": "Order {orderRef} will be deleted for good. Stickers assigned to it will be released.",
+        "deleteYes": "Yes, delete",
+        "formErrors": {
+          "no_delivery": "No delivery fee for this wilaya: add it in Settings.",
+          "not_allowed": "This order can no longer be edited.",
+          "not_found": "Order not found.",
+          "conflict": "The order changed in the meantime. Reload the page."
+        }
       }
     },
     "settings": {

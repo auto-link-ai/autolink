@@ -33,3 +33,16 @@ export function availableOrderActions(status: OrderStatus): OrderAction[] {
 export function canAssignTags(status: OrderStatus): boolean {
   return status === 'CONFIRMED' || status === 'PREPARING';
 }
+
+/** An order's details can be corrected until the parcel leaves. */
+export function canEditOrder(status: OrderStatus): boolean {
+  return status === 'PENDING' || status === 'CONFIRMED' || status === 'PREPARING';
+}
+
+/**
+ * Only an order that never went anywhere can be deleted: a new one (a mistake,
+ * a duplicate, a prank) or a cancelled one. A confirmed order is cancelled first.
+ */
+export function canDeleteOrder(status: OrderStatus): boolean {
+  return status === 'PENDING' || status === 'CANCELLED';
+}

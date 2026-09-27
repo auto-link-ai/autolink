@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { routing } from '@/i18n/routing';
 import { requireAdmin } from '@/lib/admin/auth';
 import {
+  ORDER_SUCCESS_RESULTS,
   orderListSearch,
   parseOrderListQuery,
   parseOrderResult,
@@ -17,7 +18,10 @@ import { cx } from '@/lib/cx';
 import { formatDzd } from '@/lib/format/currency';
 import { formatDateTime } from '@/lib/format/date';
 import { OrderDetail } from './_components/OrderDetail';
+import { OrderForm } from './_components/OrderForm';
+import { orderFormLabels } from './_components/orderFormLabels';
 import { getWilayas } from '@/lib/config/wilayas';
+import { buttonClasses } from '@/components/ui/Button';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -55,6 +59,16 @@ export default async function AdminOrdersPage({ params, searchParams }: Props) {
   };
 
   const selected = query.ref ? await adminOrdersRepository.get(session.actor, query.ref) : null;
+  // « Nouvelle commande » opens the empty form at the top of the page.
+  const creating = raw.new === '1';
+  const [editLabels, newLabels] = await Promise.all([
+    selected ? orderFormLabels('edit') : null,
+    creating ? orderFormLabels('new') : null,
+  ]);
+  const wilayaOptions = wilayas.map((w) => ({
+    code: w.code,
+    name: locale === 'ar' ? w.nameAr : locale === 'en' ? w.nameEn : w.nameFr,
+  }));
   const total = ORDER_STATUSES.reduce((sum, status) => sum + counts[status], 0);
 
   return (
@@ -64,32 +78,46 @@ export default async function AdminOrdersPage({ params, searchParams }: Props) {
           <h1 className="text-h2 text-text">{t('title')}</h1>
           <p className="mt-1 text-text-secondary">{t('subtitle', { pending: counts.PENDING })}</p>
         </div>
-        <a
-          href={`/api/admin/orders/export${returnSearch}`}
-          className="inline-flex h-11 items-center rounded-sm border border-border-strong bg-surface px-4 text-sm font-semibold text-text hover:bg-surface-2"
-        >
-          {t('export')}
-        </a>
+        <div className="flex flex-wrap gap-2">
+          <NextLink href={`${listPath}?new=1`} className={buttonClasses('primary', 'sm')}>
+            + {t('form.newOrder')}
+          </NextLink>
+          <a
+            href={`/api/admin/orders/export${returnSearch}`}
+            className="inline-flex h-11 items-center rounded-sm border border-border-strong bg-surface px-4 text-sm font-semibold text-text hover:bg-surface-2"
+          >
+            {t('export')}
+          </a>
+        </div>
       </div>
+
+      {creating && newLabels && (
+        <Card title={t('form.newTitle')} description={t('form.newHint')}>
+          <OrderForm locale={locale} returnSearch={returnSearch} values={{ quantity: '1' }} wilayas={wilayaOptions} labels={newLabels} cancelHref={listPath} />
+        </Card>
+      )}
 
       {result && (
         <p
           role="status"
           className={cx(
             'rounded-sm border px-3 py-2 text-sm',
-            result === 'ok' ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/5 text-danger',
+            ORDER_SUCCESS_RESULTS.has(result) ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/5 text-danger',
           )}
         >
           {t(`results.${result}`)}
         </p>
       )}
 
-      {selected && (
+      {selected && editLabels && (
         <OrderDetail
           order={selected}
           locale={locale}
           returnSearch={returnSearch}
           wilayaName={wilayaName(selected.wilayaCode)}
+          wilayas={wilayaOptions}
+          formLabels={editLabels}
+          canDelete={session.actor.role === 'ADMIN'}
         />
       )}
 

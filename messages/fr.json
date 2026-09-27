@@ -187,7 +187,11 @@
         "tags_missing": "Assignez d’abord toutes les étiquettes de la commande.",
         "wrong_count": "Le nombre d’étiquettes doit correspondre à la quantité commandée.",
         "unavailable": "Certaines étiquettes ne sont pas disponibles (déjà assignées ou activées).",
-        "invalid": "Saisie invalide."
+        "invalid": "Saisie invalide.",
+        "created": "Commande créée.",
+        "deleted": "Commande supprimée.",
+        "no_delivery": "Aucun frais de livraison pour cette wilaya : ajoutez-les dans Réglages.",
+        "forbidden": "Seul un compte administrateur peut supprimer."
       },
       "status": {
         "PENDING": "Reçue",
@@ -248,6 +252,26 @@
         "courier": "Transporteur",
         "tracking": "Numéro de suivi",
         "saveShipping": "Enregistrer la livraison"
+      },
+      "form": {
+        "edit": "Modifier la commande",
+        "newOrder": "Nouvelle commande",
+        "newTitle": "Nouvelle commande (prise par téléphone)",
+        "newHint": "Enregistrée « En attente », avec le prix et les frais de livraison actuels.",
+        "editHint": "Le prix unitaire reste celui de la commande ; les frais de livraison et le total suivent la wilaya et le mode choisis.",
+        "submitEdit": "Enregistrer",
+        "submitNew": "Créer la commande",
+        "working": "Enregistrement…",
+        "cancel": "Annuler",
+        "delete": "Supprimer la commande",
+        "deleteConfirm": "La commande {orderRef} sera supprimée définitivement. Les autocollants qui lui sont attribués seront libérés.",
+        "deleteYes": "Oui, supprimer",
+        "formErrors": {
+          "no_delivery": "Aucun frais de livraison pour cette wilaya : ajoutez-les dans Réglages.",
+          "not_allowed": "Cette commande ne peut plus être modifiée.",
+          "not_found": "Commande introuvable.",
+          "conflict": "La commande a changé entre-temps. Rechargez la page."
+        }
       }
     },
     "settings": {
