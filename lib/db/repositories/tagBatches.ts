@@ -22,6 +22,8 @@ export interface TagBatchDTO {
   createdAt: Date;
   createdByEmail: string | null;
   statusCounts: Record<TagStatus, number>;
+  /** Never used and not promised to an order: what « clean up » would delete. */
+  unused: number;
 }
 
 export interface NewBatchTag {
@@ -94,6 +96,7 @@ export const tagBatchesRepository = {
       createdAt: Date;
       createdByEmail?: string;
       statuses: TagStatus[];
+      unused: number;
     }>([
       { $sort: { createdAt: -1 } },
       { $limit: limit },
@@ -103,7 +106,7 @@ export const tagBatchesRepository = {
           localField: '_id',
           foreignField: 'batchId',
           as: 'tags',
-          pipeline: [{ $project: { _id: 0, status: 1 } }],
+          pipeline: [{ $project: { _id: 0, status: 1, orderId: 1 } }],
         },
       },
       {
@@ -124,6 +127,16 @@ export const tagBatchesRepository = {
           createdAt: 1,
           createdByEmail: { $first: '$admins.email' },
           statuses: '$tags.status',
+          unused: {
+            $size: {
+              $filter: {
+                input: '$tags',
+                cond: {
+                  $and: [{ $eq: ['$$this.status', 'UNASSIGNED'] }, { $eq: [{ $ifNull: ['$$this.orderId', null] }, null] }],
+                },
+              },
+            },
+          },
         },
       },
     ]);
@@ -138,6 +151,7 @@ export const tagBatchesRepository = {
         createdAt: row.createdAt,
         createdByEmail: row.createdByEmail ?? null,
         statusCounts,
+        unused: row.unused,
       };
     });
   },

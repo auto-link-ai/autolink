@@ -1,11 +1,13 @@
 import { getTranslations } from 'next-intl/server';
+import { ConfirmAction } from '@/components/admin/ConfirmAction';
 import { buttonClasses } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
 import type { AdminTagRow } from '@/lib/db/repositories/tags';
 import type { TagAction } from '@/lib/domain/constants';
 import { formatDateTime } from '@/lib/format/date';
+import { canDeleteTag, canTakeBackTag } from '@/lib/tags/adminRules';
 import { availableActions } from '@/lib/tags/transitions';
-import { changeTagStatusAction } from '../actions';
+import { changeTagStatusAction, deleteTagAction, takeBackTagAction } from '../actions';
 import { StatusBadge } from './StatusBadge';
 
 const ACTION_STYLE: Record<TagAction, 'secondary' | 'danger'> = {
@@ -19,11 +21,14 @@ export async function TagsTable({
   rows,
   locale,
   returnSearch,
+  canEdit,
 }: {
   rows: AdminTagRow[];
   locale: Locale;
   /** Current list query, so an action returns to the same filtered page. */
   returnSearch: string;
+  /** Delete and take back: ADMIN role only. */
+  canEdit: boolean;
 }) {
   const t = await getTranslations('admin.tags');
   if (rows.length === 0) return <p className="py-6 text-sm text-text-muted">{t('list.empty')}</p>;
@@ -70,6 +75,27 @@ export async function TagsTable({
                     </button>
                   ))}
                 </form>
+                {canEdit && (canDeleteTag(row) || canTakeBackTag(row)) && (
+                  <div className="mt-2">
+                    {canDeleteTag(row) ? (
+                      <ConfirmAction
+                        summary={t('edit.delete')}
+                        message={t('edit.deleteConfirm', { tagId: row.publicTagId })}
+                        confirm={t('edit.deleteYes')}
+                        action={deleteTagAction}
+                        fields={{ locale, publicTagId: row.publicTagId, returnSearch }}
+                      />
+                    ) : (
+                      <ConfirmAction
+                        summary={t('edit.takeBack')}
+                        message={t('edit.takeBackConfirm', { tagId: row.publicTagId })}
+                        confirm={t('edit.takeBackYes')}
+                        action={takeBackTagAction}
+                        fields={{ locale, publicTagId: row.publicTagId, returnSearch }}
+                      />
+                    )}
+                  </div>
+                )}
               </td>
             </tr>
           ))}

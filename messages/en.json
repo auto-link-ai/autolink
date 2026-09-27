@@ -143,7 +143,11 @@
         "ok": "Status updated.",
         "not_allowed": "That change isn't possible from the current status.",
         "conflict": "The tag changed in the meantime. Try again.",
-        "not_found": "Tag not found."
+        "not_found": "Tag not found.",
+        "deleted": "Sticker deleted.",
+        "cleaned": "Unused stickers deleted.",
+        "taken_back": "Sticker taken back: it is “Unassigned”. Reissue the batch codes before handing it out again.",
+        "forbidden": "Only an administrator account can delete or take back a sticker."
       },
       "status": {
         "UNASSIGNED": "Unassigned",
@@ -173,6 +177,17 @@
         "forbidden": "Request refused.",
         "server_error": "Something went wrong. Try again.",
         "network": "Couldn't connect. Check your network and try again."
+      },
+      "edit": {
+        "delete": "Delete",
+        "deleteConfirm": "Sticker {tagId} was never used: it will be deleted for good.",
+        "deleteYes": "Yes, delete",
+        "takeBack": "Take back",
+        "takeBackConfirm": "Sticker {tagId} will be taken from its customer and become “Unassigned”. That car’s car book will be deleted; the customer keeps their messages. Its old activation code will stop working: reissue the batch codes before handing it out again.",
+        "takeBackYes": "Yes, take it back",
+        "clean": "{count, plural, one {Delete the unused sticker} other {Delete the # unused}}",
+        "cleanConfirm": "{count, plural, one {This batch’s never-used sticker will be deleted} other {This batch’s # never-used stickers will be deleted}}. Used stickers are never touched; the batch goes if nothing is left.",
+        "cleanYes": "Yes, delete"
       }
     },
     "orders": {

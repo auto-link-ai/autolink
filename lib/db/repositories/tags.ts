@@ -40,6 +40,10 @@ export interface AdminTagRow {
   batchLabel: string | null;
   activatedAt: Date | null;
   createdAt: Date;
+  /** A customer holds it (it can be taken back). */
+  hasOwner: boolean;
+  /** Promised to an order (it cannot be deleted). */
+  onOrder: boolean;
 }
 
 export interface AdminTagPage {
@@ -138,6 +142,9 @@ export const tagsRepository = {
           activatedAt: 1,
           createdAt: 1,
           batchLabel: { $ifNull: [{ $first: '$batch.label' }, null] },
+          // A missing field and null both mean "none".
+          hasOwner: { $ne: [{ $ifNull: ['$ownerId', null] }, null] },
+          onOrder: { $ne: [{ $ifNull: ['$orderId', null] }, null] },
         },
       },
     ]);

@@ -143,7 +143,11 @@
         "ok": "Statut mis à jour.",
         "not_allowed": "Ce changement n'est pas possible depuis le statut actuel.",
         "conflict": "L'étiquette a changé entre-temps. Réessayez.",
-        "not_found": "Étiquette introuvable."
+        "not_found": "Étiquette introuvable.",
+        "deleted": "Étiquette supprimée.",
+        "cleaned": "Étiquettes inutilisées supprimées.",
+        "taken_back": "Étiquette reprise : elle est « Non attribuée ». Réémettez les codes du lot avant de la redonner.",
+        "forbidden": "Seul un compte administrateur peut supprimer ou reprendre une étiquette."
       },
       "status": {
         "UNASSIGNED": "Non attribuée",
@@ -173,6 +177,17 @@
         "forbidden": "Requête refusée.",
         "server_error": "Une erreur est survenue. Réessayez.",
         "network": "Connexion impossible. Vérifiez votre réseau et réessayez."
+      },
+      "edit": {
+        "delete": "Supprimer",
+        "deleteConfirm": "L'étiquette {tagId} n'a jamais servi : elle sera supprimée définitivement.",
+        "deleteYes": "Oui, supprimer",
+        "takeBack": "Reprendre",
+        "takeBackConfirm": "L'étiquette {tagId} sera retirée à son client et redeviendra « Non attribuée ». Le carnet de cette voiture sera supprimé ; le client garde ses messages. Son ancien code d'activation ne fonctionnera plus : réémettez les codes du lot avant de la redonner.",
+        "takeBackYes": "Oui, reprendre",
+        "clean": "{count, plural, one {Supprimer l’étiquette inutilisée} other {Supprimer les # inutilisées}}",
+        "cleanConfirm": "{count, plural, one {L’étiquette jamais utilisée de ce lot sera supprimée} other {Les # étiquettes jamais utilisées de ce lot seront supprimées}}. Les étiquettes utilisées ne sont jamais touchées ; le lot disparaît s'il ne lui reste rien.",
+        "cleanYes": "Oui, supprimer"
       }
     },
     "orders": {

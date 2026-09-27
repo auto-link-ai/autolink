@@ -13,7 +13,9 @@ export interface TagListQuery {
   page: number;
 }
 
-export const TRANSITION_RESULTS = ['ok', 'not_allowed', 'conflict', 'not_found'] as const;
+export const TRANSITION_RESULTS = ['ok', 'not_allowed', 'conflict', 'not_found', 'deleted', 'cleaned', 'taken_back', 'forbidden'] as const;
+/** The results that report something done, shown in green. */
+export const TAG_SUCCESS_RESULTS: ReadonlySet<string> = new Set(['ok', 'deleted', 'cleaned', 'taken_back']);
 export type TransitionResultCode = (typeof TRANSITION_RESULTS)[number];
 
 type RawParams = Record<string, string | string[] | undefined>;

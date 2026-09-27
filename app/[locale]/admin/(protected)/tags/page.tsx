@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { buttonClasses } from '@/components/ui/Button';
 import { routing } from '@/i18n/routing';
 import { requireAdmin } from '@/lib/admin/auth';
-import { parseTagListQuery, parseTransitionResult, tagListSearch } from '@/lib/admin/tagListQuery';
+import { parseTagListQuery, parseTransitionResult, TAG_SUCCESS_RESULTS, tagListSearch } from '@/lib/admin/tagListQuery';
 import { cx } from '@/lib/cx';
 import { tagBatchesRepository } from '@/lib/db/repositories/tagBatches';
 import { tagsRepository, type AdminTagPage } from '@/lib/db/repositories/tags';
@@ -98,7 +98,14 @@ export default async function AdminTagsPage({ params, searchParams }: Props) {
       </Card>
 
       <Card title={t('batches.title')}>
-        <BatchesTable batches={batches} locale={locale} canReissue={isAdmin && qr.ok} errors={errors} />
+        <BatchesTable
+          batches={batches}
+          locale={locale}
+          canReissue={isAdmin && qr.ok}
+          canEdit={isAdmin}
+          errors={errors}
+          returnSearch={currentSearch}
+        />
       </Card>
 
       <Card title={t('list.title')} description={t('list.count', { count: tagPage.total })}>
@@ -107,7 +114,7 @@ export default async function AdminTagsPage({ params, searchParams }: Props) {
             role="status"
             className={cx(
               'mb-4 rounded-sm border px-3 py-2 text-sm',
-              result === 'ok' ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/5 text-danger',
+              TAG_SUCCESS_RESULTS.has(result) ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/5 text-danger',
             )}
           >
             {t(`results.${result}`)}
@@ -154,7 +161,7 @@ export default async function AdminTagsPage({ params, searchParams }: Props) {
           </form>
         </div>
 
-        <TagsTable rows={tagPage.items} locale={locale} returnSearch={currentSearch} />
+        <TagsTable rows={tagPage.items} locale={locale} returnSearch={currentSearch} canEdit={isAdmin} />
 
         {tagPage.pageCount > 1 && (
           <nav className="mt-4 flex items-center justify-between gap-3 text-sm">
