@@ -65,6 +65,7 @@ export default async function ScanPage({ params, searchParams }: Props) {
       rate_limited: t('errors.rate_limited'),
       unavailable: t('errors.unavailable'),
       challenge_failed: t('errors.challenge_failed'),
+      abusive: t('errors.abusive'),
       server_error: t('errors.server_error'),
     },
   };

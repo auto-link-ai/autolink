@@ -40,6 +40,7 @@ export default async function AdminLayout({ children, params }: Props) {
     orders: t('nav.orders'),
     tags: t('nav.tags'),
     customers: t('nav.customers'),
+    blocked: t('nav.blocked'),
     settings: t('nav.settings'),
   };
 

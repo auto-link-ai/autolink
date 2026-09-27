@@ -52,7 +52,8 @@
       "rate_limited": "Trop de messages pour le moment. Réessayez dans une heure.",
       "unavailable": "Cet AutoLink n’est pas disponible.",
       "challenge_failed": "La vérification a échoué. Réessayez.",
-      "server_error": "Une erreur est survenue. Réessayez dans un instant."
+      "server_error": "Une erreur est survenue. Réessayez dans un instant.",
+      "abusive": "Votre message contient des insultes ou des menaces. Reformulez-le pour qu'il soit envoyé."
     },
     "owner": {
       "title": "C’est votre voiture",
@@ -78,7 +79,8 @@
       "orders": "Commandes",
       "settings": "Réglages",
       "overview": "Vue d'ensemble",
-      "customers": "Clients"
+      "customers": "Clients",
+      "blocked": "Messages bloqués"
     },
     "login": {
       "title": "Connexion administrateur",
@@ -409,6 +411,12 @@
         "blockConfirm": "{email} ne pourra plus se connecter, et sa session actuelle s’arrête immédiatement. Vous pourrez le débloquer ensuite.",
         "blockYes": "Oui, bloquer ce compte"
       }
+    },
+    "blocked": {
+      "title": "Messages bloqués",
+      "subtitle": "Messages arrêtés par Gemini pour insultes ou menaces, du plus récent au plus ancien. Le propriétaire ne les reçoit jamais. Supprimés automatiquement après {days, plural, one {# jour} other {# jours}}.",
+      "empty": "Aucun message bloqué pour l'instant.",
+      "reason": "Raison :"
     }
   },
   "site": {
@@ -733,6 +741,13 @@
           "title": "Ce que nous ne montrons jamais",
           "body": [
             "Votre numéro de téléphone, votre nom, votre e-mail, votre adresse et votre plaque d'immatriculation ne sont jamais affichés à la personne qui scanne l'autocollant."
+          ]
+        },
+        {
+          "title": "Vérification automatique des messages",
+          "body": [
+            "Avant d'être transmis, le texte écrit par la personne qui scanne est vérifié automatiquement par Gemini, un service de Google, pour arrêter les insultes et les menaces. Seul le texte est envoyé : ni le moyen de recontact, ni l'autocollant, ni le propriétaire.",
+            "Un message arrêté n'est pas transmis au propriétaire. Il est conservé pour vérification, puis supprimé automatiquement comme les autres messages."
           ]
         },
         {

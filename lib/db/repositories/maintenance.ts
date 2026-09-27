@@ -9,6 +9,7 @@ import type { Model } from 'mongoose';
 import { connectToDatabase } from '@/lib/db/connect';
 import { AdminUserModel } from '@/lib/db/models/adminUser';
 import { AuditLogModel } from '@/lib/db/models/auditLog';
+import { BlockedMessageModel } from '@/lib/db/models/blockedMessage';
 import { MessageModel } from '@/lib/db/models/message';
 import { NotificationAttemptModel } from '@/lib/db/models/notificationAttempt';
 import { NotificationSubscriptionModel } from '@/lib/db/models/notificationSubscription';
@@ -28,6 +29,7 @@ const ALL_MODELS: ReadonlyArray<Pick<Model<unknown>, 'syncIndexes' | 'collection
   TagModel,
   TagBatchModel,
   MessageModel,
+  BlockedMessageModel,
   NotificationSubscriptionModel,
   NotificationAttemptModel,
   OrderModel,

@@ -48,25 +48,35 @@ const IPHONE_SAFARI =
 
 test('one button installs the app with the browser’s own install window', async ({ page }) => {
   await page.goto('/en/faq');
-  await page.waitForLoadState('networkidle');
+  const banner = page.getByRole('banner');
   // Phones find it in the menu; a computer, which has no menu when signed out, in the bar.
-  const menuButton = page.getByRole('banner').getByRole('button', { name: 'Open menu' });
-  if (await menuButton.isVisible()) await menuButton.click();
+  const menuButton = banner.locator('button[aria-controls="mobile-menu"]');
+  if (await menuButton.isVisible()) {
+    // A tap before the page has finished loading does nothing: retry until it opens.
+    await expect(async () => {
+      if ((await menuButton.getAttribute('aria-expanded')) !== 'true') await menuButton.click();
+      await expect(page.locator('#mobile-menu')).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 15_000 });
+  }
   // Only the visible button counts: getByRole skips the hidden one.
-  const install = page.getByRole('banner').getByRole('button', { name: 'Install the app' });
+  const install = banner.getByRole('button', { name: 'Install the app' });
   // Nothing offered yet: a browser that cannot install gets no button.
   await expect(install).toHaveCount(0);
 
-  // What Chrome and Edge send when the site can be installed.
-  await page.evaluate(() => {
-    const offer = Object.assign(new Event('beforeinstallprompt', { cancelable: true }), {
-      prompt: async () => {
-        (window as unknown as { prompted: boolean }).prompted = true;
-      },
-      userChoice: Promise.resolve({ outcome: 'accepted' as const }),
+  // What Chrome and Edge send when the site can be installed — sent again until
+  // the page is listening, as a real browser's offer always arrives after it is.
+  await expect(async () => {
+    await page.evaluate(() => {
+      const offer = Object.assign(new Event('beforeinstallprompt', { cancelable: true }), {
+        prompt: async () => {
+          (window as unknown as { prompted: boolean }).prompted = true;
+        },
+        userChoice: Promise.resolve({ outcome: 'accepted' as const }),
+      });
+      window.dispatchEvent(offer);
     });
-    window.dispatchEvent(offer);
-  });
+    await expect(install).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   await install.click();
   await expect.poll(() => page.evaluate(() => (window as unknown as { prompted?: boolean }).prompted)).toBe(true);
   // Installed: the button goes away.

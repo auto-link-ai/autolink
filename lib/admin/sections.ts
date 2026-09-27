@@ -1,7 +1,7 @@
 import type { Locale } from '@/i18n/locales';
 
-/** The admin's five sections, in the order the navigation shows them. */
-export const ADMIN_SECTIONS = ['overview', 'orders', 'tags', 'customers', 'settings'] as const;
+/** The admin's sections, in the order the navigation shows them. */
+export const ADMIN_SECTIONS = ['overview', 'orders', 'tags', 'customers', 'blocked', 'settings'] as const;
 export type AdminSection = (typeof ADMIN_SECTIONS)[number];
 
 export function adminSectionHref(locale: Locale, section: AdminSection): string {

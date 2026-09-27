@@ -52,7 +52,8 @@
       "rate_limited": "Too many messages right now. Try again in an hour.",
       "unavailable": "This AutoLink is not available.",
       "challenge_failed": "The check failed. Try again.",
-      "server_error": "Something went wrong. Try again in a moment."
+      "server_error": "Something went wrong. Try again in a moment.",
+      "abusive": "Your message contains insults or threats. Please rephrase it so it can be sent."
     },
     "owner": {
       "title": "This is your car",
@@ -78,7 +79,8 @@
       "orders": "Orders",
       "settings": "Settings",
       "overview": "Overview",
-      "customers": "Customers"
+      "customers": "Customers",
+      "blocked": "Blocked messages"
     },
     "login": {
       "title": "Admin sign-in",
@@ -409,6 +411,12 @@
         "blockConfirm": "{email} will not be able to sign in, and any session they have ends at once. You can unblock them afterwards.",
         "blockYes": "Yes, block this account"
       }
+    },
+    "blocked": {
+      "title": "Blocked messages",
+      "subtitle": "Messages stopped by Gemini for insults or threats, newest first. The owner never receives them. Deleted automatically after {days, plural, one {# day} other {# days}}.",
+      "empty": "No blocked messages yet.",
+      "reason": "Reason:"
     }
   },
   "site": {
@@ -733,6 +741,13 @@
           "title": "What we never show",
           "body": [
             "Your phone number, name, email, address and plate number are never shown to the person scanning the sticker."
+          ]
+        },
+        {
+          "title": "Automatic message check",
+          "body": [
+            "Before it is delivered, the text typed by the person who scans is checked automatically by Gemini, a Google service, to stop insults and threats. Only the text is sent: not the contact details, the sticker or the owner.",
+            "A stopped message is not delivered to the owner. It is kept for review, then deleted automatically like other messages."
           ]
         },
         {

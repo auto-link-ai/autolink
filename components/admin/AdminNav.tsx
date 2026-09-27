@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ComponentType, SVGProps } from 'react';
-import { GearIcon, GridIcon, StickerIcon, TruckIcon, UsersIcon } from '@/components/site/icons';
+import { GearIcon, GridIcon, ShieldIcon, StickerIcon, TruckIcon, UsersIcon } from '@/components/site/icons';
 import type { Locale } from '@/i18n/locales';
 import {
   ADMIN_SECTIONS,
@@ -18,11 +18,12 @@ const ICONS: Record<AdminSection, ComponentType<SVGProps<SVGSVGElement>>> = {
   orders: TruckIcon,
   tags: StickerIcon,
   customers: UsersIcon,
+  blocked: ShieldIcon,
   settings: GearIcon,
 };
 
 /**
- * The five sections, shared by the sidebar and the small-screen bar so they can
+ * The sections, shared by the sidebar and the small-screen bar so they can
  * never drift apart. The active one is filled in and carries aria-current.
  */
 export function AdminNav({

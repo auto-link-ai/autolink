@@ -4,7 +4,10 @@ import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { after } from 'next/server';
 import { getSettings } from '@/lib/config/settings';
+import { blockedMessagesRepository } from '@/lib/db/repositories/blockedMessages';
 import { messagesRepository } from '@/lib/db/repositories/messages';
+import { checkMessage } from '@/lib/moderation/check';
+import { needsCheck } from '@/lib/moderation/verdict';
 import { rateLimitsRepository } from '@/lib/db/repositories/rateLimits';
 import { notifyOwnerOfMessage } from '@/lib/notifications/notify';
 import { ensureScannerSessionId } from '@/lib/scanner/session';
@@ -23,8 +26,9 @@ const HOUR_MS = 60 * 60 * 1000;
  * Sends a message to the owner of a scanned sticker.
  *
  * Order matters: rate limits first, then the challenge, then the content, then
- * the tag. Every refusal that could reveal whether a sticker exists answers
- * with the same generic state (rule 9).
+ * the words, then the tag. Every refusal that could reveal whether a sticker
+ * exists answers with the same generic state (rule 9); the words are judged
+ * before the sticker is looked up, so an abusive message learns nothing either.
  */
 export async function sendReportAction(_prev: ReportFormState, formData: FormData): Promise<ReportFormState> {
   const publicTagId = normalizeTagIdInput(String(formData.get('tagId') ?? ''));
@@ -59,10 +63,31 @@ export async function sendReportAction(_prev: ReportFormState, formData: FormDat
   }
 
   const locale = await resolveScannerLocale();
+  const scanner = { kind: 'scanner' as const, scannerSessionId: await ensureScannerSessionId(), ipHash };
+
+  // Insults and threats, in Darija too, never reach the owner. The sender is
+  // asked to rephrase, so a genuine alert typed in anger still gets through.
+  if (needsCheck(parsed.data.body)) {
+    const verdict = await checkMessage(parsed.data.body);
+    if (verdict.kind === 'abusive') {
+      await blockedMessagesRepository
+        .record(scanner, {
+          publicTagId,
+          category: parsed.data.category,
+          body: parsed.data.body,
+          reason: verdict.reason,
+          locale,
+          retentionDays: settings.messageRetentionDays,
+        })
+        .catch((error: unknown) => console.error('[scan] could not record a blocked message:', error instanceof Error ? error.message : error));
+      return { status: 'error', formError: 'abusive', challenge };
+    }
+  }
+
   let result;
   try {
     result = await messagesRepository.create(
-      { kind: 'scanner', scannerSessionId: await ensureScannerSessionId(), ipHash },
+      scanner,
       {
         publicTagId,
         category: parsed.data.category,
