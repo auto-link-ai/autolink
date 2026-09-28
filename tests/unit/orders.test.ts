@@ -3,7 +3,7 @@ import { ORDER_STATUSES } from '@/lib/domain/constants';
 import { orderListReturnPath, parseOrderListQuery } from '@/lib/admin/orderListQuery';
 import { csvCell, csvRow } from '@/lib/format/csv';
 import { generateOrderRef, isValidOrderRef, normalizeOrderRefInput } from '@/lib/orders/ref';
-import { computeOrderTotals } from '@/lib/orders/totals';
+import { computeOrderTotals, deliveryFreeEverywhere, shownOrderTotals } from '@/lib/orders/totals';
 import {
   availableOrderActions,
   canApplyOrderAction,
@@ -154,5 +154,29 @@ describe('editing and deleting an order', () => {
 
   it('deletes only an order that never went anywhere', () => {
     expect(ORDER_STATUSES.filter(canDeleteOrder)).toEqual(['PENDING', 'CANCELLED']);
+  });
+});
+
+describe('the totals the order form shows', () => {
+  const paid = { unitPrice: 1500, deliveryFees: [{ wilayaCode: 16, home: 600, stopdesk: 400 }] };
+  const free = { unitPrice: 1500, deliveryFees: [{ wilayaCode: 16, home: 0, stopdesk: 0 }, { wilayaCode: 31, home: 0, stopdesk: 0 }] };
+
+  it('knows when delivery is free in every wilaya, and not when nothing is configured', () => {
+    expect(deliveryFreeEverywhere(free.deliveryFees)).toBe(true);
+    expect(deliveryFreeEverywhere(paid.deliveryFees)).toBe(false);
+    expect(deliveryFreeEverywhere([])).toBe(false);
+  });
+
+  it('waits for the wilaya when delivery costs something', () => {
+    expect(shownOrderTotals({ quantity: 2, wilayaCode: '', deliveryType: 'HOME' }, paid)).toBeNull();
+    expect(shownOrderTotals({ quantity: 2, wilayaCode: 16, deliveryType: 'HOME' }, paid)?.totalPrice).toBe(3600);
+  });
+
+  it('gives the total at once when delivery is free everywhere', () => {
+    expect(shownOrderTotals({ quantity: 2, wilayaCode: '', deliveryType: 'HOME' }, free)).toEqual({
+      unitPrice: 1500,
+      deliveryFee: 0,
+      totalPrice: 3000,
+    });
   });
 });

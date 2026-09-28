@@ -6,22 +6,15 @@ import { adminContext, hasAdminCredentials } from './adminSession';
  * arrived must be visible and one click away without filtering anything.
  */
 
-/** Orders the way a customer does: one step at a time. */
+/** Orders the way a customer does, on the one-page form. */
 async function placeOrder(page: Page, name: string): Promise<string> {
   await page.goto('/en/order');
-  const next = page.getByRole('button', { name: 'Continue' });
-  await next.click();
-
   await page.locator('#order-name').fill(name);
   await page.locator('#order-phone').fill('0551 23 45 67');
-  await next.click();
-
   await page.locator('#order-wilaya').selectOption('16');
   await page.locator('#order-commune').fill('Bab Ezzouar');
   await page.locator('#order-address').fill('Cite 200 logements');
-  await next.click();
-
-  await page.getByRole('button', { name: 'Confirm order' }).click();
+  await page.getByRole('button', { name: 'Order — pay on delivery' }).click();
   await expect(page).toHaveURL(/\/en\/order\/AL-/, { timeout: 60_000 });
   return new URL(page.url()).pathname.split('/').pop()!;
 }

@@ -1,22 +1,21 @@
 'use client';
 
-import { useActionState, useEffect, useRef, useState } from 'react';
+import { useActionState, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { PhoneIcon } from '@/components/site/icons';
 import { Button } from '@/components/ui/Button';
 import { submitKeepingValues } from '@/components/ui/submitKeepingValues';
-import { useHydrated } from '@/components/ui/useHydrated';
 import type { Locale } from '@/i18n/locales';
-import { cx } from '@/lib/cx';
 import type { DeliveryType } from '@/lib/domain/constants';
-import { formatDzd } from '@/lib/format/currency';
-import { computeOrderTotals, type FeeRow } from '@/lib/orders/totals';
+import { deliveryFreeEverywhere, shownOrderTotals, type FeeRow } from '@/lib/orders/totals';
 import { orderFieldErrors, orderInputSchema } from '@/lib/validation/order';
-import { ContactFields, DeliveryFields, QuantityFields } from './_components/OrderFields';
-import { OrderReview } from './_components/OrderReview';
-import { OrderSummary } from './_components/OrderSummary';
+import { DeliveryChoice } from './_components/DeliveryChoice';
+import { AddressFields, ContactFields, ExtraFields } from './_components/OrderFields';
+import { OrderTotal } from './_components/OrderTotal';
+import { QuantityCards } from './_components/QuantityCards';
 import { placeOrderAction } from './actions';
 import { ORDER_FORM_INITIAL, type OrderFormState } from './formState';
 import type { OrderFormLabels } from './orderLabels';
-import { fieldsOfStep, ORDER_STEPS, REVIEW_STEP, stepWithField } from './orderSteps';
+import { firstFieldToFix, TUCKED_AWAY } from './orderFieldOrder';
 
 interface Props {
   locale: Locale;
@@ -30,235 +29,184 @@ interface Props {
 
 /** Where to put the cursor when a field is refused. */
 const FIELD_IDS: Record<string, string> = {
-  quantity: 'order-quantity',
   customerName: 'order-name',
   phone: 'order-phone',
   email: 'order-email',
   wilayaCode: 'order-wilaya',
   commune: 'order-commune',
   address: 'order-address',
+  deliveryType: 'order-delivery-HOME',
   deliveryNotes: 'order-notes',
 };
 
+function Part({ number, title, children }: { number: number; title: string; children: ReactNode }) {
+  return (
+    <fieldset className="flex min-w-0 flex-col gap-4">
+      <legend className="mb-4 flex items-center gap-3 text-[18px] font-bold text-text">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-sm text-white">
+          {number}
+        </span>
+        {title}
+      </legend>
+      {children}
+    </fieldset>
+  );
+}
+
 /**
- * Guest checkout, one step at a time: quantity, contact, delivery, then a
- * review of everything before confirming. Each step checks its own fields with
- * the rules the server uses, so a problem is always shown on the step that
- * asks for it — never behind a hidden field, which used to make "Confirmer"
- * do nothing at all. Without JavaScript every step shows at once and the form
- * posts in one go, exactly as before.
+ * Guest checkout on one screen: how many, who, where — then one button. The
+ * button first checks every field with the rules the server uses and puts the
+ * cursor on the first one to fix, top to bottom. Without JavaScript the form
+ * simply posts and the server answers the same way.
  */
 export function OrderForm({ locale, labels, wilayas, fees, unitPrice, currencyLabel, maxQuantity }: Props) {
   const [state, formAction, pending] = useActionState<OrderFormState, FormData>(placeOrderAction, ORDER_FORM_INITIAL);
-  const hydrated = useHydrated();
   const form = useRef<HTMLFormElement>(null);
 
-  const [step, setStep] = useState(0);
-  const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
-  const [typed, setTyped] = useState<Record<string, string>>({});
+  const [checked, setChecked] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
   const [wilayaCode, setWilayaCode] = useState<number | ''>('');
   const [deliveryType, setDeliveryType] = useState<DeliveryType>('HOME');
+  const [extrasOpen, setExtrasOpen] = useState(false);
 
-  const totals =
+  const free = deliveryFreeEverywhere(fees);
+  const fee =
     wilayaCode === ''
-      ? null
-      : computeOrderTotals({ quantity, wilayaCode, deliveryType }, { unitPrice, deliveryFees: fees });
+      ? free
+        ? { wilayaCode: 0, home: 0, stopdesk: 0 }
+        : null
+      : (fees.find((row) => row.wilayaCode === wilayaCode) ?? null);
+  const totals = shownOrderTotals({ quantity, wilayaCode, deliveryType }, { unitPrice, deliveryFees: fees });
 
   const errorOf = (field: string) => {
-    const code = stepErrors[field] ?? state.fieldErrors?.[field as keyof typeof state.fieldErrors];
+    const code = checked[field] ?? state.fieldErrors?.[field as keyof typeof state.fieldErrors];
     return code ? (labels.errors[code] ?? labels.errors.invalid) : undefined;
   };
 
-  const focusField = (field: string | undefined) => {
-    const id = field ? FIELD_IDS[field] : undefined;
-    if (id) document.getElementById(id)?.focus();
+  /** Opens the optional part if needed, then brings the field into view with the cursor in it. */
+  const reveal = (field: string | null) => {
+    if (!field) return;
+    if (TUCKED_AWAY.has(field)) setExtrasOpen(true);
+    requestAnimationFrame(() => {
+      const el =
+        field === 'quantity'
+          ? form.current?.querySelector<HTMLElement>('input[name="quantity"]:checked')
+          : document.getElementById(FIELD_IDS[field] ?? '');
+      el?.focus({ preventScroll: true });
+      el?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
   };
 
-  // A field the server refused belongs to a step: go there and show it.
+  // A field the server refused: show it and go there.
   useEffect(() => {
-    const refused = Object.keys(state.fieldErrors ?? {});
-    if (refused.length === 0) return;
-    const target = stepWithField(refused);
-    if (target === null) return;
-    setStep(target);
-    focusField(refused.find((field) => fieldsOfStep(target).includes(field)));
+    reveal(firstFieldToFix(state.fieldErrors ?? {}));
   }, [state]);
 
-  const read = (): Record<string, string> => {
-    const data = new FormData(form.current ?? undefined);
-    return Object.fromEntries([...data.entries()].map(([key, value]) => [key, typeof value === 'string' ? value : '']));
+  const check = (): Record<string, string> => {
+    const values = Object.fromEntries(
+      [...new FormData(form.current ?? undefined).entries()].map(([key, value]) => [key, typeof value === 'string' ? value : '']),
+    );
+    const parsed = orderInputSchema(maxQuantity).safeParse(values);
+    return parsed.success ? {} : (orderFieldErrors(parsed.error) as Record<string, string>);
   };
 
-  /** Checks this step's fields only, with the same rules the server applies. */
-  const stepIsValid = (index: number): boolean => {
-    const parsed = orderInputSchema(maxQuantity).safeParse(read());
-    const mine = fieldsOfStep(index);
-    const errors = parsed.success
-      ? {}
-      : Object.fromEntries(Object.entries(orderFieldErrors(parsed.error)).filter(([field]) => mine.includes(field)));
-    setStepErrors(errors as Record<string, string>);
-    const first = Object.keys(errors)[0];
-    if (first) focusField(first);
-    return !first;
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const errors = check();
+    setChecked(errors);
+    if (Object.keys(errors).length > 0) {
+      event.preventDefault();
+      reveal(firstFieldToFix(errors));
+      return;
+    }
+    submitKeepingValues(formAction)(event);
   };
 
-  const goTo = (index: number) => {
-    setStepErrors({});
-    if (index === REVIEW_STEP) setTyped(read());
-    setStep(index);
+  // Once refused, a field's message goes away as soon as it is right — never new ones while typing.
+  const onChange = () => {
+    if (Object.keys(checked).length === 0) return;
+    const now = check();
+    setChecked((before) => Object.fromEntries(Object.keys(before).flatMap((f) => (now[f] ? [[f, now[f]]] : []))));
   };
 
-  const wilayaName = wilayas.find((wilaya) => wilaya.code === wilayaCode)?.name ?? '';
-  const reviewBlocks = [
-    { step: 0, title: labels.steps.quantity, lines: [`${quantity} × ${formatDzd(unitPrice, currencyLabel)}`] },
-    { step: 1, title: labels.steps.contact, lines: [typed.customerName, typed.phone, typed.email] },
-    {
-      step: 2,
-      title: labels.steps.delivery,
-      lines: [
-        [wilayaName, typed.commune].filter(Boolean).join(' · '),
-        typed.address,
-        deliveryType === 'HOME' ? labels.fields.home : labels.fields.stopdesk,
-        typed.deliveryNotes,
-      ],
-    },
-  ];
-
-  // Before hydration (and without JavaScript) every step is shown and the form
-  // posts in one go; the step buttons only appear once they can work.
-  const panelClass = (index: number) => cx('flex flex-col gap-5', hydrated && index !== step && 'hidden');
+  const needsFixing = Object.keys(checked).length > 0 || Object.keys(state.fieldErrors ?? {}).length > 0;
 
   return (
     <form
+      id="order-form"
       ref={form}
       action={formAction}
-      onSubmit={submitKeepingValues(formAction)}
+      onSubmit={onSubmit}
+      onChange={onChange}
       noValidate
-      className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-start"
+      className="flex scroll-mt-24 flex-col gap-8 rounded-xl bg-white p-5 shadow-card-md sm:p-7 md:p-8"
     >
       <input type="hidden" name="locale" value={locale} />
       {/* Honeypot: hidden from people, tempting for bots. */}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
 
-      <div className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-card-sm md:p-8">
-        {hydrated && (
-          <div>
-            <p className="text-sm font-semibold text-text-secondary">{labels.progress[step]}</p>
-            <h2 aria-live="polite" className="mt-1 text-h3 text-text">
-              {labels.steps[ORDER_STEPS[step]!.id]}
-            </h2>
-            <ol aria-hidden="true" className="mt-3 flex gap-1.5">
-              {ORDER_STEPS.map((entry, index) => (
-                <li
-                  key={entry.id}
-                  className={cx('h-1.5 flex-1 rounded-full', index <= step ? 'bg-accent' : 'bg-surface-3')}
-                />
-              ))}
-            </ol>
-          </div>
-        )}
+      <Part number={1} title={labels.sections.quantity}>
+        <QuantityCards
+          labels={labels}
+          maxQuantity={maxQuantity}
+          quantity={quantity}
+          onQuantity={setQuantity}
+          unitPrice={unitPrice}
+          currencyLabel={currencyLabel}
+          error={errorOf('quantity')}
+        />
+      </Part>
 
-        <div className={panelClass(0)}>
-          <QuantityFields
-            labels={labels}
-            errorOf={errorOf}
-            maxQuantity={maxQuantity}
-            quantity={quantity}
-            onQuantity={setQuantity}
-          />
-        </div>
+      <Part number={2} title={labels.sections.contact}>
+        <ContactFields labels={labels} errorOf={errorOf} />
+      </Part>
 
-        <div className={panelClass(1)}>
-          <ContactFields labels={labels} errorOf={errorOf} />
-        </div>
+      <Part number={3} title={labels.sections.delivery}>
+        <AddressFields labels={labels} errorOf={errorOf} wilayas={wilayas} wilayaCode={wilayaCode} onWilaya={setWilayaCode} />
+        <DeliveryChoice
+          labels={labels}
+          deliveryType={deliveryType}
+          onDeliveryType={setDeliveryType}
+          fee={fee}
+          currencyLabel={currencyLabel}
+        />
+        <details open={extrasOpen} onToggle={(event) => setExtrasOpen(event.currentTarget.open)} className="group">
+          <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 text-[15px] font-bold text-accent hover:underline [&::-webkit-details-marker]:hidden">
+            <span aria-hidden="true" className="text-lg leading-none group-open:hidden">
+              +
+            </span>
+            <span aria-hidden="true" className="hidden text-lg leading-none group-open:inline">
+              −
+            </span>
+            {labels.extras}
+          </summary>
+          <ExtraFields labels={labels} errorOf={errorOf} />
+        </details>
+      </Part>
 
-        <div className={panelClass(2)}>
-          <DeliveryFields
-            labels={labels}
-            errorOf={errorOf}
-            wilayas={wilayas}
-            wilayaCode={wilayaCode}
-            onWilaya={setWilayaCode}
-            deliveryType={deliveryType}
-            onDeliveryType={setDeliveryType}
-          />
-        </div>
-
-        {hydrated && (
-          <div className={panelClass(REVIEW_STEP)}>
-            <OrderReview blocks={reviewBlocks} editLabel={labels.actions.edit} onEdit={goTo} />
-            {/*
-              Confirm lives here, on the step that sends. Sharing one button
-              with "Continuer" made React turn it into a submit inside the very
-              click that moved here, and the order left a step early.
-            */}
-            <p className="mt-5 flex items-baseline justify-between gap-4 rounded-2xl bg-surface-3 px-4 py-3 text-[16px]">
-              <span className="font-bold text-text">{labels.summary.total}</span>
-              <span dir="ltr" className="font-bold text-accent">
-                {totals ? formatDzd(totals.totalPrice, currencyLabel) : '—'}
-              </span>
-            </p>
-            <Button type="submit" disabled={pending} className="mt-4 w-full sm:w-auto">
-              {pending ? labels.actions.confirming : labels.actions.confirm}
-            </Button>
-          </div>
-        )}
+      <div className="flex flex-col gap-4">
+        <OrderTotal labels={labels} unitPrice={unitPrice} currencyLabel={currencyLabel} quantity={quantity} totals={totals} />
 
         {state.formError && (
           <p role="alert" className="rounded-2xl bg-danger/10 px-4 py-3 text-sm font-medium text-danger">
             {labels.errors[state.formError] ?? labels.errors.server_error}
           </p>
         )}
-
-        {/*
-          On a phone the summary sits below, so without this line people would
-          press the button having never seen the price.
-        */}
-        {(!hydrated || step !== REVIEW_STEP) && (
-          <p className="flex items-baseline justify-between gap-4 rounded-2xl bg-surface-3 px-4 py-3 text-[15px] lg:hidden">
-            <span className="font-bold text-text">{labels.summary.total}</span>
-            <span dir="ltr" className="font-bold text-accent">
-              {totals
-                ? formatDzd(totals.totalPrice, currencyLabel)
-                : `${formatDzd(unitPrice * quantity, currencyLabel)} + ${labels.summary.delivery}`}
-            </span>
+        {needsFixing && !pending && (
+          <p role="alert" className="text-sm font-semibold text-danger">
+            {labels.checkFields}
           </p>
         )}
 
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
-          {hydrated && step > 0 && (
-            <Button type="button" variant="secondary" onClick={() => goTo(step - 1)} className="w-full sm:w-auto">
-              {labels.actions.back}
-            </Button>
-          )}
-          {hydrated && step < REVIEW_STEP && (
-            <Button
-              type="button"
-              onClick={() => {
-                if (stepIsValid(step)) goTo(step + 1);
-              }}
-              className="w-full sm:w-auto"
-            >
-              {labels.actions.continue}
-            </Button>
-          )}
-          {/* No JavaScript: every step is shown, and this one button sends it all. */}
-          {!hydrated && (
-            <Button type="submit" className="w-full sm:w-auto">
-              {labels.actions.confirm}
-            </Button>
-          )}
-        </div>
-      </div>
+        <Button type="submit" disabled={pending} data-order-submit className="h-15 w-full text-[17px]">
+          {pending ? labels.actions.ordering : labels.actions.order}
+        </Button>
 
-      <OrderSummary
-        labels={labels}
-        unitPrice={unitPrice}
-        currencyLabel={currencyLabel}
-        quantity={quantity}
-        totals={totals}
-      />
+        <p className="flex items-center justify-center gap-2 text-center text-sm text-text-secondary">
+          <PhoneIcon className="h-4 w-4 shrink-0 text-accent" />
+          {labels.reassurance}
+        </p>
+        <p className="text-center text-xs leading-relaxed text-text-muted">{labels.notice}</p>
+      </div>
     </form>
   );
 }

@@ -30,3 +30,24 @@ export function computeOrderTotals(
     totalPrice: pricing.unitPrice * input.quantity + deliveryFee,
   };
 }
+
+/**
+ * True when every wilaya delivers for free: the page can then say so before a
+ * wilaya is even chosen. False while no fee is configured at all.
+ */
+export function deliveryFreeEverywhere(deliveryFees: readonly FeeRow[]): boolean {
+  return deliveryFees.length > 0 && deliveryFees.every((row) => row.home === 0 && row.stopdesk === 0);
+}
+
+/**
+ * What the order form shows: the chosen wilaya's totals, or — before one is
+ * chosen — the stickers alone when delivery is free everywhere. Display only.
+ */
+export function shownOrderTotals(
+  input: { quantity: number; wilayaCode: number | ''; deliveryType: DeliveryType },
+  pricing: { unitPrice: number; deliveryFees: readonly FeeRow[] },
+): OrderTotals | null {
+  if (input.wilayaCode !== '') return computeOrderTotals({ ...input, wilayaCode: input.wilayaCode }, pricing);
+  if (!deliveryFreeEverywhere(pricing.deliveryFees)) return null;
+  return { unitPrice: pricing.unitPrice, deliveryFee: 0, totalPrice: pricing.unitPrice * input.quantity };
+}

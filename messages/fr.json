@@ -946,22 +946,39 @@
       "notes": "Note pour la livraison (facultatif)",
       "notesHint": "Un repère, un étage, une heure qui vous arrange."
     },
-    "summary": {
-      "title": "Votre commande",
-      "unitPrice": "Prix unitaire",
-      "quantity": "Quantité",
+    "sections": {
+      "quantity": "Combien d’autocollants ?",
+      "contact": "Vos coordonnées",
+      "delivery": "Où vous livrer ?"
+    },
+    "quantity": {
+      "hint": "Un autocollant par voiture.",
+      "cars": [
+        "voiture",
+        "voitures",
+        "voitures"
+      ],
+      "more": "ou plus",
+      "stickers": "autocollants",
+      "fewer": "Un autocollant de moins",
+      "oneMore": "Un autocollant de plus"
+    },
+    "feeAfterWilaya": "Prix selon la wilaya",
+    "free": "Gratuite",
+    "extras": "Ajouter un e-mail ou une note pour le livreur",
+    "total": {
+      "stickers": "Autocollants",
       "delivery": "Livraison",
-      "deliveryUnknown": "Choisissez une wilaya",
+      "deliveryPending": "Choisissez votre wilaya",
       "total": "Total à payer",
-      "cod": "Paiement en espèces à la livraison. Rien à payer maintenant."
+      "nothingNow": "Rien à payer maintenant : vous payez en espèces à la livraison."
     },
     "actions": {
-      "continue": "Continuer",
-      "back": "Retour",
-      "edit": "Modifier",
-      "confirm": "Confirmer la commande",
-      "confirming": "Envoi en cours…"
+      "order": "Commander — je paie à la livraison",
+      "ordering": "Envoi de la commande…"
     },
+    "checkFields": "Il manque une information : vérifiez le champ indiqué en rouge.",
+    "reassurance": "Nous vous appelons pour confirmer avant l’envoi.",
     "errors": {
       "required": "Ce champ est obligatoire.",
       "invalid": "Cette valeur n’est pas valide.",
@@ -1010,14 +1027,7 @@
       "backHome": "Retour à l’accueil",
       "nextTitle": "Et maintenant",
       "activateLink": "Créer mon compte dès maintenant"
-    },
-    "steps": {
-      "quantity": "Combien d’autocollants ?",
-      "contact": "Vos coordonnées",
-      "delivery": "Livraison",
-      "review": "Vérifier et confirmer"
-    },
-    "progress": "Étape {step} sur {total}"
+    }
   },
   "auth": {
     "fields": {

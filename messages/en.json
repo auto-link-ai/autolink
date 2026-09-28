@@ -946,22 +946,39 @@
       "notes": "Delivery note (optional)",
       "notesHint": "A landmark, a floor, a time that suits you."
     },
-    "summary": {
-      "title": "Your order",
-      "unitPrice": "Unit price",
-      "quantity": "Quantity",
+    "sections": {
+      "quantity": "How many stickers?",
+      "contact": "Your details",
+      "delivery": "Where should we deliver?"
+    },
+    "quantity": {
+      "hint": "One sticker per car.",
+      "cars": [
+        "car",
+        "cars",
+        "cars"
+      ],
+      "more": "or more",
+      "stickers": "stickers",
+      "fewer": "One sticker fewer",
+      "oneMore": "One more sticker"
+    },
+    "feeAfterWilaya": "Price depends on the wilaya",
+    "free": "Free",
+    "extras": "Add an email or a note for the courier",
+    "total": {
+      "stickers": "Stickers",
       "delivery": "Delivery",
-      "deliveryUnknown": "Choose a wilaya",
+      "deliveryPending": "Choose your wilaya",
       "total": "Total to pay",
-      "cod": "Cash on delivery. Nothing to pay now."
+      "nothingNow": "Nothing to pay now: you pay cash on delivery."
     },
     "actions": {
-      "continue": "Continue",
-      "back": "Back",
-      "edit": "Edit",
-      "confirm": "Confirm order",
-      "confirming": "Sending…"
+      "order": "Order — pay on delivery",
+      "ordering": "Sending your order…"
     },
+    "checkFields": "Something is missing: check the field marked in red.",
+    "reassurance": "We call you to confirm before shipping.",
     "errors": {
       "required": "This field is required.",
       "invalid": "That value is not valid.",
@@ -1010,14 +1027,7 @@
       "backHome": "Back to home",
       "nextTitle": "What happens next",
       "activateLink": "Create my account now"
-    },
-    "steps": {
-      "quantity": "How many stickers?",
-      "contact": "Your details",
-      "delivery": "Delivery",
-      "review": "Check and confirm"
-    },
-    "progress": "Step {step} of {total}"
+    }
   },
   "auth": {
     "fields": {

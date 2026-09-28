@@ -10,6 +10,31 @@ test('the order form renders in Arabic, right-to-left', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('اطلب ملصقك.');
 });
 
+test('an empty order puts the cursor on the name and says what is missing', async ({ page }) => {
+  await page.goto('/ar/order');
+  await page.getByRole('button', { name: 'اطلب الآن — الدفع عند الاستلام' }).click();
+  await expect(page.getByLabel('الاسم الكامل')).toBeFocused();
+  await expect(page.getByText('تنقص معلومة: تحقّق من الحقل المشار إليه بالأحمر.')).toBeVisible();
+  await expect(page).toHaveURL(/\/ar\/order$/);
+
+  // Once fixed, a field's message goes; the others stay until they are right too.
+  await page.getByLabel('الاسم الكامل').fill('أمين بلقاسم');
+  await expect(page.locator('#order-name-error')).toHaveCount(0);
+  await expect(page.locator('#order-commune-error')).toBeVisible();
+});
+
+test('one card per car, and « or more » counts past three', async ({ page }) => {
+  await page.goto('/fr/order');
+  await expect(page.getByRole('radio', { name: /^1 voiture/ })).toBeChecked();
+  await page.getByText('voitures', { exact: true }).first().click();
+  await expect(page.getByRole('radio', { name: /^2 voitures/ })).toBeChecked();
+
+  await page.getByText('ou plus').click();
+  await page.getByRole('button', { name: 'Un autocollant de plus' }).click();
+  await expect(page.getByText('5 autocollants')).toBeVisible();
+  await expect(page.getByText(/5 × 1\s500\sDA/)).toBeVisible();
+});
+
 test('an unknown order reference is a 404, and a malformed one too', async ({ page }) => {
   expect((await page.goto('/fr/order/AL-ZZZZZZ'))?.status()).toBe(404);
   expect((await page.goto('/fr/order/not-a-ref'))?.status()).toBe(404);
@@ -55,41 +80,23 @@ test.describe('ordering end to end', () => {
   let orderRef = '';
   let tagId = '';
 
-  test('a step will not pass until what it asks for is filled in', async ({ page }) => {
-    test.setTimeout(120_000);
-    await page.goto('/ar/order');
-    // Straight past the contact step, as a hurried customer does.
-    await page.getByRole('button', { name: 'متابعة' }).click();
-    await expect(page.getByRole('heading', { name: 'معلوماتك' })).toBeVisible();
-
-    await page.getByRole('button', { name: 'متابعة' }).click();
-    // It says what is missing, on the field, and stays on this step.
-    await expect(page.getByText('هذا الحقل مطلوب.').or(page.getByText('النص قصير جدًا.')).first()).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'معلوماتك' })).toBeVisible();
-    await expect(page.getByLabel('الاسم الكامل')).toBeFocused();
-  });
-
-  test('a customer orders in Arabic, step by step, and gets a confirmation', async ({ page }) => {
+  test('a customer orders in Arabic on one page and gets a confirmation', async ({ page }) => {
     test.setTimeout(120_000);
     await page.goto('/ar/order');
 
-    await page.getByLabel('الكمية').selectOption('2');
-    await page.getByRole('button', { name: 'متابعة' }).click();
-
+    await page.getByText('سيارتان', { exact: true }).click();
+    await expect(page.getByRole('radio', { name: /سيارتان/ })).toBeChecked();
     await page.getByLabel('الاسم الكامل').fill('أمين بلقاسم');
     await page.getByLabel('رقم الهاتف', { exact: true }).fill(PHONE);
-    await page.getByRole('button', { name: 'متابعة' }).click();
 
+    // Delivery says what it costs once the wilaya is known (the seed's placeholder fees).
+    await expect(page.getByRole('radio', { name: /إلى المنزل/ })).toBeChecked();
     await page.getByLabel('الولاية', { exact: true }).selectOption('16');
+    await expect(page.locator('label').filter({ hasText: 'إلى المنزل' })).toContainText(/800\sDA/);
+    await expect(page.locator('[data-order-total]')).toHaveText(/3\s800\sDA/);
     await page.getByLabel('البلدية').fill('باب الزوار');
     await page.getByLabel('العنوان').fill('حي 200 مسكن، عمارة ب');
-    await page.getByRole('button', { name: 'متابعة' }).click();
-
-    // The last step repeats everything before it is sent.
-    await expect(page.getByRole('heading', { name: 'التحقّق والتأكيد' })).toBeVisible();
-    await expect(page.getByText('أمين بلقاسم')).toBeVisible();
-    await expect(page.getByText('باب الزوار')).toBeVisible();
-    await page.getByRole('button', { name: 'تأكيد الطلب' }).click();
+    await page.getByRole('button', { name: 'اطلب الآن — الدفع عند الاستلام' }).click();
 
     await expect(page).toHaveURL(/\/ar\/order\/AL-[0-9A-HJKMNP-TV-Z]{6}$/, { timeout: 60_000 });
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
@@ -165,13 +172,12 @@ test('ordering works without JavaScript: every field at once, one submit', async
   const page = await context.newPage();
   await page.goto('/fr/order');
 
-  await page.getByLabel('Quantité').selectOption('1');
   await page.getByLabel('Nom et prénom').fill('Yasmine Haddad');
   await page.getByLabel('Téléphone', { exact: true }).fill('0661 22 33 44');
   await page.getByLabel('Wilaya', { exact: true }).selectOption('31');
   await page.getByLabel('Commune').fill('Bir El Djir');
   await page.getByLabel('Adresse').fill('Cité des Oliviers, bât. C');
-  await page.getByRole('button', { name: 'Confirmer la commande' }).click();
+  await page.getByRole('button', { name: 'Commander — je paie à la livraison' }).click();
 
   await expect(page).toHaveURL(/\/fr\/order\/AL-[0-9A-HJKMNP-TV-Z]{6}$/, { timeout: 60_000 });
   await context.close();

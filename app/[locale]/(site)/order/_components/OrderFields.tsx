@@ -1,13 +1,12 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { CheckIcon } from '@/components/site/icons';
 import { cx } from '@/lib/cx';
-import { DELIVERY_TYPES, ORDER_FIELD_LIMITS as L, type DeliveryType } from '@/lib/domain/constants';
+import { ORDER_FIELD_LIMITS as L } from '@/lib/domain/constants';
 import type { OrderFormLabels } from '../orderLabels';
 
 export const INPUT =
-  'h-12 w-full rounded-2xl border border-border bg-white px-4 text-[15px] text-text outline-none placeholder:text-text-muted focus:border-accent aria-[invalid=true]:border-danger';
+  'h-13 w-full rounded-2xl border border-border-strong bg-white px-4 text-[16px] text-text outline-none placeholder:text-text-muted focus:border-accent focus:ring-3 focus:ring-accent/15 aria-[invalid=true]:border-danger';
 
 /**
  * Label, control, then hint or error. The label points at the control by id
@@ -50,55 +49,25 @@ interface GroupProps {
   errorOf: (field: string) => string | undefined;
 }
 
-const invalid = (error: string | undefined, id: string) =>
+export const invalid = (error: string | undefined, id: string) =>
   error ? ({ 'aria-invalid': true, 'aria-describedby': `${id}-error` } as const) : {};
 
-export function QuantityFields({
-  labels,
-  errorOf,
-  maxQuantity,
-  quantity,
-  onQuantity,
-}: GroupProps & { maxQuantity: number; quantity: number; onQuantity: (value: number) => void }) {
-  const error = errorOf('quantity');
-  return (
-    <Field id="order-quantity" label={labels.fields.quantity} error={error}>
-      <select
-        id="order-quantity"
-        name="quantity"
-        value={quantity}
-        onChange={(event) => onQuantity(Number(event.target.value))}
-        className={cx(INPUT, 'max-w-40')}
-        {...invalid(error, 'order-quantity')}
-      >
-        {Array.from({ length: maxQuantity }, (_, index) => index + 1).map((value) => (
-          <option key={value} value={value}>
-            {value}
-          </option>
-        ))}
-      </select>
-    </Field>
-  );
-}
-
+/** Who to call: the only two things we need to reach the customer. */
 export function ContactFields({ labels, errorOf }: GroupProps) {
   const nameError = errorOf('customerName');
   const phoneError = errorOf('phone');
-  const emailError = errorOf('email');
   return (
-    <div className="grid gap-5 sm:grid-cols-2">
-      <div className="sm:col-span-2">
-        <Field id="order-name" label={labels.fields.name} error={nameError}>
-          <input
-            id="order-name"
-            name="customerName"
-            maxLength={L.name.max}
-            autoComplete="name"
-            className={INPUT}
-            {...invalid(nameError, 'order-name')}
-          />
-        </Field>
-      </div>
+    <div className="grid gap-4 sm:grid-cols-2">
+      <Field id="order-name" label={labels.fields.name} error={nameError}>
+        <input
+          id="order-name"
+          name="customerName"
+          maxLength={L.name.max}
+          autoComplete="name"
+          className={INPUT}
+          {...invalid(nameError, 'order-name')}
+        />
+      </Field>
       <Field id="order-phone" label={labels.fields.phone} hint={labels.fields.phoneHint} error={phoneError}>
         <input
           id="order-phone"
@@ -111,48 +80,33 @@ export function ContactFields({ labels, errorOf }: GroupProps) {
           {...invalid(phoneError, 'order-phone')}
         />
       </Field>
-      <Field id="order-email" label={labels.fields.email} hint={labels.fields.emailHint} error={emailError}>
-        <input
-          id="order-email"
-          name="email"
-          type="email"
-          dir="ltr"
-          autoComplete="email"
-          maxLength={L.email.max}
-          className={cx(INPUT, 'rtl:text-end')}
-          {...invalid(emailError, 'order-email')}
-        />
-      </Field>
     </div>
   );
 }
 
-export function DeliveryFields({
+/** Where to deliver: wilaya (which sets the fee), commune, address. */
+export function AddressFields({
   labels,
   errorOf,
   wilayas,
   wilayaCode,
   onWilaya,
-  deliveryType,
-  onDeliveryType,
 }: GroupProps & {
   wilayas: { code: number; name: string }[];
   wilayaCode: number | '';
-  onWilaya: (code: number) => void;
-  deliveryType: DeliveryType;
-  onDeliveryType: (type: DeliveryType) => void;
+  onWilaya: (code: number | '') => void;
 }) {
   const wilayaError = errorOf('wilayaCode');
   const communeError = errorOf('commune');
   const addressError = errorOf('address');
   return (
-    <div className="grid gap-5 sm:grid-cols-2">
+    <div className="grid gap-4 sm:grid-cols-2">
       <Field id="order-wilaya" label={labels.fields.wilaya} error={wilayaError}>
         <select
           id="order-wilaya"
           name="wilayaCode"
           value={wilayaCode}
-          onChange={(event) => onWilaya(Number(event.target.value))}
+          onChange={(event) => onWilaya(event.target.value === '' ? '' : Number(event.target.value))}
           className={INPUT}
           {...invalid(wilayaError, 'order-wilaya')}
         >
@@ -187,45 +141,38 @@ export function DeliveryFields({
           />
         </Field>
       </div>
+    </div>
+  );
+}
 
-      <fieldset className="sm:col-span-2">
-        <legend className="text-sm font-bold text-text">{labels.fields.deliveryType}</legend>
-        <div className="mt-2 grid gap-3 sm:grid-cols-2">
-          {DELIVERY_TYPES.map((type) => (
-            <label
-              key={type}
-              className={cx(
-                'flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border p-4 text-[15px] font-semibold',
-                deliveryType === type ? 'border-accent bg-accent-soft text-accent' : 'border-border text-text',
-              )}
-            >
-              <input
-                type="radio"
-                name="deliveryType"
-                value={type}
-                checked={deliveryType === type}
-                onChange={() => onDeliveryType(type)}
-                className="sr-only"
-              />
-              <span
-                className={cx(
-                  'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border',
-                  deliveryType === type ? 'border-accent bg-accent text-white' : 'border-border-strong',
-                )}
-              >
-                {deliveryType === type && <CheckIcon className="h-3 w-3" />}
-              </span>
-              {type === 'HOME' ? labels.fields.home : labels.fields.stopdesk}
-            </label>
-          ))}
-        </div>
-      </fieldset>
-
-      <div className="sm:col-span-2">
-        <Field id="order-notes" label={labels.fields.notes} hint={labels.fields.notesHint} error={errorOf('deliveryNotes')}>
-          <textarea id="order-notes" name="deliveryNotes" maxLength={L.notes.max} rows={3} className={cx(INPUT, 'h-auto py-3')} />
-        </Field>
-      </div>
+/** Optional: an e-mail in case the phone does not answer, and a note for the courier. */
+export function ExtraFields({ labels, errorOf }: GroupProps) {
+  const emailError = errorOf('email');
+  const notesError = errorOf('deliveryNotes');
+  return (
+    <div className="grid gap-4 pt-4">
+      <Field id="order-email" label={labels.fields.email} hint={labels.fields.emailHint} error={emailError}>
+        <input
+          id="order-email"
+          name="email"
+          type="email"
+          dir="ltr"
+          autoComplete="email"
+          maxLength={L.email.max}
+          className={cx(INPUT, 'rtl:text-end')}
+          {...invalid(emailError, 'order-email')}
+        />
+      </Field>
+      <Field id="order-notes" label={labels.fields.notes} hint={labels.fields.notesHint} error={notesError}>
+        <textarea
+          id="order-notes"
+          name="deliveryNotes"
+          maxLength={L.notes.max}
+          rows={3}
+          className={cx(INPUT, 'h-auto py-3')}
+          {...invalid(notesError, 'order-notes')}
+        />
+      </Field>
     </div>
   );
 }
