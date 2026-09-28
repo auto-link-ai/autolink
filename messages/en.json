@@ -1292,6 +1292,7 @@
     "title": "Car book",
     "back": "My stickers",
     "private": "Private: only you see this, when you are signed in.",
+    "changeCar": "Switch car",
     "save": "Save",
     "saving": "Saving…",
     "add": "Add",
@@ -1317,6 +1318,11 @@
       "lateDays": "{count, plural, one {# day late} other {# days late}}",
       "atKm": "At {km} km",
       "notSet": "To fill in"
+    },
+    "pill": {
+      "late": "Late",
+      "today": "Today",
+      "days": "{count, plural, one {# day} other {# days}}"
     },
     "profile": {
       "title": "Car profile",
@@ -1433,7 +1439,8 @@
       "cta": "Activate a sticker"
     },
     "overview": {
-      "noDates": "Add your insurance, contrôle technique and vignette dates to be reminded in time.",
+      "heading": "My car book",
+      "subtitle": "Everything about your car and its upkeep, in one place.",
       "everything": "Everything about the car"
     },
     "summary": {

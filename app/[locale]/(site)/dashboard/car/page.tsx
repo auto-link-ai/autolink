@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound, redirect } from 'next/navigation';
-import { DueChip, dueSentence } from '@/components/care/DueList';
+import { dueSentence } from '@/components/care/DueList';
+import { DuePill } from '@/components/care/DuePill';
 import { buttonClasses } from '@/components/ui/Button';
 import { PendingLink } from '@/components/ui/PendingLink';
 import { routing } from '@/i18n/routing';
@@ -11,6 +12,7 @@ import { algiersToday, dueItems, mostUrgent } from '@/lib/care/due';
 import { carBookPath } from '@/lib/care/sections';
 import { getSettings } from '@/lib/config/settings';
 import { carBookRepository } from '@/lib/db/repositories/carBook';
+import { CarCard } from './[tagId]/_components/CarCard';
 import { BookCard, BookHeader } from './[tagId]/_components/parts';
 
 export const dynamic = 'force-dynamic';
@@ -71,25 +73,12 @@ export default async function CarBooksPage({ params }: Props) {
           <ul className="flex flex-col gap-3">
             {rows.map((car) => (
               <li key={car.publicTagId}>
-                <PendingLink
+                <CarCard
                   href={carBookPath(locale, car.publicTagId)}
-                  className="flex min-h-18 items-center gap-3 rounded-2xl border border-border bg-white px-4 py-3 shadow-card-sm transition-colors hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                >
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-[17px] font-bold text-text">
-                      {car.car.brand} {car.car.model}
-                      <span className="font-normal text-text-muted"> · {car.car.color}</span>
-                    </span>
-                    <span dir="ltr" className="block font-mono text-sm text-text-secondary rtl:text-end">
-                      {car.publicTagId}
-                    </span>
-                    {car.urgentText && <span className="block text-sm font-semibold text-text">{car.urgentText}</span>}
-                  </span>
-                  {car.urgent && <DueChip status={car.urgent.status} locale={locale} />}
-                  <span aria-hidden="true" className="inline-block text-2xl leading-none text-text-muted rtl:rotate-180">
-                    ›
-                  </span>
-                </PendingLink>
+                  car={car.car}
+                  detail={car.urgentText}
+                  aside={car.urgent && <DuePill item={car.urgent} locale={locale} />}
+                />
               </li>
             ))}
           </ul>

@@ -5,9 +5,9 @@ import type { MessageCategory } from '@/lib/domain/constants';
  * Line icons (24px grid, 1.75 stroke, currentColor). Decorative: always
  * aria-hidden — the text next to them carries the meaning.
  */
-type IconProps = SVGProps<SVGSVGElement>;
+export type IconProps = SVGProps<SVGSVGElement>;
 
-function Icon({ children, className = 'h-5 w-5', ...props }: IconProps) {
+export function Icon({ children, className = 'h-5 w-5', ...props }: IconProps) {
   return (
     <svg
       viewBox="0 0 24 24"

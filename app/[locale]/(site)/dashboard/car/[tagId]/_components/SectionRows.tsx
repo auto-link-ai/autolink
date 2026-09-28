@@ -1,12 +1,17 @@
 import { getTranslations } from 'next-intl/server';
-import { DueChip, dueSentence } from '@/components/care/DueList';
+import type { ComponentType } from 'react';
+import { DuePill } from '@/components/care/DuePill';
+import { ClipboardIcon, NoteIcon, OilIcon, RoadIcon, WrenchIcon } from '@/components/care/icons';
+import { ShieldIcon, type IconProps } from '@/components/site/icons';
 import { PendingLink } from '@/components/ui/PendingLink';
 import type { Locale } from '@/i18n/locales';
 import type { DueItem } from '@/lib/care/due';
-import { CARE_SECTIONS, carBookPath, type CareSection } from '@/lib/care/sections';
+import { carBookPath, CARE_SECTIONS, type CareSection } from '@/lib/care/sections';
+import { cx } from '@/lib/cx';
 import type { CarBookDTO } from '@/lib/db/repositories/carBook';
 import type { CareDueKind } from '@/lib/domain/constants';
-import { formatDay } from '@/lib/format/date';
+import { formatDayLong } from '@/lib/format/date';
+import { groupThousands } from '@/lib/format/number';
 
 const DUE_KIND: Partial<Record<CareSection, CareDueKind>> = {
   oil: 'OIL_CHANGE',
@@ -15,6 +20,18 @@ const DUE_KIND: Partial<Record<CareSection, CareDueKind>> = {
   vignette: 'VIGNETTE',
 };
 
+const ICON: Partial<Record<CareSection, ComponentType<IconProps>>> = {
+  oil: OilIcon,
+  insurance: ShieldIcon,
+  inspection: ClipboardIcon,
+  vignette: RoadIcon,
+  repairs: WrenchIcon,
+  notes: NoteIcon,
+};
+
+/** The car's details open from the car card above, so they get no row. */
+const ROWS = CARE_SECTIONS.filter((section) => section !== 'profile');
+
 /** The first line of the notes, short enough for one row. */
 function preview(text: string, max = 60): string {
   const line = text.split('\n')[0]!.trim();
@@ -22,60 +39,63 @@ function preview(text: string, max = 60): string {
 }
 
 /**
- * Every section of the car book, one big row each: its name, where it stands,
- * and a way in. A row with nothing in it says so, which is the invitation.
+ * One card per part of the car book: its icon, its name, its date (or what is
+ * in it), and a pill with the days left. A part with nothing in it says
+ * « À renseigner » in orange — that line is the invitation.
  */
 export async function SectionRows({ book, locale, items }: { book: CarBookDTO; locale: Locale; items: DueItem[] }) {
   const t = await getTranslations('care');
   const itemOf = (kind: CareDueKind) => items.find((item) => item.kind === kind)!;
 
-  const summaryOf = async (section: CareSection): Promise<string> => {
+  const lineOf = (section: CareSection): { text: string; empty: boolean } => {
     const kind = DUE_KIND[section];
-    if (section === 'oil') {
-      const latest = book.oilChanges[0];
-      if (!latest) return t('due.notSet');
-      const next = itemOf('OIL_CHANGE');
-      return next.status === 'unset'
-        ? t('summary.last', { when: formatDay(latest.date, locale) })
-        : t('summary.next', { when: await dueSentence(next, locale) });
+    if (kind) {
+      const item = itemOf(kind);
+      const km = item.km !== null ? t('due.atKm', { km: groupThousands(item.km) }) : null;
+      if (item.date) {
+        const late = item.daysLeft !== null && item.daysLeft < 0 ? t('due.lateDays', { count: -item.daysLeft }) : null;
+        return { text: [formatDayLong(item.date, locale), late, km].filter(Boolean).join(' · '), empty: false };
+      }
+      if (km) return { text: km, empty: false };
+      const latest = section === 'oil' ? book.oilChanges[0] : undefined;
+      if (latest) return { text: t('summary.last', { when: formatDayLong(latest.date, locale) }), empty: false };
+      return { text: t('due.notSet'), empty: true };
     }
-    if (kind) return dueSentence(itemOf(kind), locale);
-    if (section === 'repairs') return t('summary.repairs', { count: book.repairs.length });
-    if (section === 'profile') {
-      const p = book.profile;
-      const parts = [p.fuel && t(`profile.fuels.${p.fuel}`), p.year, p.engine].filter(Boolean);
-      return parts.length > 0 ? parts.join(' · ') : t('due.notSet');
-    }
-    return book.notes ? preview(book.notes) : t('due.notSet');
+    if (section === 'repairs') return { text: t('summary.repairs', { count: book.repairs.length }), empty: false };
+    return book.notes ? { text: preview(book.notes), empty: false } : { text: t('due.notSet'), empty: true };
   };
 
-  const rows = await Promise.all(
-    CARE_SECTIONS.map(async (section) => {
-      const kind = DUE_KIND[section];
-      const status = kind ? itemOf(kind).status : null;
-      return { section, summary: await summaryOf(section), status };
-    }),
-  );
-
   return (
-    <ul className="flex flex-col gap-3">
-      {rows.map(({ section, summary, status }) => (
-        <li key={section}>
-          <PendingLink
-            href={carBookPath(locale, book.publicTagId, section)}
-            className="flex min-h-18 items-center gap-3 rounded-2xl border border-border bg-white px-4 py-3 shadow-card-sm transition-colors hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            <span className="min-w-0 flex-1">
-              <span className="block text-[17px] font-bold text-text">{t(`${section}.title`)}</span>
-              <span className="block truncate text-[15px] text-text-secondary">{summary}</span>
-            </span>
-            {status && status !== 'unset' && status !== 'km' && <DueChip status={status} locale={locale} />}
-            <span aria-hidden="true" className="inline-block text-2xl leading-none text-text-muted rtl:rotate-180">
-              ›
-            </span>
-          </PendingLink>
-        </li>
-      ))}
+    <ul aria-label={t('overview.everything')} className="flex flex-col gap-3">
+      {ROWS.map((section) => {
+        const kind = DUE_KIND[section];
+        const Icon = ICON[section]!;
+        const line = lineOf(section);
+        return (
+          <li key={section}>
+            <PendingLink
+              href={carBookPath(locale, book.publicTagId, section)}
+              className="flex min-h-20 items-center gap-3 rounded-xl bg-white px-4 py-3.5 shadow-card-sm transition-shadow hover:shadow-card-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:gap-4 sm:px-5"
+            >
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-accent">
+                <Icon className="h-6 w-6" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[17px] leading-snug font-bold text-text">
+                  {kind ? t(`due.kinds.${kind}`) : t(`${section}.title`)}
+                </span>
+                <span className={cx('line-clamp-2 block text-[15px] leading-snug', line.empty ? 'font-semibold text-accent' : 'text-text-secondary')}>
+                  {line.text}
+                </span>
+              </span>
+              {kind && <DuePill item={itemOf(kind)} locale={locale} />}
+              <span aria-hidden="true" className="inline-block text-2xl leading-none text-text-muted rtl:rotate-180">
+                ›
+              </span>
+            </PendingLink>
+          </li>
+        );
+      })}
     </ul>
   );
 }

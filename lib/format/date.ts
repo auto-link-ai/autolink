@@ -41,3 +41,8 @@ export function formatAge(date: Date, locale: Locale, now: Date = new Date()): s
   const format = new Intl.RelativeTimeFormat(INTL_LOCALE[locale], { numeric: 'auto' });
   return format.format(-Math.floor(elapsed / size), unit);
 }
+
+/** The same day with the month written out — « 12 mai 2026 », « 12 ماي 2026 » — where there is room. */
+export function formatDayLong(date: Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], { dateStyle: 'long', timeZone: 'UTC' }).format(date);
+}

@@ -82,13 +82,16 @@ test.describe('the car book', () => {
     // One car: the "Car book" tab goes straight to it.
     await page.getByRole('link', { name: 'Car book', exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/en/dashboard/car/${tagId}$`));
-    await expect(page.getByRole('heading', { name: 'Car book', level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'My car book', level: 1 })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'Where you are' })).toContainText('My stickers');
 
-    await expect(page.getByRole('region', { name: 'Coming up' })).toContainText('Add your insurance');
-    const sections = page.getByRole('heading', { name: 'Everything about the car' }).locator('..').getByRole('link');
-    await expect(sections).toHaveCount(7);
-    await expect(sections.filter({ hasText: 'To fill in' })).toHaveCount(6);
+    // The car on top, opening its details; then one card per part, each still to fill in.
+    const car = page.getByRole('link', { name: /^Renault Clio/ });
+    await expect(car).toContainText('Grey');
+    await expect(car).toHaveAttribute('href', `/en/dashboard/car/${tagId}/profile`);
+    const sections = page.getByRole('list', { name: 'Everything about the car' }).getByRole('link');
+    await expect(sections).toHaveCount(6);
+    await expect(sections.filter({ hasText: 'To fill in' })).toHaveCount(5);
     await expect(sections.filter({ hasText: 'Repairs & service' })).toContainText('Nothing logged yet');
     await page.close();
   });
@@ -197,16 +200,17 @@ test.describe('the car book', () => {
   test('the overview and the dashboard reflect it all, and link to the right place', async () => {
     const page = await owner.newPage();
     await page.goto(`/en/dashboard/car/${tagId}`);
-    const due = page.getByRole('region', { name: 'Coming up' });
-    await expect(due.getByRole('link').first()).toContainText('Insurance');
-    await expect(due.getByRole('link', { name: /Oil change/ })).toContainText('Due soon');
-
-    const sections = page.getByRole('heading', { name: 'Everything about the car' }).locator('..');
-    await expect(sections.getByRole('link', { name: /^Oil change/ })).toContainText('Next:');
-    await expect(sections.getByRole('link', { name: /^Car profile/ })).toContainText('Diesel · 2019');
+    // Each date with its pill: late in words, otherwise the days left.
+    const sections = page.getByRole('list', { name: 'Everything about the car' });
+    const insurance = sections.getByRole('link', { name: /^Insurance/ });
+    await expect(insurance).toContainText('Late');
+    await expect(insurance).toContainText(/\d+ days? late/);
+    await expect(sections.getByRole('link', { name: /^Oil change/ })).toContainText('3 days');
+    await expect(sections.getByRole('link', { name: /^Oil change/ })).toContainText('95 000 km');
+    await expect(page.getByRole('link', { name: /^Renault Clio/ })).toContainText('Diesel · 2019');
     await expect(sections.getByRole('link', { name: /^Notes/ })).toContainText(PRIVATE.notes);
 
-    await due.getByRole('link').first().click();
+    await insurance.click();
     await expect(page).toHaveURL(new RegExp(`/car/${tagId}/insurance$`));
 
     await page.goto('/en/dashboard');

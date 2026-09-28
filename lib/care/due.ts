@@ -71,6 +71,17 @@ export function dueItems(inputs: DueInputs, today: Date, soonDays: number): DueI
   );
 }
 
+/**
+ * The pill beside a date on the car book: « En retard » when it has passed,
+ * otherwise the days left — orange within the reminder window, green after.
+ * Null when there is no date to count from.
+ */
+export function duePill(item: DueItem): { tone: 'late' | 'soon' | 'ok'; days: number } | null {
+  if (item.daysLeft === null) return null;
+  if (item.status === 'overdue') return { tone: 'late', days: -item.daysLeft };
+  return { tone: item.status === 'soon' ? 'soon' : 'ok', days: item.daysLeft };
+}
+
 /** The one thing worth a line on the dashboard: late or due soon, else nothing. */
 export function mostUrgent(items: DueItem[]): DueItem | null {
   const first = items[0];

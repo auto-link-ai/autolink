@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addDays, algiersToday, dueItem, dueItems, mostUrgent } from '@/lib/care/due';
+import { addDays, algiersToday, dueItem, dueItems, duePill, mostUrgent } from '@/lib/care/due';
 import { groupThousands } from '@/lib/format/number';
 
 describe('groupThousands', () => {
@@ -62,5 +62,22 @@ describe('dueItems', () => {
     expect(mostUrgent(items)?.kind).toBe('INSURANCE');
     const calm = dueItems({ oilChange: null, insuranceExpiry: addDays(today, 90), inspectionDue: null, vignetteDue: null }, today, 7);
     expect(mostUrgent(calm)).toBeNull();
+  });
+});
+
+describe('duePill', () => {
+  it('says « late » once a date has passed, with how long ago', () => {
+    expect(duePill(dueItem('INSURANCE', addDays(today, -3), null, today, 7))).toEqual({ tone: 'late', days: 3 });
+  });
+
+  it('counts the days left: orange inside the reminder window, green after', () => {
+    expect(duePill(dueItem('INSURANCE', addDays(today, 5), null, today, 7))).toEqual({ tone: 'soon', days: 5 });
+    expect(duePill(dueItem('INSURANCE', today, null, today, 7))).toEqual({ tone: 'soon', days: 0 });
+    expect(duePill(dueItem('INSURANCE', addDays(today, 45), null, today, 7))).toEqual({ tone: 'ok', days: 45 });
+  });
+
+  it('shows nothing without a date, even with a km', () => {
+    expect(duePill(dueItem('OIL_CHANGE', null, 85000, today, 7))).toBeNull();
+    expect(duePill(dueItem('VIGNETTE', null, null, today, 7))).toBeNull();
   });
 });

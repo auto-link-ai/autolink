@@ -1292,6 +1292,7 @@
     "title": "Carnet de la voiture",
     "back": "Mes autocollants",
     "private": "Privé : vous seul le voyez, une fois connecté.",
+    "changeCar": "Changer de voiture",
     "save": "Enregistrer",
     "saving": "Enregistrement…",
     "add": "Ajouter",
@@ -1317,6 +1318,11 @@
       "lateDays": "{count, plural, one {# jour de retard} other {# jours de retard}}",
       "atKm": "À {km} km",
       "notSet": "À renseigner"
+    },
+    "pill": {
+      "late": "En retard",
+      "today": "Aujourd’hui",
+      "days": "{count, plural, one {# jour} other {# jours}}"
     },
     "profile": {
       "title": "Fiche de la voiture",
@@ -1433,7 +1439,8 @@
       "cta": "Activer un autocollant"
     },
     "overview": {
-      "noDates": "Ajoutez les dates de votre assurance, du contrôle technique et de la vignette pour être prévenu à temps.",
+      "heading": "Mon carnet",
+      "subtitle": "Toutes les infos et l’entretien de votre voiture, au même endroit.",
       "everything": "Tout sur la voiture"
     },
     "summary": {
