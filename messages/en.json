@@ -924,10 +924,56 @@
   "order": {
     "metaTitle": "Order — AutoLink",
     "metaDescription": "Order your AutoLink sticker. Cash on delivery, across all 58 wilayas.",
-    "eyebrow": "Order",
-    "title": "Order your sticker.",
-    "subtitle": "You pay on delivery. We call you to confirm before anything ships.",
     "unavailable": "Ordering is briefly unavailable. Please try again in a few minutes.",
+    "product": {
+      "eyebrow": "QR sticker for your car",
+      "title": "Let anyone warn you, without ever seeing your number.",
+      "body": "Lights left on, exit blocked, window open: whoever scans the sticker sends you a message, and the alert reaches your phone.",
+      "priceSuffix": "per sticker · one payment, no subscription",
+      "stickerAlt": "The AutoLink sticker: the logo and the QR code, inviting people to scan it to contact the owner.",
+      "size": "8 × 11.3 cm"
+    },
+    "badges": {
+      "cod": "Pay on delivery",
+      "delivery": "Delivery to all 58 wilayas",
+      "deliveryFree": "Free delivery, all 58 wilayas",
+      "private": "Your number never shown",
+      "noSubscription": "No subscription, no app"
+    },
+    "includes": {
+      "title": "What you get",
+      "items": {
+        "sticker": {
+          "title": "The sticker",
+          "body": "8 × 11.3 cm, with its own QR code, for a window that is easy to see."
+        },
+        "slip": {
+          "title": "The activation slip",
+          "body": "A private code on a separate slip: only you can link the sticker to your car."
+        },
+        "messages": {
+          "title": "Unlimited messages",
+          "body": "Each message arrives as a notification on your phone and stays in your space."
+        },
+        "carBook": {
+          "title": "Your car book",
+          "body": "Oil change, insurance, roadworthiness test, vignette: a reminder before each is due."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to put it on your car?",
+      "body": "You pay cash on delivery. We call you before shipping.",
+      "button": "Order now"
+    },
+    "whatsapp": {
+      "label": "A question? Message us on WhatsApp",
+      "message": "Hello, I have a question about the AutoLink sticker."
+    },
+    "sticky": {
+      "price": "Per sticker",
+      "order": "Order"
+    },
     "notice": "We use these details only to deliver this order and to call you about it.",
     "fields": {
       "quantity": "Quantity",

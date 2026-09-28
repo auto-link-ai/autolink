@@ -1,17 +1,19 @@
 'use client';
 
 import { useActionState, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { PhoneIcon } from '@/components/site/icons';
+import { PhoneIcon, WhatsAppIcon } from '@/components/site/icons';
 import { Button } from '@/components/ui/Button';
 import { submitKeepingValues } from '@/components/ui/submitKeepingValues';
 import type { Locale } from '@/i18n/locales';
 import type { DeliveryType } from '@/lib/domain/constants';
+import { formatDzd } from '@/lib/format/currency';
 import { deliveryFreeEverywhere, shownOrderTotals, type FeeRow } from '@/lib/orders/totals';
 import { orderFieldErrors, orderInputSchema } from '@/lib/validation/order';
 import { DeliveryChoice } from './_components/DeliveryChoice';
 import { AddressFields, ContactFields, ExtraFields } from './_components/OrderFields';
 import { OrderTotal } from './_components/OrderTotal';
 import { QuantityCards } from './_components/QuantityCards';
+import { StickyOrderBar } from './_components/StickyOrderBar';
 import { placeOrderAction } from './actions';
 import { ORDER_FORM_INITIAL, type OrderFormState } from './formState';
 import type { OrderFormLabels } from './orderLabels';
@@ -25,6 +27,8 @@ interface Props {
   unitPrice: number;
   currencyLabel: string;
   maxQuantity: number;
+  /** « Une question ? WhatsApp », when a number is set. */
+  whatsapp: { href: string; label: string } | null;
 }
 
 /** Where to put the cursor when a field is refused. */
@@ -59,7 +63,7 @@ function Part({ number, title, children }: { number: number; title: string; chil
  * cursor on the first one to fix, top to bottom. Without JavaScript the form
  * simply posts and the server answers the same way.
  */
-export function OrderForm({ locale, labels, wilayas, fees, unitPrice, currencyLabel, maxQuantity }: Props) {
+export function OrderForm({ locale, labels, wilayas, fees, unitPrice, currencyLabel, maxQuantity, whatsapp }: Props) {
   const [state, formAction, pending] = useActionState<OrderFormState, FormData>(placeOrderAction, ORDER_FORM_INITIAL);
   const form = useRef<HTMLFormElement>(null);
 
@@ -205,8 +209,26 @@ export function OrderForm({ locale, labels, wilayas, fees, unitPrice, currencyLa
           <PhoneIcon className="h-4 w-4 shrink-0 text-accent" />
           {labels.reassurance}
         </p>
+        {whatsapp && (
+          <a
+            href={whatsapp.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-border-strong px-5 text-[15px] font-bold text-text hover:bg-surface-2"
+          >
+            <WhatsAppIcon className="h-5 w-5 text-success" />
+            {whatsapp.label}
+          </a>
+        )}
         <p className="text-center text-xs leading-relaxed text-text-muted">{labels.notice}</p>
       </div>
+
+      <StickyOrderBar
+        form={form}
+        label={totals ? labels.total.total : labels.sticky.price}
+        amount={formatDzd(totals ? totals.totalPrice : unitPrice, currencyLabel)}
+        action={labels.sticky.order}
+      />
     </form>
   );
 }

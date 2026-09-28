@@ -41,6 +41,8 @@ export interface OrderFormLabels {
   /** Shown by the button when fields need fixing. */
   checkFields: string;
   reassurance: string;
+  /** The phone bar: its label when no total is known yet, and its button. */
+  sticky: Record<'price' | 'order', string>;
   errors: Record<string, string>;
   notice: string;
 }

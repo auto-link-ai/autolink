@@ -7,7 +7,22 @@ import JSZip from 'jszip';
 test('the order form renders in Arabic, right-to-left', async ({ page }) => {
   await page.goto('/ar/order');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('اطلب ملصقك.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('ليتمكّن أيّ شخص من تنبيهك، دون أن يرى رقمك أبدًا.');
+});
+
+test('on a phone, the first screen sells, and a bar brings the form back', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/fr/order');
+  await expect(page.getByRole('heading', { level: 1 })).toBeInViewport();
+  await expect(page.getByText(/^1\s500\sDA$/).first()).toBeInViewport();
+  await expect(page.getByText('Paiement à la livraison', { exact: true })).toBeInViewport();
+  await expect(page.getByRole('img', { name: /L’autocollant AutoLink/ })).toBeVisible();
+
+  const bar = page.locator('[data-order-bar]');
+  await expect(bar).toHaveAttribute('aria-hidden', 'false');
+  await bar.getByRole('link', { name: 'Commander' }).click();
+  await expect(page.locator('#order-form')).toBeInViewport();
+  await expect(bar).toHaveAttribute('aria-hidden', 'true');
 });
 
 test('an empty order puts the cursor on the name and says what is missing', async ({ page }) => {

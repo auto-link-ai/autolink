@@ -924,10 +924,56 @@
   "order": {
     "metaTitle": "Commander — AutoLink",
     "metaDescription": "Commandez votre autocollant AutoLink. Paiement à la livraison, dans les 58 wilayas.",
-    "eyebrow": "Commande",
-    "title": "Commandez votre autocollant.",
-    "subtitle": "Vous payez à la livraison. Nous vous appelons pour confirmer avant l’expédition.",
     "unavailable": "Les commandes sont momentanément indisponibles. Réessayez dans quelques minutes.",
+    "product": {
+      "eyebrow": "Autocollant QR pour votre voiture",
+      "title": "Qu’on puisse vous prévenir, sans jamais voir votre numéro.",
+      "body": "Phares allumés, sortie bloquée, vitre ouverte : la personne qui scanne l’autocollant vous envoie un message, et l’alerte arrive sur votre téléphone.",
+      "priceSuffix": "l’autocollant · paiement unique, sans abonnement",
+      "stickerAlt": "L’autocollant AutoLink : le logo, le QR code et « Scannez pour contacter le propriétaire ».",
+      "size": "8 × 11,3 cm"
+    },
+    "badges": {
+      "cod": "Paiement à la livraison",
+      "delivery": "Livraison dans les 58 wilayas",
+      "deliveryFree": "Livraison gratuite, 58 wilayas",
+      "private": "Votre numéro jamais affiché",
+      "noSubscription": "Sans abonnement ni application"
+    },
+    "includes": {
+      "title": "Ce que vous recevez",
+      "items": {
+        "sticker": {
+          "title": "L’autocollant",
+          "body": "8 × 11,3 cm, avec son QR code unique, à coller sur une vitre bien visible."
+        },
+        "slip": {
+          "title": "La fiche d’activation",
+          "body": "Un code privé, sur une fiche à part : vous seul pouvez lier l’autocollant à votre voiture."
+        },
+        "messages": {
+          "title": "Les messages, sans limite",
+          "body": "Chaque message arrive en notification sur votre téléphone et reste dans votre espace."
+        },
+        "carBook": {
+          "title": "Le carnet de votre voiture",
+          "body": "Vidange, assurance, contrôle technique, vignette : un rappel avant chaque échéance."
+        }
+      }
+    },
+    "cta": {
+      "title": "Prêt à le coller sur votre voiture ?",
+      "body": "Vous payez à la livraison, en espèces. Nous vous appelons avant l’envoi.",
+      "button": "Commander maintenant"
+    },
+    "whatsapp": {
+      "label": "Une question ? Écrivez-nous sur WhatsApp",
+      "message": "Bonjour, j’ai une question sur l’autocollant AutoLink."
+    },
+    "sticky": {
+      "price": "L’autocollant",
+      "order": "Commander"
+    },
     "notice": "Nous utilisons ces informations uniquement pour vous livrer et vous appeler au sujet de cette commande.",
     "fields": {
       "quantity": "Quantité",
