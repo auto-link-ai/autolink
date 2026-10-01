@@ -72,13 +72,12 @@ export const adminTagEditsRepository = {
   },
 
   /**
-   * Takes a sticker back from its customer: unassigned again, its old activation
-   * code replaced (`disabledCodeHash`) so the old slip no longer works — reissue
-   * the batch's codes before handing it out. That car and its car book are
-   * deleted unless another sticker still points at it; the customer keeps the
-   * messages they already received.
+   * Takes a sticker back from its customer: unassigned again, so whoever scans
+   * it next can link it. That car and its car book are deleted unless another
+   * sticker still points at it; the customer keeps the messages they already
+   * received.
    */
-  async takeBack(admin: AdminActor, publicTagId: string, disabledCodeHash: string): Promise<TagEditResult> {
+  async takeBack(admin: AdminActor, publicTagId: string): Promise<TagEditResult> {
     const mongoose = await connectToDatabase();
     const tag = await TagModel.findOne({ publicTagId }, { _id: 1, ownerId: 1, vehicleId: 1 }).lean();
     if (!tag) return { ok: false, reason: 'not_found' };
@@ -94,9 +93,6 @@ export const adminTagEditsRepository = {
             ownerId: null,
             vehicleId: null,
             activatedAt: null,
-            activationCodeHash: disabledCodeHash,
-            activationAttempts: 0,
-            lockedUntil: null,
           },
         },
         { session },

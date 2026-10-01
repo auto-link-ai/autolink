@@ -4,10 +4,9 @@ import { argon2id, hash, verify } from 'argon2';
 import { encodeCrockford } from '@/lib/tags/generate';
 
 /**
- * argon2id for passwords and activation codes.
- * Parameters are the OWASP baseline (19 MiB, 2 iterations, 1 lane): strong,
- * and light enough to hash a batch of activation codes inside a serverless
- * function's time limit.
+ * argon2id for passwords. Parameters are the OWASP baseline (19 MiB,
+ * 2 iterations, 1 lane): strong, and light enough for a serverless function's
+ * time limit.
  */
 const ARGON2_OPTIONS = {
   type: argon2id,

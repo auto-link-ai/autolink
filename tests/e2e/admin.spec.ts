@@ -92,12 +92,12 @@ test.describe('with an admin account', () => {
     expect(download.suggestedFilename()).toMatch(/^autolink-e2e-batch-B-[0-9A-Z]{8}\.zip$/);
     const zip = await readZip(download);
     const csv = (await zip.file('tags.csv')!.async('string')).trim().split('\r\n');
-    expect(csv[0]).toBe('tag_id,activation_code,qr_url');
+    // The stickers and their addresses: no activation code anywhere.
+    expect(csv[0]).toBe('tag_id,qr_url');
     const rows = csv.slice(1).map((line) => line.split(','));
     expect(rows).toHaveLength(3);
-    for (const [id, code, url] of rows) {
+    for (const [id, url] of rows) {
       expect(id).toMatch(/^AUT-[0-9A-HJKMNP-TV-Z]{8}$/);
-      expect(code).toMatch(/^[0-9A-HJKMNP-TV-Z]{4}-[0-9A-HJKMNP-TV-Z]{4}-[0-9A-HJKMNP-TV-Z]{2}$/);
       expect(url).toMatch(new RegExp(`/t/${id}$`));
       expect(zip.file(`pdf/${id}.pdf`)).not.toBeNull();
     }
@@ -115,21 +115,8 @@ test.describe('with an admin account', () => {
     await page.getByRole('row', { name: new RegExp(firstId) }).getByRole('button', { name: 'Reactivate' }).click();
     await expect(page.getByRole('row', { name: new RegExp(firstId) }).getByText('Unassigned')).toBeVisible();
 
-    // Reissue: fresh codes for the same tags.
-    page.once('dialog', (dialog) => dialog.accept());
-    const batchRow = page.getByRole('row', { name: /E2E batch/ }).first();
-    const [reissued] = await Promise.all([
-      page.waitForEvent('download'),
-      batchRow.getByRole('button', { name: 'Reissue codes' }).click(),
-    ]);
-    expect(reissued.suggestedFilename()).toMatch(/-reissue\.zip$/);
-    const newRows = (await (await readZip(reissued)).file('tags.csv')!.async('string'))
-      .trim()
-      .split('\r\n')
-      .slice(1)
-      .map((line) => line.split(','));
-    expect(newRows.map((r) => r[0]).sort()).toEqual(rows.map((r) => r[0]).sort());
-    for (const [id, code] of newRows) expect(code).not.toBe(rows.find((r) => r[0] === id)![1]);
+    // Nothing to reissue any more: a batch has no codes.
+    await expect(page.getByRole('button', { name: 'Reissue codes' })).toHaveCount(0);
 
     // Sign out ends the session.
     await page.getByRole('button', { name: 'Sign out' }).click();

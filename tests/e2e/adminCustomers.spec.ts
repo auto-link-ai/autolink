@@ -50,7 +50,7 @@ test.describe('an admin looking after a customer', () => {
     test.skip(testInfo.project.name !== 'desktop-chromium', 'Writes to the database: run once.');
   });
 
-  let tag = { id: '', code: '' };
+  let tag = { id: '' };
 
   test('the overview counts what exists', async ({ browser }) => {
     test.setTimeout(180_000);
@@ -64,8 +64,8 @@ test.describe('an admin looking after a customer', () => {
     const download = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Generate and download' }).click();
     const zip = await JSZip.loadAsync(await readFile((await (await download).path())!));
-    const [id, code] = (await zip.file('tags.csv')!.async('string')).split('\r\n')[1]!.split(',');
-    tag = { id: id!, code: code! };
+    const [id] = (await zip.file('tags.csv')!.async('string')).split('\r\n')[1]!.split(',');
+    tag = { id: id! };
     expect(tag.id).toMatch(/^AUT-[0-9A-HJKMNP-TV-Z]{8}$/);
 
     await page.goto('/en/admin');

@@ -1,6 +1,5 @@
 'use server';
 
-import { randomBytes } from 'node:crypto';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { toLocale } from '@/i18n/locales';
@@ -10,7 +9,6 @@ import { tagsRepository } from '@/lib/db/repositories/tags';
 import { adminTagEditsRepository } from '@/lib/db/repositories/tagsAdminEdit';
 import { TAG_ACTIONS } from '@/lib/domain/constants';
 import { tagIdSchema } from '@/lib/validation/tagId';
-import { hashSecret } from '@/lib/security/password';
 
 const inputSchema = z.object({
   publicTagId: tagIdSchema,
@@ -66,15 +64,11 @@ export async function cleanBatchAction(formData: FormData): Promise<void> {
   redirect(tagListReturnPath(locale, returnSearch, result.ok ? 'cleaned' : result.reason));
 }
 
-/**
- * A sticker taken back from its customer. Its old activation code is replaced
- * by a random one nobody knows, so the old slip stops working.
- */
+/** A sticker taken back from its customer: free again for whoever scans it next. */
 export async function takeBackTagAction(formData: FormData): Promise<void> {
   const { session, locale, returnSearch } = await requireAdminRole(formData);
   const id = tagIdSchema.safeParse(formData.get('publicTagId'));
   if (!id.success) redirect(tagListReturnPath(locale, returnSearch, 'not_found'));
-  const disabledCodeHash = await hashSecret(randomBytes(24).toString('base64url'));
-  const result = await adminTagEditsRepository.takeBack(session.actor, id.data, disabledCodeHash);
+  const result = await adminTagEditsRepository.takeBack(session.actor, id.data);
   redirect(tagListReturnPath(locale, returnSearch, result.ok ? 'taken_back' : result.reason));
 }

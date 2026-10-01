@@ -1,5 +1,5 @@
 /**
- * Repository: maintenance (index management, verification checks)
+ * Repository: maintenance (index management)
  *
  * SECURITY BOUNDARY — only repositories import models. Called by scripts only;
  * never exposed through a route.
@@ -56,37 +56,4 @@ export async function syncAllIndexes(): Promise<string[]> {
     synced.push(m.collection.collectionName);
   }
   return synced;
-}
-
-/**
- * Verification for the Phase 1 gate: searches EVERY collection for any of the
- * given strings (e.g. plaintext activation codes from a tags.csv). Returns the
- * number of matching documents per collection; an empty result means none leaked.
- */
-export async function findStringOccurrences(needles: string[]): Promise<Record<string, number>> {
-  const mongoose = await connectToDatabase();
-  const db = mongoose.connection.db;
-  if (!db || needles.length === 0) return {};
-  const hits: Record<string, number> = {};
-  for (const { name } of await db.listCollections({}, { nameOnly: true }).toArray()) {
-    for await (const doc of db.collection(name).find({})) {
-      const text = JSON.stringify(doc);
-      if (needles.some((needle) => text.includes(needle))) hits[name] = (hits[name] ?? 0) + 1;
-    }
-  }
-  return hits;
-}
-
-/** For the same check: how many of these tags store an argon2id hash. */
-export async function countArgon2idHashes(
-  publicTagIds: string[],
-): Promise<{ found: number; argon2id: number }> {
-  await connectToDatabase();
-  const docs = await TagModel.find({ publicTagId: { $in: publicTagIds } }, { activationCodeHash: 1 })
-    .select('+activationCodeHash')
-    .lean();
-  return {
-    found: docs.length,
-    argon2id: docs.filter((d) => d.activationCodeHash.startsWith('$argon2id$')).length,
-  };
 }

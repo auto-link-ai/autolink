@@ -11,7 +11,7 @@ import { linkSticker } from './linkSticker';
 
 const run = Date.now().toString(36).slice(-6);
 
-async function generate(page: Page, label: string, quantity: number): Promise<{ id: string; code: string }[]> {
+async function generate(page: Page, label: string, quantity: number): Promise<{ id: string }[]> {
   await page.goto('/en/admin/tags');
   await page.getByLabel('Batch name').fill(label);
   await page.getByLabel('Quantity').fill(String(quantity));
@@ -20,12 +20,12 @@ async function generate(page: Page, label: string, quantity: number): Promise<{ 
   const zip = await JSZip.loadAsync(await readFile((await (await download).path())!));
   const rows = (await zip.file('tags.csv')!.async('string')).trim().split('\r\n').slice(1);
   return rows.map((row) => {
-    const [id, code] = row.split(',');
-    return { id: id!, code: code! };
+    const [id] = row.split(',');
+    return { id: id! };
   });
 }
 
-async function customerWith(browser: Browser, tag: { id: string; code: string }) {
+async function customerWith(browser: Browser, tag: { id: string }) {
   const shop = await browser.newContext({ extraHTTPHeaders: { 'x-forwarded-for': `198.51.100.${Date.now() % 250}` } });
   const page = await shop.newPage();
   await page.goto('/en/register');
@@ -46,7 +46,7 @@ test.describe('an admin cleaning up stickers', () => {
   });
 
   const label = `E2E clean ${run}`;
-  let tags: { id: string; code: string }[] = [];
+  let tags: { id: string }[] = [];
 
   test('an unused sticker is deleted in two taps', async ({ browser }) => {
     test.setTimeout(180_000);

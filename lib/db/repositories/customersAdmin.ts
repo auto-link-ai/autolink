@@ -108,8 +108,6 @@ export const adminCustomersRepository = {
             ownerId: null,
             vehicleId: null,
             activatedAt: null,
-            activationAttempts: 0,
-            lockedUntil: null,
           },
         },
         { session },

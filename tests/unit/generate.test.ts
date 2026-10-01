@@ -1,12 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   encodeCrockford,
-  generateActivationCode,
   generateBatchPublicId,
   generateTagId,
   generateUniqueTagIds,
 } from '@/lib/tags/generate';
-import { isValidActivationCodeShape } from '@/lib/validation/activationCode';
 import { CROCKFORD_ALPHABET, isValidTagIdShape } from '@/lib/validation/tagId';
 
 describe('encodeCrockford', () => {
@@ -33,9 +31,7 @@ describe('generators', () => {
     for (let i = 0; i < 1000; i++) expect(isValidTagIdShape(generateTagId())).toBe(true);
   });
 
-  it('activation codes match XXXX-XXXX-XX', () => {
-    for (let i = 0; i < 1000; i++) expect(isValidActivationCodeShape(generateActivationCode())).toBe(true);
-  });
+
 
   it('batch public ids look like B-XXXXXXXX', () => {
     expect(generateBatchPublicId()).toMatch(/^B-[0-9A-HJKMNP-TV-Z]{8}$/);

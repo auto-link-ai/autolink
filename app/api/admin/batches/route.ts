@@ -14,7 +14,7 @@ const inputSchema = z.object({
   quantity: z.number().int().min(1).max(BATCH_LIMITS.maxQuantity),
 });
 
-/** Creates a tag batch and returns its print ZIP (the only copy of the activation codes). */
+/** Creates a tag batch and returns its print ZIP: the stickers to print. */
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return jsonError('forbidden', 403);
   const session = await getAdminSession();

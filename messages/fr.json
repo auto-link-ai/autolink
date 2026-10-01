@@ -105,7 +105,7 @@
       "title": "Étiquettes",
       "generate": {
         "title": "Générer un lot",
-        "intro": "Crée les étiquettes et télécharge un ZIP prêt à imprimer. Les codes d'activation n'existent que dans ce ZIP : conservez-le en lieu sûr.",
+        "intro": "Crée les étiquettes et télécharge un ZIP prêt à imprimer : les autocollants, rien d'autre. Le client active le sien en le scannant.",
         "label": "Nom du lot",
         "labelHint": "Pour vous repérer, ex. « Impression septembre »",
         "quantity": "Quantité",
@@ -123,11 +123,7 @@
         "quantity": "Qté",
         "created": "Créé le",
         "createdBy": "Par",
-        "statuses": "Statuts",
-        "reissue": "Réémettre les codes",
-        "reissuing": "Réémission…",
-        "reissueConfirm": "Les codes d'activation actuels des étiquettes non activées de ce lot cesseront de fonctionner, et un nouveau ZIP sera téléchargé. Continuer ?",
-        "reissueDone": "Nouveaux codes émis. Le téléchargement a démarré."
+        "statuses": "Statuts"
       },
       "list": {
         "title": "Toutes les étiquettes",
@@ -154,7 +150,7 @@
         "not_found": "Étiquette introuvable.",
         "deleted": "Étiquette supprimée.",
         "cleaned": "Étiquettes inutilisées supprimées.",
-        "taken_back": "Étiquette reprise : elle est « Non attribuée ». Réémettez les codes du lot avant de la redonner.",
+        "taken_back": "Étiquette reprise : elle est « Non attribuée ». La prochaine personne qui la scanne pourra l'activer.",
         "forbidden": "Seul un compte administrateur peut supprimer ou reprendre une étiquette."
       },
       "status": {
@@ -179,7 +175,6 @@
         "invalid_input": "Vérifiez le nom du lot et la quantité.",
         "conflict": "Conflit d'identifiants. Relancez la génération.",
         "not_found": "Lot introuvable.",
-        "nothing_to_reissue": "Aucune étiquette non activée dans ce lot.",
         "forbidden_role": "Réservé aux administrateurs.",
         "unauthorized": "Session expirée. Reconnectez-vous.",
         "forbidden": "Requête refusée.",
@@ -191,7 +186,7 @@
         "deleteConfirm": "L'étiquette {tagId} n'a jamais servi : elle sera supprimée définitivement.",
         "deleteYes": "Oui, supprimer",
         "takeBack": "Reprendre",
-        "takeBackConfirm": "L'étiquette {tagId} sera retirée à son client et redeviendra « Non attribuée ». Le carnet de cette voiture sera supprimé ; le client garde ses messages. Son ancien code d'activation ne fonctionnera plus : réémettez les codes du lot avant de la redonner.",
+        "takeBackConfirm": "L'étiquette {tagId} sera retirée à son client et redeviendra « Non attribuée ». Le carnet de cette voiture sera supprimé ; le client garde ses messages. Ensuite, la prochaine personne qui la scanne pourra l'activer.",
         "takeBackYes": "Oui, reprendre",
         "clean": "{count, plural, one {Supprimer l’étiquette inutilisée} other {Supprimer les # inutilisées}}",
         "cleanConfirm": "{count, plural, one {L’étiquette jamais utilisée de ce lot sera supprimée} other {Les # étiquettes jamais utilisées de ce lot seront supprimées}}. Les étiquettes utilisées ne sont jamais touchées ; le lot disparaît s'il ne lui reste rien.",
@@ -460,7 +455,7 @@
         "blockConfirm": "{email} ne pourra plus se connecter, et sa session actuelle s’arrête immédiatement. Vous pourrez le débloquer ensuite.",
         "blockYes": "Oui, bloquer ce compte",
         "delete": "Supprimer le compte",
-        "deleteConfirm": "Le compte {email} sera supprimé définitivement, avec ses voitures, leurs carnets, ses messages et ses notifications. {count, plural, =0 {Il n'a aucune étiquette.} one {Son étiquette redevient « Non attribuée »} other {Ses # étiquettes redeviennent « Non attribuées »}} : son papier d'activation fonctionnera encore s'il crée un nouveau compte. Les commandes sont conservées.",
+        "deleteConfirm": "Le compte {email} sera supprimé définitivement, avec ses voitures, leurs carnets, ses messages et ses notifications. {count, plural, =0 {Il n'a aucune étiquette.} one {Son étiquette redevient « Non attribuée »} other {Ses # étiquettes redeviennent « Non attribuées »}} : qui les scanne ensuite peut les activer. Les commandes sont conservées.",
         "deleteYes": "Oui, supprimer ce compte"
       },
       "new": {

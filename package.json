@@ -15,7 +15,6 @@
     "test:e2e": "playwright test",
     "seed": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/seed.ts",
     "print:preview": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/print-preview.ts",
-    "check:codes": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/check-codes.ts",
     "admin:create": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/admin-create.ts",
     "admin:password": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/admin-password.ts",
     "reset:ratelimits": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/reset-rate-limits.ts",

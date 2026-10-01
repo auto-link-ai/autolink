@@ -9,7 +9,6 @@
  * - The public scanner lookup (Phase 2) returns `PublicTagView | null` and
  *   nothing else: UNASSIGNED, DEACTIVATED, SUSPENDED, LOST and missing tags all
  *   return `null`, so callers cannot distinguish them (rule 9).
- * - `activationCodeHash` is `select: false` and never leaves this module.
  * Returned objects never include `_id`; tags are identified by `publicTagId`.
  */
 import 'server-only';

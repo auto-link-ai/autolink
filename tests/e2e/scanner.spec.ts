@@ -50,7 +50,7 @@ test.describe('scanning a sticker', () => {
     test.skip(testInfo.project.name !== 'desktop-chromium', 'Writes to the database: run once.');
   });
 
-  let tag = { id: '', code: '' };
+  let tag = { id: '' };
 
   test.afterAll(async () => {
     await ownerSession?.close();
@@ -67,8 +67,8 @@ test.describe('scanning a sticker', () => {
     const download = admin.waitForEvent('download');
     await admin.getByRole('button', { name: 'Generate and download' }).click();
     const zip = await JSZip.loadAsync(await readFile((await (await download).path())!));
-    const [id, code] = (await zip.file('tags.csv')!.async('string')).split('\r\n')[1]!.split(',');
-    tag = { id: id!, code: code! };
+    const [id] = (await zip.file('tags.csv')!.async('string')).split('\r\n')[1]!.split(',');
+    tag = { id: id! };
     await office.close();
 
     const home = await browser.newContext();

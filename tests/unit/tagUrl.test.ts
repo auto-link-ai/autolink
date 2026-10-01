@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { claimUrl, resolveQrBaseUrl, tagUrl } from '@/lib/tags/tagUrl';
+import { resolveQrBaseUrl, tagUrl } from '@/lib/tags/tagUrl';
 
 describe('resolveQrBaseUrl', () => {
   // The suite must not depend on the shell it runs in: this value is read from
@@ -52,19 +52,3 @@ describe('tagUrl', () => {
   });
 });
 
-describe('claimUrl', () => {
-  it('points at the activation page with both values', () => {
-    expect(claimUrl('https://autolink.dz', 'fr', 'AUT-7K3M9QXZ', 'ABCD-EFGH-JK')).toBe(
-      'https://autolink.dz/fr/activate?t=AUT-7K3M9QXZ&c=ABCD-EFGH-JK',
-    );
-  });
-
-  it('never points at the public scan page', () => {
-    expect(claimUrl('https://autolink.dz', 'ar', 'AUT-7K3M9QXZ', 'ABCD-EFGH-JK')).not.toContain('/t/');
-  });
-
-  it('refuses a malformed id or code, so a broken claim QR is never printed', () => {
-    expect(() => claimUrl('https://autolink.dz', 'fr', 'AUT-BAD', 'ABCD-EFGH-JK')).toThrow(RangeError);
-    expect(() => claimUrl('https://autolink.dz', 'fr', 'AUT-7K3M9QXZ', 'abcd-efgh')).toThrow(RangeError);
-  });
-});

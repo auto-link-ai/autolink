@@ -33,7 +33,6 @@ const ERROR_CODES = [
   'invalid_input',
   'conflict',
   'not_found',
-  'nothing_to_reissue',
   'forbidden_role',
   'unauthorized',
   'forbidden',
@@ -101,9 +100,7 @@ export default async function AdminTagsPage({ params, searchParams }: Props) {
         <BatchesTable
           batches={batches}
           locale={locale}
-          canReissue={isAdmin && qr.ok}
           canEdit={isAdmin}
-          errors={errors}
           returnSearch={currentSearch}
         />
       </Card>

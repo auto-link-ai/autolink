@@ -4,7 +4,6 @@
  * SECURITY BOUNDARY — only repositories import models. Admin-only: every
  * function takes an `AdminActor`, and every mutation writes its audit entry in
  * the same transaction. Batches are identified by `publicId`, never `_id`.
- * Activation codes arrive here already hashed; plaintext never reaches the DB.
  */
 import 'server-only';
 import { connectToDatabase } from '@/lib/db/connect';
@@ -28,7 +27,6 @@ export interface TagBatchDTO {
 
 export interface NewBatchTag {
   publicTagId: string;
-  activationCodeHash: string;
 }
 
 function isDuplicateKeyError(error: unknown): boolean {
@@ -62,7 +60,6 @@ export const tagBatchesRepository = {
         await TagModel.insertMany(
           input.tags.map((tag) => ({
             publicTagId: tag.publicTagId,
-            activationCodeHash: tag.activationCodeHash,
             status: 'UNASSIGNED',
             batchId: batch._id,
           })),
@@ -154,68 +151,5 @@ export const tagBatchesRepository = {
         unused: row.unused,
       };
     });
-  },
-
-  /** Tag ids in the batch that have not been activated yet (the only ones a reissue may touch). */
-  async findUnassignedTags(
-    _admin: AdminActor,
-    batchPublicId: string,
-  ): Promise<{ label: string; publicTagIds: string[] } | null> {
-    await connectToDatabase();
-    const batch = await TagBatchModel.findOne({ publicId: batchPublicId }, { _id: 1, label: 1 }).lean();
-    if (!batch) return null;
-    const tags = await TagModel.find({ batchId: batch._id, status: 'UNASSIGNED' }, { _id: 0, publicTagId: 1 })
-      .sort({ publicTagId: 1 })
-      .lean();
-    return { label: batch.label, publicTagIds: tags.map((t) => t.publicTagId) };
-  },
-
-  /**
-   * Replaces activation-code hashes for tags that are STILL unassigned (checked
-   * inside the transaction). Returns the ids actually updated — the caller must
-   * only print codes for those. Resets activation attempts and lockouts.
-   */
-  async replaceActivationHashes(
-    admin: AdminActor,
-    batchPublicId: string,
-    entries: NewBatchTag[],
-  ): Promise<string[]> {
-    const mongoose = await connectToDatabase();
-    const batch = await TagBatchModel.findOne({ publicId: batchPublicId }, { _id: 1 }).lean();
-    if (!batch) return [];
-    const ids = entries.map((e) => e.publicTagId);
-    let updated: string[] = [];
-
-    await mongoose.connection.transaction(async (session) => {
-      await TagModel.bulkWrite(
-        entries.map((entry) => ({
-          updateOne: {
-            filter: { publicTagId: entry.publicTagId, batchId: batch._id, status: 'UNASSIGNED' },
-            update: {
-              $set: { activationCodeHash: entry.activationCodeHash, activationAttempts: 0, lockedUntil: null },
-            },
-          },
-        })),
-        { session },
-      );
-      const stillUnassigned = await TagModel.find(
-        { publicTagId: { $in: ids }, batchId: batch._id, status: 'UNASSIGNED' },
-        { _id: 0, publicTagId: 1 },
-        { session },
-      ).lean();
-      updated = stillUnassigned.map((t) => t.publicTagId);
-      await auditLogsRepository.append(
-        admin,
-        {
-          action: 'TAG_BATCH_REISSUE',
-          targetType: 'tagBatch',
-          targetId: batchPublicId,
-          metadata: { reissued: updated.length },
-        },
-        session,
-      );
-    });
-
-    return updated;
   },
 };

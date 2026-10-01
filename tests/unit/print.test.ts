@@ -1,13 +1,7 @@
 import path from 'node:path';
 import JSZip from 'jszip';
-import { PDFDocument, StandardFonts } from 'pdf-lib';
+import { PDFDocument } from 'pdf-lib';
 import { describe, expect, it } from 'vitest';
-import {
-  renderActivationSlips,
-  slipLineBudgetMm,
-  slipLines,
-  SLIPS_PER_PAGE,
-} from '@/lib/print/activationSlips';
 import { buildBatchZip } from '@/lib/print/batchZip';
 import { toTagsCsv } from '@/lib/print/csv';
 import { gangGrid, renderPrintSheet } from '@/lib/print/printSheet';
@@ -28,9 +22,7 @@ import { mm } from '@/lib/print/units';
 const URL_ = 'https://autolink.dz/t/AUT-7K3M9QXZ';
 const entry = (n: number) => ({
   publicTagId: `AUT-7K3M9QX${n}`,
-  activationCode: `ABCD-EFGH-J${n}`,
   url: `https://autolink.dz/t/AUT-7K3M9QX${n}`,
-  claimUrl: `https://autolink.dz/fr/activate?t=AUT-7K3M9QX${n}&c=ABCD-EFGH-J${n}`,
 });
 
 async function repoTemplate(): Promise<PrintTemplate> {
@@ -131,44 +123,20 @@ describe('PDFs', () => {
     const pdf = await PDFDocument.load(await renderPrintSheet(await repoTemplate(), [1, 2, 3].map(entry)));
     expect(pdf.getPageCount()).toBe(2);
   });
-
-  it.each(['autolink.dz/activate', 'localhost:3100/activate'])(
-    'every slip line fits its column (%s)',
-    async (activateAt) => {
-      const doc = await PDFDocument.create();
-      const fonts = {
-        regular: await doc.embedFont(StandardFonts.Helvetica),
-        bold: await doc.embedFont(StandardFonts.HelveticaBold),
-        mono: await doc.embedFont(StandardFonts.CourierBold),
-      };
-      for (const line of slipLines(entry(1), activateAt)) {
-        const widthMm = fonts[line.font].widthOfTextAtSize(line.text, line.size) / mm(1);
-        // Nothing may reach the claim QR beside it, or the cut line.
-        expect(widthMm, line.text).toBeLessThanOrEqual(slipLineBudgetMm(line));
-      }
-    },
-  );
-
-  it('activation slips paginate at 12 per page', async () => {
-    const entries = Array.from({ length: SLIPS_PER_PAGE + 1 }, (_, i) => entry(i % 10));
-    const pdf = await PDFDocument.load(await renderActivationSlips(entries, 'autolink.dz/activate'));
-    expect(pdf.getPageCount()).toBe(2);
-  });
 });
 
 describe('CSV and ZIP', () => {
   it('CSV has the spec header and CRLF rows', () => {
     expect(toTagsCsv([entry(1)])).toBe(
-      'tag_id,activation_code,qr_url\r\nAUT-7K3M9QX1,ABCD-EFGH-J1,https://autolink.dz/t/AUT-7K3M9QX1\r\n',
+      'tag_id,qr_url\r\nAUT-7K3M9QX1,https://autolink.dz/t/AUT-7K3M9QX1\r\n',
     );
   });
 
-  it('ZIP contains every required file', async () => {
+  it('ZIP holds only the stickers to print: no slips, no codes', async () => {
     const entries = [entry(1), entry(2)];
     const bytes = await buildBatchZip(await repoTemplate(), entries, {
       label: 'Test',
       batchPublicId: 'B-TEST0000',
-      activateAt: 'autolink.dz/activate',
       generatedAt: new Date(0),
     });
     const zip = await JSZip.loadAsync(bytes);
@@ -176,11 +144,8 @@ describe('CSV and ZIP', () => {
     expect(names).toEqual(
       [
         'README.txt',
-        'claim/AUT-7K3M9QX1.png',
-        'claim/AUT-7K3M9QX2.png',
         'pdf/AUT-7K3M9QX1.pdf',
         'pdf/AUT-7K3M9QX2.pdf',
-        'pdf/activation-slips.pdf',
         'print-sheet.pdf',
         'qr/AUT-7K3M9QX1.png',
         'qr/AUT-7K3M9QX1.svg',
@@ -195,7 +160,7 @@ describe('CSV and ZIP', () => {
     expect(readme).toContain('9.5 mm');
     const svg = await zip.file('qr/AUT-7K3M9QX1.svg')!.async('string');
     expect(svg).toContain('<svg');
-    // QR content is the public URL only: the activation code must not be in the QR files.
-    expect(svg).not.toContain('ABCD');
+    // Nothing else to put in the parcel: the printer is told so.
+    expect(readme).toContain('Nothing else goes in the parcel');
   });
 });

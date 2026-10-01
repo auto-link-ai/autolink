@@ -1,5 +1,4 @@
 import { randomBytes } from 'node:crypto';
-import { formatActivationCode, ACTIVATION_CODE_LENGTH } from '@/lib/validation/activationCode';
 import { PUBLIC_USER_ID_BODY_LENGTH, PUBLIC_USER_ID_PREFIX } from '@/lib/validation/publicUserId';
 import { CROCKFORD_ALPHABET, TAG_ID_BODY_LENGTH, TAG_ID_PREFIX } from '@/lib/validation/tagId';
 
@@ -30,11 +29,6 @@ export function encodeCrockford(bytes: Uint8Array, length: number): string {
 /** Public tag ID: 'AUT-' + 8 chars = 40 random bits. Unguessable, non-sequential. */
 export function generateTagId(): string {
   return TAG_ID_PREFIX + encodeCrockford(randomBytes(5), TAG_ID_BODY_LENGTH);
-}
-
-/** Private activation code: 10 chars = 50 random bits, formatted XXXX-XXXX-XX. */
-export function generateActivationCode(): string {
-  return formatActivationCode(encodeCrockford(randomBytes(7), ACTIVATION_CODE_LENGTH));
 }
 
 /** Opaque public handle for a tag batch (rule 4: never expose `_id`). */

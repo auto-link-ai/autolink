@@ -5,34 +5,22 @@ import type { TagBatchDTO } from '@/lib/db/repositories/tagBatches';
 import { TAG_STATUSES } from '@/lib/domain/constants';
 import { formatDateTime } from '@/lib/format/date';
 import { cleanBatchAction } from '../actions';
-import { ReissueButton } from './ReissueButton';
 import { StatusBadge } from './StatusBadge';
 
 export async function BatchesTable({
   batches,
   locale,
-  canReissue,
   canEdit,
-  errors,
   returnSearch,
 }: {
   batches: TagBatchDTO[];
   locale: Locale;
-  canReissue: boolean;
   /** Clean up unused stickers: ADMIN role only. */
   canEdit: boolean;
-  errors: Record<string, string>;
   returnSearch: string;
 }) {
   const t = await getTranslations('admin.tags');
   if (batches.length === 0) return <p className="text-sm text-text-muted">{t('batches.empty')}</p>;
-
-  const reissueLabels = {
-    reissue: t('batches.reissue'),
-    reissuing: t('batches.reissuing'),
-    confirm: t('batches.reissueConfirm'),
-    done: t('batches.reissueDone'),
-  };
 
   return (
     <div className="-mx-5 overflow-x-auto md:mx-0">
@@ -43,7 +31,7 @@ export async function BatchesTable({
             <th scope="col" className="px-3 py-2 text-start font-semibold">{t('batches.quantity')}</th>
             <th scope="col" className="px-3 py-2 text-start font-semibold">{t('batches.created')}</th>
             <th scope="col" className="px-3 py-2 text-start font-semibold">{t('batches.statuses')}</th>
-            {(canReissue || canEdit) && <th scope="col" className="px-3 py-2"><span className="sr-only">{t('list.actions')}</span></th>}
+            {canEdit && <th scope="col" className="px-3 py-2"><span className="sr-only">{t('list.actions')}</span></th>}
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
@@ -69,11 +57,8 @@ export async function BatchesTable({
                   ))}
                 </div>
               </td>
-              {(canReissue || canEdit) && (
+              {canEdit && (
                 <td className="flex flex-col items-start gap-2 px-3 py-3">
-                  {canReissue && batch.statusCounts.UNASSIGNED > 0 && (
-                    <ReissueButton batchPublicId={batch.publicId} labels={reissueLabels} errors={errors} />
-                  )}
                   {canEdit && batch.unused > 0 && (
                     <ConfirmAction
                       summary={t('edit.clean', { count: batch.unused })}

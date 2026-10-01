@@ -55,8 +55,6 @@ export const ownerTagsRepository = {
             ownerId,
             vehicleId: toObjectId(vehicleId),
             activatedAt: new Date(),
-            activationAttempts: 0,
-            lockedUntil: null,
           },
         },
         { session },

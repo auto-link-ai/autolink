@@ -105,7 +105,7 @@
       "title": "Tags",
       "generate": {
         "title": "Generate a batch",
-        "intro": "Creates the tags and downloads a print-ready ZIP. Activation codes exist only in that ZIP — keep it somewhere safe.",
+        "intro": "Creates the tags and downloads a print-ready ZIP: the stickers, nothing else. Customers activate theirs by scanning it.",
         "label": "Batch name",
         "labelHint": "Something you'll recognise, e.g. \"September print run\"",
         "quantity": "Quantity",
@@ -123,11 +123,7 @@
         "quantity": "Qty",
         "created": "Created",
         "createdBy": "By",
-        "statuses": "Statuses",
-        "reissue": "Reissue codes",
-        "reissuing": "Reissuing…",
-        "reissueConfirm": "The current activation codes of this batch's unactivated tags will stop working, and a new ZIP will download. Continue?",
-        "reissueDone": "New codes issued. The download has started."
+        "statuses": "Statuses"
       },
       "list": {
         "title": "All tags",
@@ -154,7 +150,7 @@
         "not_found": "Tag not found.",
         "deleted": "Sticker deleted.",
         "cleaned": "Unused stickers deleted.",
-        "taken_back": "Sticker taken back: it is “Unassigned”. Reissue the batch codes before handing it out again.",
+        "taken_back": "Sticker taken back: it is “Unassigned”. Whoever scans it next can activate it.",
         "forbidden": "Only an administrator account can delete or take back a sticker."
       },
       "status": {
@@ -179,7 +175,6 @@
         "invalid_input": "Check the batch name and quantity.",
         "conflict": "ID collision. Run the generation again.",
         "not_found": "Batch not found.",
-        "nothing_to_reissue": "This batch has no unactivated tags.",
         "forbidden_role": "Admins only.",
         "unauthorized": "Your session expired. Sign in again.",
         "forbidden": "Request refused.",
@@ -191,7 +186,7 @@
         "deleteConfirm": "Sticker {tagId} was never used: it will be deleted for good.",
         "deleteYes": "Yes, delete",
         "takeBack": "Take back",
-        "takeBackConfirm": "Sticker {tagId} will be taken from its customer and become “Unassigned”. That car’s car book will be deleted; the customer keeps their messages. Its old activation code will stop working: reissue the batch codes before handing it out again.",
+        "takeBackConfirm": "Sticker {tagId} will be taken from its customer and become “Unassigned”. That car’s car book will be deleted; the customer keeps their messages. Whoever scans it next can then activate it.",
         "takeBackYes": "Yes, take it back",
         "clean": "{count, plural, one {Delete the unused sticker} other {Delete the # unused}}",
         "cleanConfirm": "{count, plural, one {This batch’s never-used sticker will be deleted} other {This batch’s # never-used stickers will be deleted}}. Used stickers are never touched; the batch goes if nothing is left.",
@@ -460,7 +455,7 @@
         "blockConfirm": "{email} will not be able to sign in, and any session they have ends at once. You can unblock them afterwards.",
         "blockYes": "Yes, block this account",
         "delete": "Delete the account",
-        "deleteConfirm": "The account {email} will be deleted for good, with its cars, their car books, its messages and notifications. {count, plural, =0 {It has no stickers.} one {Its sticker goes back to “Unassigned”} other {Its # stickers go back to “Unassigned”}}: the activation slip still works if they create a new account. Orders are kept.",
+        "deleteConfirm": "The account {email} will be deleted for good, with its cars, their car books, its messages and notifications. {count, plural, =0 {It has no stickers.} one {Its sticker goes back to “Unassigned”} other {Its # stickers go back to “Unassigned”}}: whoever scans them next can activate them. Orders are kept.",
         "deleteYes": "Yes, delete this account"
       },
       "new": {
