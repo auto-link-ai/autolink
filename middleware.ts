@@ -29,7 +29,7 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Skip: API routes, the prefix-free scanner page (/t/...), Next internals,
-  // Vercel internals, and anything with a file extension.
-  matcher: ['/((?!api/|t/|_next|_vercel|.*\\..*).*)'],
+  // Skip: API routes, the prefix-free scanner page (/t/...), the Arabic ad page
+  // (/offre), Next internals, Vercel internals, and anything with a file extension.
+  matcher: ['/((?!api/|t/|offre(?:/|$)|_next|_vercel|.*\\..*).*)'],
 };
