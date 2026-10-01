@@ -19,6 +19,7 @@ import { UserModel } from '@/lib/db/models/user';
 import { VehicleModel, type Vehicle } from '@/lib/db/models/vehicle';
 import type { CareDueKind } from '@/lib/domain/constants';
 import type { SystemActor } from './actor';
+import { carName } from '@/lib/vehicles/carName';
 
 export interface DueReminder {
   kind: CareDueKind;
@@ -27,7 +28,8 @@ export interface DueReminder {
   userId: string;
   locale: Locale;
   publicTagId: string;
-  carLabel: string;
+  /** « Peugeot 3008 », or null while the car is not described yet. */
+  carLabel: string | null;
   dueDate: Date;
 }
 
@@ -114,13 +116,14 @@ export const careRemindersRepository = {
     ]);
     const userById = new Map(users.map((user) => [user._id.toString(), user]));
     const tagByVehicle = new Map(tags.map((tag) => [tag.vehicleId!.toString(), tag.publicTagId]));
-    const labelByVehicle = new Map(vehicles.map((v) => [v._id.toString(), `${v.brand} ${v.model}`]));
+    const labelByVehicle = new Map(vehicles.map((v) => [v._id.toString(), carName(v)]));
 
     return candidates.flatMap((candidate) => {
       const user = userById.get(candidate.ownerId.toString());
       const publicTagId = tagByVehicle.get(candidate.vehicleId.toString());
-      const carLabel = labelByVehicle.get(candidate.vehicleId.toString());
-      if (!user || !publicTagId || !carLabel) return [];
+      const vehicleId = candidate.vehicleId.toString();
+      if (!user || !publicTagId || !labelByVehicle.has(vehicleId)) return [];
+      const carLabel = labelByVehicle.get(vehicleId) ?? null;
       return [
         {
           kind: candidate.kind,

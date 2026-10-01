@@ -7,10 +7,9 @@ import type { DueItem } from '@/lib/care/due';
 import { cx } from '@/lib/cx';
 import type { OwnerTagRow } from '@/lib/db/repositories/tagsOwner';
 import { formatDateTime } from '@/lib/format/date';
-import { toggleStickerAction, updateVehicleAction } from '../actions';
-
-const INPUT =
-  'h-11 w-full rounded-2xl border border-border bg-white px-3 text-[15px] text-text outline-none focus:border-accent';
+import { carDescribed, carName } from '@/lib/vehicles/carName';
+import { toggleStickerAction } from '../actions';
+import { VehicleForm } from './VehicleForm';
 
 /**
  * One sticker: which car it is on, its id, its state, and the controls to edit
@@ -40,8 +39,8 @@ export async function StickerCard({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h3 className="text-h3 text-text">
-            {tag.vehicle ? `${tag.vehicle.brand} ${tag.vehicle.model}` : t('card.noVehicle')}
-            {tag.vehicle && <span className="text-text-muted"> · {tag.vehicle.color}</span>}
+            {(tag.vehicle && carName(tag.vehicle)) ?? t('card.noVehicle')}
+            {tag.vehicle?.color && <span className="text-text-muted"> · {tag.vehicle.color}</span>}
           </h3>
           <p dir="ltr" className="mt-1 font-mono text-sm text-text-secondary">
             {tag.publicTagId}
@@ -94,51 +93,26 @@ export async function StickerCard({
         <span aria-hidden="true">↗</span>
       </a>
 
-      {tag.vehicle && tag.vehicleId && (
-        <details className="group mt-5 border-t border-border pt-4">
-          <summary className="cursor-pointer list-none text-[15px] font-bold text-accent">{t('card.edit')}</summary>
-          <form action={updateVehicleAction} className="mt-4 grid gap-4 sm:grid-cols-2">
-            <input type="hidden" name="locale" value={locale} />
-            <input type="hidden" name="vehicleId" value={tag.vehicleId} />
-            <label className="flex flex-col gap-1.5 text-sm font-bold text-text">
-              {t('card.brand')}
-              <input name="brand" defaultValue={tag.vehicle.brand} maxLength={40} required className={INPUT} />
-            </label>
-            <label className="flex flex-col gap-1.5 text-sm font-bold text-text">
-              {t('card.model')}
-              <input name="model" defaultValue={tag.vehicle.model} maxLength={40} required className={INPUT} />
-            </label>
-            <label className="flex flex-col gap-1.5 text-sm font-bold text-text">
-              {t('card.color')}
-              <input name="color" defaultValue={tag.vehicle.color} maxLength={30} required className={INPUT} />
-            </label>
-            <label className="flex flex-col gap-1.5 text-sm font-bold text-text">
-              {t('card.plate')}
-              <input
-                name="plateNumber"
-                defaultValue={tag.vehicle.plateNumber ?? ''}
-                maxLength={20}
-                dir="ltr"
-                className={INPUT}
-              />
-            </label>
-            <label className="flex items-start gap-3 sm:col-span-2">
-              <input
-                type="checkbox"
-                name="showDetailsPublicly"
-                defaultChecked={tag.vehicle.showDetailsPublicly}
-                className="mt-0.5 h-5 w-5 accent-[var(--orange)]"
-              />
-              <span className="text-sm text-text-secondary">{t('card.showDetails')}</span>
-            </label>
-            <div className="sm:col-span-2">
-              <Button type="submit" variant="secondary" size="sm">
-                {t('card.save')}
-              </Button>
-            </div>
-          </form>
-        </details>
-      )}
+      {tag.vehicle &&
+        tag.vehicleId &&
+        (carDescribed(tag.vehicle) ? (
+          <details className="group mt-5 border-t border-border pt-4">
+            <summary className="cursor-pointer list-none text-[15px] font-bold text-accent">{t('card.edit')}</summary>
+            <VehicleForm locale={locale} vehicleId={tag.vehicleId} vehicle={tag.vehicle} publicTagId={tag.publicTagId} />
+          </details>
+        ) : (
+          // Linked first, described now: the one thing left to do, so it is open and in colour.
+          <section
+            aria-labelledby={`add-car-${tag.publicTagId}`}
+            className="mt-5 rounded-2xl border-2 border-accent/40 bg-accent-soft p-4 sm:p-5"
+          >
+            <h4 id={`add-car-${tag.publicTagId}`} className="text-[17px] font-bold text-text">
+              {t('card.addCar')}
+            </h4>
+            <p className="mt-1 text-sm leading-relaxed text-text-secondary">{t('card.addCarHint')}</p>
+            <VehicleForm locale={locale} vehicleId={tag.vehicleId} vehicle={tag.vehicle} publicTagId={tag.publicTagId} />
+          </section>
+        ))}
 
       {live ? (
         // Switching off makes the owner unreachable, so it asks once. <details>

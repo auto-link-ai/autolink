@@ -31,8 +31,11 @@ If no — do not build it.
 6. **Never** trust client-side authorization. Re-check on the server every time.
 7. **Never** commit secrets. `.env.example` only.
 8. **Never** show raw database or stack errors to a user.
-9. **Never** reveal whether an unknown tag exists. Invalid, deleted, and never-existed tags
-   all render the identical "This AutoLink is not available" state.
+9. **Never** reveal whether an unknown tag exists. Invalid, deleted, deactivated, suspended,
+   lost and never-existed tags all render the identical "This AutoLink is not available"
+   state. The one exception, on purpose: a sticker nobody has linked yet shows "link this
+   sticker" — whoever scans it first and signs in becomes its owner. There is no activation
+   code; the packaging hides the QR until delivery.
 
 ## Process rules
 - Inspect the existing tree before writing. Do not delete or rewrite files outside the

@@ -1,9 +1,8 @@
 /**
- * Repository: tags — owner side (activation and "my stickers")
+ * Repository: tags — owner side (linking a sticker and "my stickers")
  *
  * SECURITY BOUNDARY — only repositories import models.
- * - `findForActivation` is the ONLY place `activationCodeHash` is read; it
- *   returns the hash to the activation service and nothing else ever sees it.
+ * - `claim` links a sticker nobody owns yet to the signed-in customer.
  * - Every other function takes an `OwnerActor` and filters by
  *   `ownerId: actor.userId`, so another account's sticker is indistinguishable
  *   from one that does not exist.
@@ -21,17 +20,6 @@ import { auditLogsRepository } from './auditLogs';
 import { toObjectId } from './objectId';
 import { vehiclesRepository, type NewVehicle } from './vehicles';
 
-/** Five wrong codes lock the sticker for a day (spec §2.7). */
-export const ACTIVATION_MAX_ATTEMPTS = 5;
-export const ACTIVATION_LOCK_HOURS = 24;
-
-export interface ActivationCandidate {
-  publicTagId: string;
-  status: TagStatus;
-  activationCodeHash: string;
-  lockedUntil: Date | null;
-}
-
 /** One sticker as its owner sees it. */
 export interface OwnerTagRow {
   publicTagId: string;
@@ -44,43 +32,10 @@ export interface OwnerTagRow {
 export type ClaimResult = { ok: true } | { ok: false; reason: 'taken' };
 
 export const ownerTagsRepository = {
-  /** Activation only: returns the stored hash so the service can verify a code. */
-  async findForActivation(publicTagId: string): Promise<ActivationCandidate | null> {
-    await connectToDatabase();
-    const doc = await TagModel.findOne({ publicTagId })
-      .select('+activationCodeHash publicTagId status lockedUntil')
-      .lean();
-    return doc
-      ? {
-          publicTagId: doc.publicTagId,
-          status: doc.status,
-          activationCodeHash: doc.activationCodeHash,
-          lockedUntil: doc.lockedUntil,
-        }
-      : null;
-  },
-
   /**
-   * Counts one wrong code. At ACTIVATION_MAX_ATTEMPTS the sticker is locked for
-   * ACTIVATION_LOCK_HOURS, so a stolen sticker id cannot be brute-forced.
-   */
-  async registerFailedAttempt(publicTagId: string, now: Date = new Date()): Promise<void> {
-    await connectToDatabase();
-    const doc = await TagModel.findOneAndUpdate(
-      { publicTagId },
-      { $inc: { activationAttempts: 1 } },
-      { returnDocument: 'after', projection: { activationAttempts: 1 } },
-    ).lean();
-    if (doc && doc.activationAttempts >= ACTIVATION_MAX_ATTEMPTS) {
-      const lockedUntil = new Date(now.getTime() + ACTIVATION_LOCK_HOURS * 60 * 60 * 1000);
-      await TagModel.updateOne({ publicTagId }, { $set: { lockedUntil, activationAttempts: 0 } });
-    }
-  },
-
-  /**
-   * Creates the vehicle and claims the sticker in one transaction. The filter
-   * keeps `status: 'UNASSIGNED', ownerId: null`, so two people racing on the
-   * same code cannot both win.
+   * Creates the vehicle and links the sticker in one transaction. Only a
+   * sticker nobody owns (`UNASSIGNED`, no owner) links; the same filter on the
+   * update means two people racing for one sticker cannot both win.
    */
   async claim(owner: OwnerActor, publicTagId: string, vehicle: NewVehicle): Promise<ClaimResult> {
     const ownerId = toObjectId(owner.userId);
@@ -89,6 +44,8 @@ export const ownerTagsRepository = {
 
     let claimed = false;
     await mongoose.connection.transaction(async (session) => {
+      const free = await TagModel.exists({ publicTagId, status: 'UNASSIGNED', ownerId: null }).session(session);
+      if (!free) return;
       const vehicleId = await vehiclesRepository.create(owner, vehicle, session);
       const result = await TagModel.updateOne(
         { publicTagId, status: 'UNASSIGNED', ownerId: null },

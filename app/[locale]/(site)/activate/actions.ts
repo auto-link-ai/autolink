@@ -4,51 +4,31 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { toLocale } from '@/i18n/locales';
 import { claimTag } from '@/lib/activation/claim';
+import { afterLink, linkPath } from '@/lib/activation/claimLink';
 import { getOwnerSession } from '@/lib/auth/session';
 import { getClientIp, hashIp } from '@/lib/security/ipHash';
-import { fieldErrors } from '@/lib/validation/auth';
-import { vehicleSchema, type VehicleField } from '@/lib/validation/vehicle';
-import type { ActivateFormState } from './state';
+import { normalizeTagIdInput } from '@/lib/validation/tagId';
 
 /**
- * Claims a sticker for the signed-in customer. The tag id and code come from
- * the claim QR (or are typed from the slip); everything is re-checked here.
+ * « Lier cet autocollant à mon compte »: the one tap on the scan page and on
+ * /activate. Signed out, it sends them to create an account first — which
+ * then links the sticker by itself. Everything is re-checked here.
  */
-export async function activateAction(_prev: ActivateFormState, formData: FormData): Promise<ActivateFormState> {
+export async function linkStickerAction(formData: FormData): Promise<void> {
   const locale = toLocale(formData.get('locale'));
+  const publicTagId = normalizeTagIdInput(String(formData.get('tagId') ?? ''));
+  if (!publicTagId) redirect(`/${locale}/activate?error=invalid`);
+
   const session = await getOwnerSession();
-  if (!session) {
-    const next = `/${locale}/activate`;
-    redirect(`/${locale}/login?next=${encodeURIComponent(next)}`);
-  }
+  if (!session) redirect(`/${locale}/register?next=${encodeURIComponent(linkPath(locale, publicTagId))}`);
 
-  const vehicle = vehicleSchema.safeParse({
-    brand: formData.get('brand') ?? '',
-    model: formData.get('model') ?? '',
-    color: formData.get('color') ?? '',
-    plateNumber: formData.get('plateNumber') ?? '',
-    showDetailsPublicly: formData.get('showDetailsPublicly') ?? undefined,
-  });
-  if (!vehicle.success) {
-    return { status: 'error', fieldErrors: fieldErrors<VehicleField>(vehicle.error) };
-  }
-
-  let outcome;
+  let destination: string;
   try {
-    outcome = await claimTag(
-      session.actor,
-      {
-        tagId: String(formData.get('tagId') ?? ''),
-        code: String(formData.get('code') ?? ''),
-        vehicle: vehicle.data,
-      },
-      { ipHash: hashIp(getClientIp(await headers())) },
-    );
+    const outcome = await claimTag(session.actor, publicTagId, { ipHash: hashIp(getClientIp(await headers())) });
+    destination = afterLink(locale, publicTagId, outcome);
   } catch (error) {
     console.error('[activate] failed:', error instanceof Error ? error.message : error);
-    return { status: 'error', formError: 'server_error' };
+    destination = afterLink(locale, publicTagId, { ok: false, reason: 'server_error' });
   }
-
-  if (!outcome.ok) return { status: 'error', formError: outcome.reason };
-  redirect(`/${locale}/dashboard?activated=${outcome.publicTagId}`);
+  redirect(destination);
 }

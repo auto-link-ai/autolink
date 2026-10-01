@@ -59,7 +59,12 @@ export default async function CarBookPage({ params }: Props) {
         </BookHeader>
 
         <div>
-          <CarCard href={carBookPath(locale, book.publicTagId, 'profile')} car={book.car} detail={details || null} />
+          <CarCard
+            href={carBookPath(locale, book.publicTagId, 'profile')}
+            car={book.car}
+            detail={details || null}
+            fallbackName={t('yourCar')}
+          />
           {cars.length > 1 && (
             <PendingLink
               href={`/${locale}/dashboard/car`}

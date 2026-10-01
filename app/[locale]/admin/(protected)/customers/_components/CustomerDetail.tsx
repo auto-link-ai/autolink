@@ -8,6 +8,7 @@ import { formatDateTime } from '@/lib/format/date';
 import { deleteCustomerAction } from '../accountActions';
 import { setCustomerStatusAction, updateCustomerContactAction } from '../actions';
 import { ResetPasswordForm } from './ResetPasswordForm';
+import { carLabel } from '@/lib/vehicles/carName';
 
 const INPUT = 'h-11 w-full rounded-sm border border-border-strong bg-surface px-3 text-sm text-text focus:border-accent';
 
@@ -87,9 +88,7 @@ export async function CustomerDetail({
                 {sticker.publicTagId}
               </span>
               <span className="text-text-secondary">
-                {sticker.vehicle
-                  ? `${sticker.vehicle.brand} ${sticker.vehicle.model} · ${sticker.vehicle.color}`
-                  : t('detail.noVehicle')}
+                {(sticker.vehicle && carLabel(sticker.vehicle)) ?? t('detail.noVehicle')}
               </span>
               <span className="text-text-muted">{t(`tagStatus.${sticker.status}`)}</span>
               {sticker.activatedAt && (

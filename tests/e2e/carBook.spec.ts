@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { expect, test, type Browser, type BrowserContext, type Page } from '@playwright/test';
 import JSZip from 'jszip';
 import { adminContext, hasAdminCredentials } from './adminSession';
+import { linkSticker } from './linkSticker';
 
 /**
  * The owner's private car book: an overview, one page per section, read
@@ -66,18 +67,13 @@ test.describe('the car book', () => {
     const download = admin.waitForEvent('download');
     await admin.getByRole('button', { name: 'Generate and download' }).click();
     const zip = await JSZip.loadAsync(await readFile((await (await download).path())!));
-    const [id, code] = (await zip.file('tags.csv')!.async('string')).split('\r\n')[1]!.split(',');
+    const [id] = (await zip.file('tags.csv')!.async('string')).split('\r\n')[1]!.split(',');
     tagId = id!;
     await office.close();
 
     owner = await register(browser, OWNER);
     const page = await owner.newPage();
-    await page.goto(`/en/activate?t=${tagId}&c=${code}`);
-    await page.getByLabel('Make', { exact: true }).fill('Renault');
-    await page.getByLabel('Model', { exact: true }).fill('Clio');
-    await page.getByLabel('Colour', { exact: true }).fill('Grey');
-    await page.getByRole('button', { name: 'Activate the sticker' }).click();
-    await expect(page).toHaveURL(/\/en\/dashboard\?activated=/, { timeout: 60_000 });
+    await linkSticker(page, tagId, { make: 'Renault', model: 'Clio', colour: 'Grey' });
 
     // One car: the "Car book" tab goes straight to it.
     await page.getByRole('link', { name: 'Car book', exact: true }).click();

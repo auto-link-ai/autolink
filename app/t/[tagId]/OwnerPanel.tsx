@@ -5,6 +5,7 @@ import type { Locale } from '@/i18n/locales';
 import type { DueItem } from '@/lib/care/due';
 import { carBookPath, SECTION_FOR_DUE } from '@/lib/care/sections';
 import type { CarSummaryDTO } from '@/lib/db/repositories/carBook';
+import { carLabel } from '@/lib/vehicles/carName';
 
 /**
  * What the owner sees on scanning their OWN sticker while signed in — never
@@ -22,6 +23,7 @@ export async function OwnerPanel({
 }) {
   const t = await getTranslations({ locale, namespace: 'scanner.owner' });
   const tDue = await getTranslations({ locale, namespace: 'care.due' });
+  const tCare = await getTranslations({ locale, namespace: 'care' });
   const { car, publicTagId } = summary;
 
   return (
@@ -29,7 +31,7 @@ export async function OwnerPanel({
       <section>
         <h1 className="text-h2 text-text">{t('title')}</h1>
         <p className="mt-2 inline-flex rounded-full bg-surface-3 px-4 py-2 text-[15px] font-bold text-text">
-          {car.brand} {car.model} · {car.color}
+          {carLabel(car) ?? tCare('yourCar')}
         </p>
         <p className="mt-3 text-sm text-text-muted">{t('private')}</p>
       </section>

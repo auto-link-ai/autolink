@@ -5,6 +5,8 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { signIn, signOut } from '@/auth';
 import { toLocale } from '@/i18n/locales';
+import { claimTag } from '@/lib/activation/claim';
+import { afterLink, claimTagIdFromNext } from '@/lib/activation/claimLink';
 import { getSettings } from '@/lib/config/settings';
 import { rateLimitsRepository } from '@/lib/db/repositories/rateLimits';
 import { usersRepository } from '@/lib/db/repositories/users';
@@ -27,6 +29,25 @@ async function withinLoginLimit(email: string): Promise<boolean> {
   return byIp.allowed && byEmail.allowed;
 }
 
+/**
+ * Where to go once signed in. Arriving to link a sticker (`next` is its link
+ * page), it is linked right here — no extra tap — then the dashboard asks for
+ * the car. The account is passed in: the new session cookie is only readable
+ * from the next request.
+ */
+async function landing(nextRaw: FormDataEntryValue | null, locale: string, userId: string | undefined): Promise<string> {
+  const next = safeNext(nextRaw, locale);
+  const tagId = claimTagIdFromNext(next);
+  if (!tagId || !userId) return next;
+  try {
+    const ipHash = hashIp(getClientIp(await headers()));
+    return afterLink(locale, tagId, await claimTag({ kind: 'owner', userId }, tagId, { ipHash }));
+  } catch (error) {
+    console.error('[auth] linking after sign-in failed:', error instanceof Error ? error.message : error);
+    return next;
+  }
+}
+
 /** Sign in. Every failure returns the same message: never say which part was wrong. */
 export async function signInAction(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
   const locale = toLocale(formData.get('locale'));
@@ -47,7 +68,9 @@ export async function signInAction(_prev: AuthFormState, formData: FormData): Pr
     return { status: 'error', formError: 'server_error' };
   }
 
-  redirect(safeNext(formData.get('next'), locale));
+  const linking = claimTagIdFromNext(safeNext(formData.get('next'), locale));
+  const userId = linking ? (await usersRepository.findForLogin(parsed.data.email))?.id : undefined;
+  redirect(await landing(formData.get('next'), locale, userId));
 }
 
 /** Create an account, then sign the customer straight in. */
@@ -65,6 +88,7 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
   }
 
   const { password, ...profile } = parsed.data;
+  let userId: string | undefined;
   try {
     if (!(await withinLoginLimit(profile.email))) return { status: 'error', formError: 'rate_limited' };
 
@@ -72,6 +96,7 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
     // An existing address is reported on the field, not as "this account exists"
     // in a way that helps enumeration: the copy invites signing in instead.
     if (!created.created) return { status: 'error', fieldErrors: { email: 'email_taken' } };
+    userId = created.id;
 
     await signIn('credentials', { email: profile.email, password, redirect: false });
   } catch (error) {
@@ -80,7 +105,7 @@ export async function registerAction(_prev: AuthFormState, formData: FormData): 
     return { status: 'error', formError: 'server_error' };
   }
 
-  redirect(safeNext(formData.get('next'), locale));
+  redirect(await landing(formData.get('next'), locale, userId));
 }
 
 export async function signOutAction(formData: FormData): Promise<void> {

@@ -2,10 +2,11 @@ import { readFile } from 'node:fs/promises';
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import JSZip from 'jszip';
 import { adminContext, hasAdminCredentials } from './adminSession';
+import { linkSticker } from './linkSticker';
 
 /**
  * Cleaning up stickers: an unused one deleted, a test batch emptied until it
- * goes, and a sticker taken back from a customer — whose old code then fails.
+ * goes, and a sticker taken back from a customer — free again for whoever scans it next.
  */
 
 const run = Date.now().toString(36).slice(-6);
@@ -33,12 +34,7 @@ async function customerWith(browser: Browser, tag: { id: string; code: string })
   await page.getByLabel('Password').fill('e2e-take-back-password');
   await page.getByRole('button', { name: 'Create my account' }).click();
   await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
-  await page.goto(`/en/activate?t=${tag.id}&c=${tag.code}`);
-  await page.getByLabel('Make', { exact: true }).fill('Dacia');
-  await page.getByLabel('Model', { exact: true }).fill('Logan');
-  await page.getByLabel('Colour', { exact: true }).fill('White');
-  await page.getByRole('button', { name: 'Activate the sticker' }).click();
-  await expect(page).toHaveURL(/\/en\/dashboard\?activated=/, { timeout: 60_000 });
+  await linkSticker(page, tag.id, { make: 'Dacia', model: 'Logan', colour: 'White' });
   return { shop, page };
 }
 
@@ -80,7 +76,7 @@ test.describe('an admin cleaning up stickers', () => {
     await office.close();
   });
 
-  test('a sticker is taken back from its customer, and its old code stops working', async ({ browser }) => {
+  test('a sticker is taken back from its customer, and is free to link again', async ({ browser }) => {
     test.setTimeout(240_000);
     const office = await adminContext(browser);
     const admin = await office.newPage();
@@ -97,15 +93,12 @@ test.describe('an admin cleaning up stickers', () => {
     await expect(admin.getByRole('status')).toContainText('Sticker taken back');
     await expect(admin.getByRole('row', { name: new RegExp(tag!.id) })).toContainText('Unassigned');
 
-    // The customer no longer has it, and their old slip no longer claims it.
+    // The customer no longer has it; scanned, it waits for an owner again — whoever links it next.
     await page.goto('/en/dashboard');
     await expect(page.getByText(tag!.id)).toHaveCount(0);
-    await page.goto(`/en/activate?t=${tag!.id}&c=${tag!.code}`);
-    await page.getByLabel('Make', { exact: true }).fill('Dacia');
-    await page.getByLabel('Model', { exact: true }).fill('Logan');
-    await page.getByLabel('Colour', { exact: true }).fill('White');
-    await page.getByRole('button', { name: 'Activate the sticker' }).click();
-    await expect(page.getByText('Wrong sticker id or code.')).toBeVisible();
+    await page.goto(`/t/${tag!.id}`);
+    await expect(page.getByRole('heading', { name: "This sticker isn't activated yet." })).toBeVisible();
+    await linkSticker(page, tag!.id);
 
     await shop.close();
     await office.close();

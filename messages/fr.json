@@ -62,7 +62,15 @@
       "messages": "Mes messages",
       "preview": "Voir ce que voient les autres"
     },
-    "signIn": "C’est votre voiture ? Connectez-vous"
+    "signIn": "C’est votre voiture ? Connectez-vous",
+    "link": {
+      "title": "Cet autocollant n'est pas encore activé.",
+      "body": "C'est le vôtre ? Liez-le à votre compte : les messages pour votre voiture arriveront sur votre téléphone, sans jamais montrer votre numéro.",
+      "create": "Créer mon compte",
+      "signIn": "J'ai déjà un compte",
+      "confirm": "Lier cet autocollant à mon compte",
+      "notYours": "Ce n'est pas votre voiture ? Son propriétaire n'a pas encore activé l'autocollant : il ne peut pas encore recevoir de message."
+    }
   },
   "notFound": {
     "title": "Page introuvable",
@@ -579,7 +587,7 @@
       "items": {
         "stick": {
           "title": "Collez l'autocollant",
-          "body": "Sur une vitre, bien visible de l'extérieur. Vous l'activez une seule fois avec le code privé fourni.",
+          "body": "Sur une vitre, bien visible de l'extérieur. Avant de le coller, scannez-le une fois pour le lier à votre compte.",
           "imageAlt": "Une personne colle l’autocollant AutoLink sur le pare-brise."
         },
         "scan": {
@@ -651,7 +659,7 @@
       "oneTime": "Paiement unique, par autocollant",
       "includes": {
         "sticker": "L'autocollant QR résistant, prêt à coller",
-        "code": "Le code d'activation privé, sur une fiche séparée",
+        "code": "Activation en un scan : aucun code à recopier",
         "unlimited": "Messages illimités depuis votre autocollant",
         "notify": "Notifications sur votre téléphone",
         "noSubscription": "Aucun abonnement, aucun frais caché"
@@ -670,7 +678,7 @@
         },
         "deliver": {
           "title": "On livre",
-          "body": "Le livreur vous remet l'autocollant et la fiche d'activation."
+          "body": "Le livreur vous remet l'autocollant, dans son emballage."
         },
         "pay": {
           "title": "Vous payez à la livraison",
@@ -705,7 +713,7 @@
         },
         "activate": {
           "q": "Comment j'active mon autocollant ?",
-          "a": "Avec le code privé imprimé sur une fiche séparée, jamais sur l'autocollant lui-même. Connaître l'adresse du QR ne suffit donc pas pour revendiquer une voiture."
+          "a": "Scannez-le avec l'appareil photo de votre téléphone, puis créez votre compte ou connectez-vous : il est lié à votre compte aussitôt. Faites-le dès réception, avant de le coller, puis ajoutez votre voiture."
         },
         "abuse": {
           "q": "Et si quelqu'un en abuse ?",
@@ -772,11 +780,11 @@
         "owner": {
           "order": {
             "title": "Vous commandez",
-            "body": "Paiement à la livraison. Vous recevez l'autocollant et une fiche avec le code d'activation."
+            "body": "Paiement à la livraison. Vous recevez l'autocollant dans son emballage."
           },
           "activate": {
             "title": "Vous activez",
-            "body": "Vous saisissez l'identifiant de l'autocollant et le code privé de la fiche."
+            "body": "Vous scannez l'autocollant et vous vous connectez : il est lié à votre compte."
           },
           "stick": {
             "title": "Vous le collez",
@@ -947,9 +955,9 @@
           "title": "L’autocollant",
           "body": "8 × 11,3 cm, avec son QR code unique, à coller sur une vitre bien visible."
         },
-        "slip": {
-          "title": "La fiche d’activation",
-          "body": "Un code privé, sur une fiche à part : vous seul pouvez lier l’autocollant à votre voiture."
+        "activation": {
+          "title": "Activation en un scan",
+          "body": "Scannez l'autocollant et connectez-vous : il est à vous. Aucun code à recopier."
         },
         "messages": {
           "title": "Les messages, sans limite",
@@ -1066,9 +1074,9 @@
       "privateNote": "Les détails de cette commande ne s’affichent que sur l’appareil qui l’a passée. Gardez la référence et contactez-nous si besoin.",
       "next": {
         "call": "Nous vous appelons pour confirmer la commande et l’adresse.",
-        "deliver": "Le livreur vous remet l’autocollant et la fiche d’activation.",
+        "deliver": "Le livreur vous remet l'autocollant.",
         "pay": "Vous payez en espèces au moment de la livraison.",
-        "activate": "Scannez le QR de votre fiche pour lier l’autocollant à votre voiture."
+        "activate": "Scannez l'autocollant et connectez-vous : il est lié à votre compte. Ensuite, collez-le."
       },
       "backHome": "Retour à l’accueil",
       "nextTitle": "Et maintenant",
@@ -1123,52 +1131,28 @@
       "switchLink": "Se connecter"
     },
     "claim": {
-      "loginTitle": "Vous êtes sur le point de lier votre autocollant",
-      "loginBody": "Créez votre compte — cela prend 30 secondes — et nous vous ramenons ici pour terminer. Votre autocollant vous attend.",
+      "loginTitle": "Encore un pas pour activer votre autocollant",
+      "loginBody": "Créez votre compte (30 secondes) : l'autocollant y est lié dès que c'est fait.",
       "loginCta": "Créer mon compte",
-      "loginSecondary": "Vous avez déjà un compte ? Connectez-vous ci-dessous.",
-      "registerTitle": "Ensuite, nous lions cet autocollant à votre compte",
-      "registerBody": "Dès que votre compte est créé, vous arrivez sur la page d’activation, l’autocollant déjà rempli."
+      "loginSecondary": "Vous avez déjà un compte ? Connectez-vous ci-dessous : l'autocollant y sera lié aussitôt.",
+      "registerTitle": "Cet autocollant sera lié à votre compte",
+      "registerBody": "Dès que votre compte est créé, l'autocollant est activé. Vous ajouterez ensuite votre voiture."
     }
   },
   "activate": {
     "metaTitle": "Activer un autocollant — AutoLink",
     "eyebrow": "Activation",
-    "title": "Liez l’autocollant à votre voiture.",
-    "subtitle": "Scannez le QR que nous vous avons envoyé, ou recopiez l’identifiant et le code de la fiche.",
-    "submit": "Activer l’autocollant",
-    "submitting": "Activation…",
-    "help": "Le code d’activation est imprimé sur la fiche jointe à votre commande, jamais sur l’autocollant. Si vous ne le trouvez plus, contactez-nous : nous vous renvoyons un code.",
+    "title": "Liez l'autocollant à votre compte.",
+    "subtitle": "Un geste, et les messages pour votre voiture arrivent sur votre téléphone.",
+    "ready": "Autocollant prêt à être lié",
+    "submit": "Lier cet autocollant à mon compte",
+    "help": "Le plus simple : scannez le QR de l'autocollant avec l'appareil photo de votre téléphone.",
     "fields": {
       "tagId": "Identifiant de l’autocollant",
-      "tagIdHint": "Imprimé sur l’autocollant, par exemple AUT-7K3M9QXZ.",
-      "code": "Code d’activation",
-      "codeHint": "Sur la fiche envoyée avec votre commande.",
-      "brand": "Marque",
-      "model": "Modèle",
-      "color": "Couleur",
-      "plate": "Plaque (facultatif)",
-      "plateHint": "Gardée privée : jamais affichée à la personne qui scanne.",
-      "showDetails": "Afficher la marque, le modèle et la couleur",
-      "showDetailsHint": "Aide la personne qui scanne à vérifier qu’elle est devant la bonne voiture. Vous pouvez le désactiver à tout moment.",
-      "colors": [
-        "Blanc",
-        "Noir",
-        "Gris",
-        "Argent",
-        "Bleu",
-        "Rouge",
-        "Vert",
-        "Beige",
-        "Marron",
-        "Jaune"
-      ]
+      "tagIdHint": "Imprimé sous le QR de l'autocollant, par exemple AUT-7K3M9QXZ."
     },
     "errors": {
-      "invalid": "Identifiant ou code incorrect.",
-      "too_short": "C’est un peu trop court.",
-      "too_long": "C’est trop long.",
-      "locked": "Trop d’essais sur cet autocollant. Réessayez dans 24 heures.",
+      "invalid": "Cet autocollant ne peut pas être lié : il est déjà activé sur un compte, ou l'identifiant est incorrect.",
       "rate_limited": "Trop de tentatives depuis cette connexion. Réessayez dans une heure.",
       "server_error": "Une erreur est survenue. Réessayez dans un instant."
     }
@@ -1179,7 +1163,7 @@
     "title": "Mes autocollants",
     "subtitle": "{count} autocollant(s) sur votre compte.",
     "signOut": "Se déconnecter",
-    "activated": "Autocollant {tagId} activé. Il est maintenant lié à votre voiture.",
+    "activated": "Autocollant {tagId} activé ! Ajoutez maintenant votre voiture ci-dessous.",
     "addAnother": "Activer un autre autocollant",
     "results": {
       "ok": "Modification enregistrée.",
@@ -1194,11 +1178,11 @@
     },
     "empty": {
       "title": "Aucun autocollant pour l’instant",
-      "body": "Quand vous recevez votre autocollant, scannez le QR d’activation que nous vous envoyons pour le lier à votre voiture.",
+      "body": "Quand vous recevez votre autocollant, scannez-le avec l'appareil photo de votre téléphone : il est lié à votre compte.",
       "cta": "Activer un autocollant"
     },
     "card": {
-      "noVehicle": "Voiture non renseignée",
+      "noVehicle": "Votre voiture",
       "activatedOn": "Activé le {date}",
       "edit": "Modifier la voiture",
       "brand": "Marque",
@@ -1214,7 +1198,21 @@
       "deactivateConfirm": "Une fois désactivé, qui scanne cet autocollant verra « non disponible » et ne pourra plus vous écrire. Vous pouvez le réactiver à tout moment.",
       "deactivateYes": "Oui, désactiver",
       "book": "Carnet de la voiture",
-      "nextDue": "{item} : {when}"
+      "nextDue": "{item} : {when}",
+      "addCar": "Ajoutez votre voiture",
+      "addCarHint": "La marque, le modèle et la couleur : pour votre carnet, et pour que la personne qui scanne sache qu'elle est devant la bonne voiture.",
+      "colors": [
+        "Blanc",
+        "Noir",
+        "Gris",
+        "Argent",
+        "Bleu",
+        "Rouge",
+        "Vert",
+        "Beige",
+        "Marron",
+        "Jaune"
+      ]
     },
     "inbox": {
       "title": "Messages reçus",
@@ -1284,7 +1282,8 @@
         "VIGNETTE": "Vignette à payer — {car}"
       },
       "dueOn": "Prévu le {date}.",
-      "overdue": "C’était prévu le {date}."
+      "overdue": "C’était prévu le {date}.",
+      "yourCar": "votre voiture"
     }
   },
   "care": {
@@ -1449,6 +1448,7 @@
       "repairs": "{count, plural, =0 {Rien de noté pour l’instant} one {# intervention} other {# interventions}}",
       "notesWritten": "Rédigées"
     },
-    "breadcrumb": "Où vous êtes"
+    "breadcrumb": "Où vous êtes",
+    "yourCar": "Votre voiture"
   }
 }

@@ -10,6 +10,7 @@ import { carBookRepository } from '@/lib/db/repositories/carBook';
 import { DetailsSection } from '../_components/DetailsSection';
 import { LogSection } from '../_components/LogSection';
 import { Banner, BookHeader } from '../_components/parts';
+import { carName } from '@/lib/vehicles/carName';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +47,7 @@ export default async function CarBookSectionPage({ params, searchParams }: Props
         <BookHeader
           crumbs={[
             { label: t('back'), href: `/${locale}/dashboard` },
-            { label: `${t('title')} · ${book.car.brand} ${book.car.model}`, href: carBookPath(locale, book.publicTagId) },
+            { label: `${t('title')} · ${carName(book.car) ?? t('yourCar')}`, href: carBookPath(locale, book.publicTagId) },
             { label: title },
           ]}
           title={title}

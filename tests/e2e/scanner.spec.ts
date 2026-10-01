@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { expect, test, type Browser, type BrowserContext, type Page } from '@playwright/test';
 import JSZip from 'jszip';
 import { adminContext, hasAdminCredentials } from './adminSession';
+import { linkSticker } from './linkSticker';
 
 /**
  * The whole point of the product: a stranger scans a sticker on a car, writes
@@ -80,13 +81,7 @@ test.describe('scanning a sticker', () => {
     await owner.getByRole('button', { name: 'Create my account' }).click();
     await expect(owner).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
 
-    await owner.goto(`/en/activate?t=${tag.id}&c=${tag.code}`);
-    await owner.getByLabel('Make', { exact: true }).fill('Peugeot');
-    await owner.getByLabel('Model', { exact: true }).fill('208');
-    await owner.getByLabel('Colour', { exact: true }).fill('Blue');
-    await owner.getByLabel('Plate (optional)').fill(PLATE);
-    await owner.getByRole('button', { name: 'Activate the sticker' }).click();
-    await expect(owner).toHaveURL(/\/en\/dashboard\?activated=/, { timeout: 60_000 });
+    await linkSticker(owner, tag.id, { make: 'Peugeot', model: '208', colour: 'Blue', plate: PLATE });
     await home.close();
   });
 

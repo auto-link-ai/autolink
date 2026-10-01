@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { expect, test, type Browser, type BrowserContext } from '@playwright/test';
 import JSZip from 'jszip';
 import { adminContext, hasAdminCredentials } from './adminSession';
+import { linkSticker } from './linkSticker';
 
 /**
  * Abusive messages, end to end, with the local Gemini stand-in
@@ -51,7 +52,7 @@ test.describe('messages stopped for abusive words', () => {
     const download = admin.waitForEvent('download');
     await admin.getByRole('button', { name: 'Generate and download' }).click();
     const zip = await JSZip.loadAsync(await readFile((await (await download).path())!));
-    const [id, code] = (await zip.file('tags.csv')!.async('string')).split('\r\n')[1]!.split(',');
+    const [id] = (await zip.file('tags.csv')!.async('string')).split('\r\n')[1]!.split(',');
     tagId = id!;
     await office.close();
 
@@ -63,12 +64,7 @@ test.describe('messages stopped for abusive words', () => {
     await home.getByLabel('Password').fill('e2e-blocked-password');
     await home.getByRole('button', { name: 'Create my account' }).click();
     await expect(home).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
-    await home.goto(`/en/activate?t=${tagId}&c=${code}`);
-    await home.getByLabel('Make', { exact: true }).fill('Renault');
-    await home.getByLabel('Model', { exact: true }).fill('Symbol');
-    await home.getByLabel('Colour', { exact: true }).fill('Grey');
-    await home.getByRole('button', { name: 'Activate the sticker' }).click();
-    await expect(home).toHaveURL(/\/en\/dashboard\?activated=/, { timeout: 60_000 });
+    await linkSticker(home, tagId, { make: 'Renault', model: 'Symbol', colour: 'Grey' });
     await home.close();
 
     const { street, page } = await send(browser, tagId, INSULT);

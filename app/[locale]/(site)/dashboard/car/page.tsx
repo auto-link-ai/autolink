@@ -78,6 +78,7 @@ export default async function CarBooksPage({ params }: Props) {
                   car={car.car}
                   detail={car.urgentText}
                   aside={car.urgent && <DuePill item={car.urgent} locale={locale} />}
+                  fallbackName={t('yourCar')}
                 />
               </li>
             ))}

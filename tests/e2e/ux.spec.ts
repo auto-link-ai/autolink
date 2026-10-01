@@ -9,7 +9,7 @@ import { hasAdminCredentials } from './adminSession';
  * 127.0.0.1. Real customers never share one, so this is the honest setup.
  */
 const run = Date.now().toString(36);
-const CLAIM = '/en/activate?t=AUT-7K3M9QXZ&c=ABCD-EFGH-JK';
+const CLAIM = '/en/activate?t=AUT-7K3M9QXZ';
 
 let address = 0;
 function freshClient(browser: Browser) {
@@ -37,9 +37,9 @@ test('sign-in says what to do about a forgotten password', async ({ page }) => {
   await expect(page).toHaveURL(/\/en\/contact$/);
 });
 
-test('arriving from a claim link, sign-in offers to create the account first', async ({ page }) => {
+test('arriving to link a sticker, sign-in offers to create the account first', async ({ page }) => {
   await page.goto(`/en/login?next=${encodeURIComponent(CLAIM)}`);
-  await expect(page.getByText('You are about to link your sticker')).toBeVisible();
+  await expect(page.getByText('One step left to activate your sticker')).toBeVisible();
   await expect(page.getByText('AUT-7K3M9QXZ')).toBeVisible();
   const create = page.getByRole('link', { name: 'Create my account' });
   await expect(create).toHaveAttribute('href', `/en/register?next=${encodeURIComponent(CLAIM)}`);
@@ -47,7 +47,7 @@ test('arriving from a claim link, sign-in offers to create the account first', a
 
 test('an ordinary sign-in shows no claim panel', async ({ page }) => {
   await page.goto('/en/login');
-  await expect(page.getByText('You are about to link your sticker')).toHaveCount(0);
+  await expect(page.getByText('One step left to activate your sticker')).toHaveCount(0);
 });
 
 // ---- With a disposable database -------------------------------------------------------
@@ -59,23 +59,23 @@ test.describe('first-time customers and their accounts', () => {
     test.skip(testInfo.project.name !== 'desktop-chromium', 'Writes to the database: run once.');
   });
 
-  test('from the claim QR to the activation form, without retyping anything', async ({ browser }) => {
+  test('a sticker that cannot be linked: the new account lands on the link page, which says why', async ({ browser }) => {
     test.setTimeout(120_000);
     const context = await freshClient(browser);
     const page = await context.newPage();
 
     await page.goto(`/en/login?next=${encodeURIComponent(CLAIM)}`);
     await page.getByRole('link', { name: 'Create my account' }).click();
-    await expect(page.getByText('Next, we link this sticker to your account')).toBeVisible();
+    await expect(page.getByText('This sticker will be linked to your account')).toBeVisible();
 
     await page.getByLabel('Full name').fill('Yasmine Haddad');
     await page.getByLabel('Email').fill(`e2e-ux-claim-${run}@example.dz`);
     await page.getByLabel('Password').fill('e2e-ux-password-1');
     await page.getByRole('button', { name: 'Create my account' }).click();
 
-    await expect(page).toHaveURL(/\/en\/activate\?t=AUT-7K3M9QXZ&c=ABCD-EFGH-JK/, { timeout: 60_000 });
-    await expect(page.getByLabel('Sticker id')).toHaveValue('AUT-7K3M9QXZ');
-    await expect(page.getByLabel('Activation code')).toHaveValue('ABCD-EFGH-JK');
+    // AUT-7K3M9QXZ was never made: the account exists, the sticker is not linked, and the page says so.
+    await expect(page).toHaveURL(/\/en\/activate\?t=AUT-7K3M9QXZ&error=invalid$/, { timeout: 60_000 });
+    await expect(page.getByRole('alert').filter({ hasText: "This sticker can't be linked" })).toBeVisible();
     await context.close();
   });
 

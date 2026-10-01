@@ -47,9 +47,10 @@ const nullable = <T>(type: T) => ({ type, default: null });
 const vehicleSchema = new Schema<Vehicle>(
   {
     ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-    brand: { type: String, required: true, trim: true },
-    model: { type: String, required: true, trim: true },
-    color: { type: String, required: true, trim: true },
+    // Empty until the owner describes the car: a sticker is linked first (lib/vehicles/carName.ts).
+    brand: { type: String, trim: true, default: '' },
+    model: { type: String, trim: true, default: '' },
+    color: { type: String, trim: true, default: '' },
     plateNumber: { type: String, trim: true, default: null },
     showDetailsPublicly: { type: Boolean, default: true },
     isActive: { type: Boolean, default: true },

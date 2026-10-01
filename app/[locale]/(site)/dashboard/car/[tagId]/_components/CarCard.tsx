@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { CarPicture } from '@/components/care/CarPicture';
 import { PendingLink } from '@/components/ui/PendingLink';
+import { carName } from '@/lib/vehicles/carName';
 
 /**
  * The car at the top of its book, and in the list when there are several:
@@ -13,8 +14,11 @@ export function CarCard({
   car,
   detail,
   aside,
+  fallbackName,
 }: {
   href: string;
+  /** « Votre voiture », while the owner has not said which car it is. */
+  fallbackName: string;
   car: { brand: string; model: string; color: string; plateNumber?: string | null };
   detail?: string | null;
   /** At the end of the card, before the arrow: a pill, on the list of cars. */
@@ -27,7 +31,7 @@ export function CarCard({
     >
       <span className="min-w-0 flex-1">
         <span className="block text-[18px] leading-snug font-bold text-text">
-          {car.brand} {car.model}
+          {carName(car) ?? fallbackName}
         </span>
         {car.plateNumber ? (
           <span
@@ -37,7 +41,7 @@ export function CarCard({
             {car.plateNumber}
           </span>
         ) : (
-          <span className="mt-0.5 block text-sm text-text-muted">{car.color}</span>
+          car.color && <span className="mt-0.5 block text-sm text-text-muted">{car.color}</span>
         )}
         {detail && <span className="mt-1 block truncate text-sm text-text-secondary">{detail}</span>}
       </span>

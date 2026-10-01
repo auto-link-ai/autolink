@@ -10,7 +10,9 @@ import { getSettings } from '@/lib/config/settings';
 import { resolveScannerLocale } from '@/lib/scanner/request';
 import { turnstileSiteKey } from '@/lib/security/turnstile';
 import { MESSAGE_CATEGORIES } from '@/lib/domain/constants';
+import { carLabel } from '@/lib/vehicles/carName';
 import { setScannerLanguageAction } from './actions';
+import { LinkSticker } from './LinkSticker';
 import { OwnerPanel } from './OwnerPanel';
 import { ReportForm, type ReportLabels } from './ReportForm';
 
@@ -24,7 +26,8 @@ type Props = {
 /**
  * The page a stranger reaches by scanning a sticker on a car — the whole point
  * of the product. It shows no more than the owner allowed, and sending a
- * message never reveals who they are.
+ * message never reveals who they are. A sticker nobody has linked yet shows
+ * instead how to link it: its buyer scans it straight out of the packaging.
  */
 export default async function ScanPage({ params, searchParams }: Props) {
   const { tagId } = await params;
@@ -41,7 +44,8 @@ export default async function ScanPage({ params, searchParams }: Props) {
   // accounts included — `mine` is null and the page is unchanged.
   // `?view=public` lets the owner see exactly what others see.
   const owner = raw.view === 'public' ? null : await getOwnerSession();
-  const mine = owner ? await carBookRepository.summaryForOwner(owner.actor, tag.publicTagId) : null;
+  const mine =
+    owner && tag.state === 'linked' ? await carBookRepository.summaryForOwner(owner.actor, tag.publicTagId) : null;
 
   const sent = raw.sent === '1';
   const settings = await getSettings();
@@ -95,7 +99,9 @@ export default async function ScanPage({ params, searchParams }: Props) {
         </form>
       </header>
 
-      {mine ? (
+      {tag.state === 'waiting' ? (
+        <LinkSticker publicTagId={tag.publicTagId} locale={locale} signedIn={owner !== null} />
+      ) : mine ? (
         <OwnerPanel
           summary={mine}
           items={dueItems(mine.due, algiersToday(), settings.careReminderDays)}
@@ -116,7 +122,7 @@ export default async function ScanPage({ params, searchParams }: Props) {
             <p className="mt-2 text-[15px] leading-relaxed text-text-secondary">{t('subtitle')}</p>
             {tag.vehicle && (
               <p className="mt-4 inline-flex rounded-full bg-surface-3 px-4 py-2 text-[15px] font-bold text-text">
-                {tag.vehicle.brand} {tag.vehicle.model} · {tag.vehicle.color}
+                {carLabel(tag.vehicle)}
               </p>
             )}
           </section>
@@ -128,7 +134,7 @@ export default async function ScanPage({ params, searchParams }: Props) {
       )}
 
       <footer className="mt-auto flex flex-col items-center gap-2 pt-4 text-center text-sm text-text-muted">
-        {!mine && (
+        {!mine && tag.state === 'linked' && (
           <a
             href={`/${locale}/login?next=${encodeURIComponent(`/t/${tag.publicTagId}`)}`}
             className="min-h-11 py-2 font-semibold text-text-secondary underline-offset-4 hover:underline"

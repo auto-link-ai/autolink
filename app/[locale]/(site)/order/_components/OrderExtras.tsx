@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { ArrowIcon, BellIcon, BookIcon, LockIcon, StickerIcon, WhatsAppIcon } from '@/components/site/icons';
+import { ArrowIcon, BellIcon, BookIcon, ScanIcon, StickerIcon, WhatsAppIcon } from '@/components/site/icons';
 import { Faq, type FaqKey } from '@/components/site/sections/Faq';
 import { HowItWorks } from '@/components/site/sections/HowItWorks';
 import { buttonClasses } from '@/components/ui/Button';
@@ -8,7 +8,7 @@ import type { PublicPricing } from '@/lib/site/pricing';
 
 const INCLUDES = [
   { key: 'sticker', Icon: StickerIcon },
-  { key: 'slip', Icon: LockIcon },
+  { key: 'activation', Icon: ScanIcon },
   { key: 'messages', Icon: BellIcon },
   { key: 'carBook', Icon: BookIcon },
 ] as const;

@@ -24,6 +24,7 @@ import { generateMessagePublicId } from '@/lib/tags/generate';
 import { isValidTagIdShape } from '@/lib/validation/tagId';
 import type { OwnerActor, ScannerActor } from './actor';
 import { toObjectId } from './objectId';
+import { carLabel } from '@/lib/vehicles/carName';
 
 /** Owner's view of a message. */
 export interface MessageDTO {
@@ -65,7 +66,7 @@ export interface AdminMessageMeta {
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 function vehicleLabel(vehicle: { brand: string; model: string; color: string } | null): string | null {
-  return vehicle ? `${vehicle.brand} ${vehicle.model} · ${vehicle.color}` : null;
+  return vehicle ? carLabel(vehicle) : null;
 }
 
 export const messagesRepository = {

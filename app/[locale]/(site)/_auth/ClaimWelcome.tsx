@@ -3,10 +3,10 @@ import { StickerIcon } from '@/components/site/icons';
 import { buttonClasses } from '@/components/ui/Button';
 
 /**
- * Shown when someone arrives from the claim QR on their slip while signed out.
- * Almost everyone who scans it is new, so on the sign-in page the main action
- * becomes creating an account; on the registration page it reassures them the
- * sticker is still waiting at the end.
+ * Shown when someone scanned a sticker nobody has linked yet and arrives here
+ * signed out. Almost all of them are new, so on the sign-in page the main
+ * action becomes creating an account; on both pages it says the sticker is
+ * linked as soon as they are in.
  */
 export function ClaimWelcome({
   tagId,

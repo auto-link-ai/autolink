@@ -62,7 +62,15 @@
       "messages": "My messages",
       "preview": "See what others see"
     },
-    "signIn": "Is this your car? Sign in"
+    "signIn": "Is this your car? Sign in",
+    "link": {
+      "title": "This sticker isn't activated yet.",
+      "body": "Is it yours? Link it to your account: messages about your car will reach your phone, without ever showing your number.",
+      "create": "Create my account",
+      "signIn": "I already have an account",
+      "confirm": "Link this sticker to my account",
+      "notYours": "Not your car? Its owner hasn't activated the sticker yet: it can't receive messages yet."
+    }
   },
   "notFound": {
     "title": "Page not found",
@@ -579,7 +587,7 @@
       "items": {
         "stick": {
           "title": "Stick it on",
-          "body": "On a window, clearly visible from outside. You activate it once with the private code supplied.",
+          "body": "On a window, easy to see from outside. Before sticking it, scan it once to link it to your account.",
           "imageAlt": "Someone sticking the AutoLink sticker on a windscreen."
         },
         "scan": {
@@ -651,7 +659,7 @@
       "oneTime": "One payment, per sticker",
       "includes": {
         "sticker": "A hard-wearing QR sticker, ready to stick",
-        "code": "The private activation code, on a separate slip",
+        "code": "Activated with one scan: no code to copy",
         "unlimited": "Unlimited messages from your sticker",
         "notify": "Notifications on your phone",
         "noSubscription": "No subscription, no hidden fees"
@@ -670,7 +678,7 @@
         },
         "deliver": {
           "title": "We deliver",
-          "body": "The courier hands you the sticker and the activation slip."
+          "body": "The courier hands you the sticker, in its packaging."
         },
         "pay": {
           "title": "You pay on delivery",
@@ -705,7 +713,7 @@
         },
         "activate": {
           "q": "How do I activate my sticker?",
-          "a": "With the private code printed on a separate slip, never on the sticker itself. Knowing the QR address alone is therefore not enough to claim a car."
+          "a": "Scan it with your phone's camera, then create your account or sign in: it's linked to your account straight away. Do it as soon as it arrives, before sticking it on, then add your car."
         },
         "abuse": {
           "q": "What if someone misuses it?",
@@ -772,11 +780,11 @@
         "owner": {
           "order": {
             "title": "You order",
-            "body": "Cash on delivery. You receive the sticker and a slip with the activation code."
+            "body": "Cash on delivery. You receive the sticker in its packaging."
           },
           "activate": {
             "title": "You activate",
-            "body": "You enter the sticker ID and the private code from the slip."
+            "body": "You scan the sticker and sign in: it's linked to your account."
           },
           "stick": {
             "title": "You stick it on",
@@ -947,9 +955,9 @@
           "title": "The sticker",
           "body": "8 × 11.3 cm, with its own QR code, for a window that is easy to see."
         },
-        "slip": {
-          "title": "The activation slip",
-          "body": "A private code on a separate slip: only you can link the sticker to your car."
+        "activation": {
+          "title": "Activated with one scan",
+          "body": "Scan the sticker and sign in: it's yours. No code to copy."
         },
         "messages": {
           "title": "Unlimited messages",
@@ -1066,9 +1074,9 @@
       "privateNote": "The details of this order are shown only on the device that placed it. Keep the reference and contact us if you need anything.",
       "next": {
         "call": "We call you to confirm the order and the address.",
-        "deliver": "The courier hands you the sticker and the activation slip.",
+        "deliver": "The courier hands you the sticker.",
         "pay": "You pay in cash when it is delivered.",
-        "activate": "Scan the QR on your slip to link the sticker to your car."
+        "activate": "Scan the sticker and sign in: it's linked to your account. Then stick it on."
       },
       "backHome": "Back to home",
       "nextTitle": "What happens next",
@@ -1123,52 +1131,28 @@
       "switchLink": "Sign in"
     },
     "claim": {
-      "loginTitle": "You are about to link your sticker",
-      "loginBody": "Create your account — it takes 30 seconds — and we bring you straight back here to finish. Your sticker is waiting.",
+      "loginTitle": "One step left to activate your sticker",
+      "loginBody": "Create your account (30 seconds): the sticker is linked to it as soon as you're done.",
       "loginCta": "Create my account",
-      "loginSecondary": "Already have an account? Sign in below.",
-      "registerTitle": "Next, we link this sticker to your account",
-      "registerBody": "As soon as your account exists you land on the activation page, with the sticker already filled in."
+      "loginSecondary": "Already have an account? Sign in below: the sticker is linked to it straight away.",
+      "registerTitle": "This sticker will be linked to your account",
+      "registerBody": "As soon as your account is created, the sticker is activated. You then add your car."
     }
   },
   "activate": {
     "metaTitle": "Activate a sticker — AutoLink",
     "eyebrow": "Activation",
-    "title": "Link the sticker to your car.",
-    "subtitle": "Scan the QR we sent you, or copy the id and the code from the slip.",
-    "submit": "Activate the sticker",
-    "submitting": "Activating…",
-    "help": "The activation code is printed on the slip that came with your order, never on the sticker itself. If you have lost it, contact us and we will send you a new code.",
+    "title": "Link the sticker to your account.",
+    "subtitle": "One tap, and messages about your car reach your phone.",
+    "ready": "Sticker ready to link",
+    "submit": "Link this sticker to my account",
+    "help": "Easiest: scan the sticker's QR with your phone's camera.",
     "fields": {
       "tagId": "Sticker id",
-      "tagIdHint": "Printed on the sticker, for example AUT-7K3M9QXZ.",
-      "code": "Activation code",
-      "codeHint": "On the slip sent with your order.",
-      "brand": "Make",
-      "model": "Model",
-      "color": "Colour",
-      "plate": "Plate (optional)",
-      "plateHint": "Kept private: never shown to the person scanning.",
-      "showDetails": "Show the make, model and colour",
-      "showDetailsHint": "Helps whoever scans check they are at the right car. You can turn this off at any time.",
-      "colors": [
-        "White",
-        "Black",
-        "Grey",
-        "Silver",
-        "Blue",
-        "Red",
-        "Green",
-        "Beige",
-        "Brown",
-        "Yellow"
-      ]
+      "tagIdHint": "Printed under the sticker's QR, for example AUT-7K3M9QXZ."
     },
     "errors": {
-      "invalid": "Wrong sticker id or code.",
-      "too_short": "That is a little too short.",
-      "too_long": "That is too long.",
-      "locked": "Too many attempts on this sticker. Try again in 24 hours.",
+      "invalid": "This sticker can't be linked: it's already activated on an account, or the id is wrong.",
       "rate_limited": "Too many attempts from this connection. Try again in an hour.",
       "server_error": "Something went wrong. Please try again in a moment."
     }
@@ -1179,7 +1163,7 @@
     "title": "My stickers",
     "subtitle": "{count} sticker(s) on your account.",
     "signOut": "Sign out",
-    "activated": "Sticker {tagId} activated. It is now linked to your car.",
+    "activated": "Sticker {tagId} activated! Now add your car below.",
     "addAnother": "Activate another sticker",
     "results": {
       "ok": "Change saved.",
@@ -1194,11 +1178,11 @@
     },
     "empty": {
       "title": "No stickers yet",
-      "body": "When your sticker arrives, scan the activation QR we send you to link it to your car.",
+      "body": "When your sticker arrives, scan it with your phone's camera: it's linked to your account.",
       "cta": "Activate a sticker"
     },
     "card": {
-      "noVehicle": "No car details",
+      "noVehicle": "Your car",
       "activatedOn": "Activated on {date}",
       "edit": "Edit the car",
       "brand": "Make",
@@ -1214,7 +1198,21 @@
       "deactivateConfirm": "Once it is off, anyone who scans this sticker sees \"not available\" and cannot write to you. You can switch it back on at any time.",
       "deactivateYes": "Yes, switch it off",
       "book": "My car book",
-      "nextDue": "{item}: {when}"
+      "nextDue": "{item}: {when}",
+      "addCar": "Add your car",
+      "addCarHint": "Make, model and colour: for your car book, and so whoever scans knows they're at the right car.",
+      "colors": [
+        "White",
+        "Black",
+        "Grey",
+        "Silver",
+        "Blue",
+        "Red",
+        "Green",
+        "Beige",
+        "Brown",
+        "Yellow"
+      ]
     },
     "inbox": {
       "title": "Messages",
@@ -1284,7 +1282,8 @@
         "VIGNETTE": "Vignette due — {car}"
       },
       "dueOn": "Due on {date}.",
-      "overdue": "It was due on {date}."
+      "overdue": "It was due on {date}.",
+      "yourCar": "your car"
     }
   },
   "care": {
@@ -1449,6 +1448,7 @@
       "repairs": "{count, plural, =0 {Nothing logged yet} one {# entry} other {# entries}}",
       "notesWritten": "Written"
     },
-    "breadcrumb": "Where you are"
+    "breadcrumb": "Where you are",
+    "yourCar": "Your car"
   }
 }

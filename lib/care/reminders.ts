@@ -12,6 +12,8 @@ const SYSTEM = { kind: 'system' } as const;
 
 interface ReminderCopy {
   titles: Record<CareDueKind, string>;
+  /** « votre voiture », for a car not described yet. */
+  yourCar: string;
   dueOn: string;
   overdue: string;
 }
@@ -27,7 +29,7 @@ async function reminderCopy(locale: Locale): Promise<ReminderCopy> {
 export function reminderText(copy: ReminderCopy, reminder: DueReminder, today: Date) {
   const date = formatDay(reminder.dueDate, reminder.locale);
   return {
-    title: copy.titles[reminder.kind].replace('{car}', reminder.carLabel),
+    title: copy.titles[reminder.kind].replace('{car}', reminder.carLabel ?? copy.yourCar),
     body: (reminder.dueDate < today ? copy.overdue : copy.dueOn).replace('{date}', date),
   };
 }

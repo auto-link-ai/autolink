@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import JSZip from 'jszip';
 import { adminContext, hasAdminCredentials } from './adminSession';
+import { linkSticker } from './linkSticker';
 
 /**
  * The admin side of a customer account: find them, see what they own, and the
@@ -89,12 +90,7 @@ test.describe('an admin looking after a customer', () => {
     await customer.getByRole('button', { name: 'Create my account' }).click();
     await expect(customer).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
 
-    await customer.goto(`/en/activate?t=${tag.id}&c=${tag.code}`);
-    await customer.getByLabel('Make', { exact: true }).fill('Peugeot');
-    await customer.getByLabel('Model', { exact: true }).fill('208');
-    await customer.getByLabel('Colour', { exact: true }).fill('Blue');
-    await customer.getByRole('button', { name: 'Activate the sticker' }).click();
-    await expect(customer).toHaveURL(/\/en\/dashboard\?activated=/, { timeout: 60_000 });
+    await linkSticker(customer, tag.id, { make: 'Peugeot', model: '208', colour: 'Blue' });
     await shop.close();
 
     const office = await adminContext(browser);
