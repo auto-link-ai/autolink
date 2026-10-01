@@ -8,7 +8,7 @@
  */
 
 export interface OfferButton {
-  /** `order`: the order page. `offer`: the « عرض ما يتفوتش » section on this page. */
+  /** `order`: the order form on this page. `offer`: the « عرض ما يتفوتش » section. */
   to: 'order' | 'offer';
   /** The button's words, as drawn. */
   label: string;

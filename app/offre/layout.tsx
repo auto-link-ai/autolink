@@ -28,7 +28,7 @@ export const viewport: Viewport = { themeColor: '#241d19' };
 
 export default function OfferLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={`${fontVariables} scroll-smooth`}>
+    <html lang="ar" dir="rtl" className={`${fontVariables} motion-safe:scroll-smooth`}>
       <body>{children}</body>
     </html>
   );

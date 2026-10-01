@@ -1462,5 +1462,9 @@
     },
     "breadcrumb": "Where you are",
     "yourCar": "Your car"
+  },
+  "offer": {
+    "title": "AutoLink sticker — let people reach you, without seeing your number",
+    "subtitle": "Order below and pay on delivery."
   }
 }

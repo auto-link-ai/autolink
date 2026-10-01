@@ -1462,5 +1462,9 @@
     },
     "breadcrumb": "Où vous êtes",
     "yourCar": "Votre voiture"
+  },
+  "offer": {
+    "title": "Autocollant AutoLink — qu’on vous prévienne, sans voir votre numéro",
+    "subtitle": "Commandez ci-dessous et payez à la livraison."
   }
 }
