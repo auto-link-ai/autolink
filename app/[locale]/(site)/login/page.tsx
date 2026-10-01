@@ -11,6 +11,7 @@ import { claimTagIdFromNext } from '@/lib/activation/claimLink';
 import { AuthForm, type AuthLabels } from '../_auth/AuthForm';
 import { ClaimWelcome } from '../_auth/ClaimWelcome';
 import { safeNext } from '../_auth/state';
+import { InstalledHint } from '@/components/site/InstalledHint';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,6 +66,7 @@ export default async function LoginPage({ params, searchParams }: Props) {
       <PageHero eyebrow={t('login.eyebrow')} title={t('login.title')} subtitle={t('login.subtitle')} />
       <section className="pb-16 md:pb-24">
         <div className="container-page max-w-130">
+          <InstalledHint text={t('login.installedHint')} />
           {claimTagId && (
             <ClaimWelcome
               tagId={claimTagId}

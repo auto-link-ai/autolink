@@ -108,7 +108,7 @@ export function AuthForm({
             type="email"
             required
             dir="ltr"
-            autoComplete="email"
+            autoComplete="username"
             className={INPUT}
           />
         </Field>

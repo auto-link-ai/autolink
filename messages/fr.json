@@ -1113,7 +1113,8 @@
       "switchText": "Pas encore de compte ?",
       "switchLink": "Créer un compte",
       "forgot": "Mot de passe oublié ?",
-      "forgotLink": "Écrivez-nous, nous le réinitialisons."
+      "forgotLink": "Écrivez-nous, nous le réinitialisons.",
+      "installedHint": "Dans l’application, connectez-vous une fois : vous resterez connecté."
     },
     "register": {
       "metaTitle": "Créer un compte — AutoLink",

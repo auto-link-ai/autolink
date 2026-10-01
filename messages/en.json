@@ -1113,7 +1113,8 @@
       "switchText": "No account yet?",
       "switchLink": "Create one",
       "forgot": "Forgot your password?",
-      "forgotLink": "Write to us and we will reset it."
+      "forgotLink": "Write to us and we will reset it.",
+      "installedHint": "In the app, sign in once: you will stay signed in."
     },
     "register": {
       "metaTitle": "Create an account — AutoLink",

@@ -5,7 +5,12 @@ import { usersRepository } from '@/lib/db/repositories/users';
 import { hashSecret, verifySecret } from '@/lib/security/password';
 import { loginSchema } from '@/lib/validation/auth';
 
-const THIRTY_DAYS_SECONDS = 30 * 24 * 60 * 60;
+/**
+ * As long as browsers keep a cookie: Chrome and Android refuse more than 400 days.
+ * Renewed on every visit (components/site/KeepSignedIn.tsx), so an owner is only
+ * signed out by « Se déconnecter » or by not opening AutoLink for over a year.
+ */
+const SESSION_MAX_AGE_SECONDS = 400 * 24 * 60 * 60;
 
 /**
  * A real hash of a random string, computed once. An unknown email is verified
@@ -24,7 +29,7 @@ const decoy = () => (decoyHash ??= hashSecret(randomBytes(24).toString('base64ur
  * sign-in action before `signIn` is called — the provider itself only verifies.
  */
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  session: { strategy: 'jwt', maxAge: THIRTY_DAYS_SECONDS },
+  session: { strategy: 'jwt', maxAge: SESSION_MAX_AGE_SECONDS },
   pages: { signIn: '/fr/login' },
   trustHost: true,
   logger: {

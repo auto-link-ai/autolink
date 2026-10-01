@@ -11,6 +11,7 @@ import { carBookRepository } from '@/lib/db/repositories/carBook';
 import { messagesRepository } from '@/lib/db/repositories/messages';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { InstallApp } from './InstallApp';
+import { KeepSignedIn } from './KeepSignedIn';
 import { href } from './links';
 import { BackButton } from './BackButton';
 import { MobileMenu, type MenuAccount, type NavItem } from './MobileMenu';
@@ -173,6 +174,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
       </header>
       {/* Outside the header: its blurred pill would trap a fixed child inside it. */}
       {session && <OwnerBar locale={locale} items={ownerItems} label={t('owner')} />}
+      {session && <KeepSignedIn />}
     </>
   );
 }
