@@ -45,8 +45,13 @@ test.describe('staying signed in', () => {
     await page.getByLabel('Email').fill(`e2e-stay-${Date.now().toString(36)}@example.dz`);
     await page.getByLabel('WhatsApp number').fill('0551 23 45 67');
     await page.getByLabel('Password').fill('e2e-stay-signed-in');
+    // The dashboard renews the sign-in on its first visit of the day: let that finish first.
+    const firstRenewal = page.waitForResponse((response) => response.url().endsWith('/api/auth/session'), {
+      timeout: 60_000,
+    });
     await page.getByRole('button', { name: 'Create my account' }).click();
     await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
+    expect((await firstRenewal).ok()).toBe(true);
 
     const first = await sessionCookie(context);
     const daysLeft = (first.expires - Date.now() / 1000) / DAY;
