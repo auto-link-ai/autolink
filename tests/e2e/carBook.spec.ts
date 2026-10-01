@@ -33,6 +33,7 @@ async function register(browser: Browser, who: { email: string; password: string
   await page.goto('/en/register');
   await page.getByLabel('Full name').fill('Karim Meziane');
   await page.getByLabel('Email').fill(who.email);
+  await page.getByLabel('WhatsApp number').fill('0551 23 45 67');
   await page.getByLabel('Password').fill(who.password);
   await page.getByRole('button', { name: 'Create my account' }).click();
   await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });

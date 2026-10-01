@@ -57,6 +57,7 @@ export default async function RegisterPage({ params, searchParams }: Props) {
       too_long: t('errors.too_long'),
       invalid_email: t('errors.invalid_email'),
       invalid_phone: t('errors.invalid_phone'),
+      required: t('errors.required'),
       password_too_short: t('errors.password_too_short'),
       email_taken: t('errors.email_taken'),
       rate_limited: t('errors.rate_limited'),

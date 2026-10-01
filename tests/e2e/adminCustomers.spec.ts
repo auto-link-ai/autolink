@@ -14,6 +14,7 @@ const run = Date.now().toString(36);
 const CUSTOMER = `e2e-customer-${run}@example.dz`;
 /** Made by hand by the admin, for a customer who called. */
 const BY_PHONE = `e2e-by-phone-${run}@example.dz`;
+const NO_PHONE = `e2e-no-phone-${run}@example.dz`;
 /** CUSTOMER's email after the admin fixes a typo. */
 const RENAMED = `e2e-renamed-${run}@example.dz`;
 /** The customer's current password: the reset test replaces it. */
@@ -85,7 +86,7 @@ test.describe('an admin looking after a customer', () => {
     await customer.goto('/en/register');
     await customer.getByLabel('Full name').fill('Amine Belkacem');
     await customer.getByLabel('Email').fill(CUSTOMER);
-    await customer.getByLabel('Phone (optional)').fill('0551 23 45 67');
+    await customer.getByLabel('WhatsApp number').fill('0551 23 45 67');
     await customer.getByLabel('Password').fill(PASSWORD);
     await customer.getByRole('button', { name: 'Create my account' }).click();
     await expect(customer).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
@@ -190,6 +191,30 @@ test.describe('an admin looking after a customer', () => {
 
     const { shop, page } = await signIn(browser, BY_PHONE, temporary);
     await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
+    await shop.close();
+    await office.close();
+  });
+
+  test('an account without a WhatsApp number is asked for one on its dashboard', async ({ browser }) => {
+    test.setTimeout(180_000);
+    const office = await adminContext(browser);
+    const admin = await office.newPage();
+    await admin.goto('/en/admin/customers');
+    await admin.getByRole('link', { name: '+ New customer' }).click();
+    await admin.getByLabel('Email').fill(NO_PHONE);
+    await admin.getByLabel('Name', { exact: true }).fill('Walid Sans Numero');
+    await admin.getByRole('button', { name: 'Create the account' }).click();
+    const done = admin.getByRole('status').filter({ hasText: 'Account created.' });
+    const temporary = (await done.locator('p[dir="ltr"]').innerText()).trim();
+
+    const { shop, page } = await signIn(browser, NO_PHONE, temporary);
+    await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
+    const prompt = page.getByRole('region', { name: 'Add your WhatsApp number' });
+    await prompt.getByLabel('WhatsApp number').fill('0661 22 33 44');
+    await prompt.getByRole('button', { name: 'Save' }).click();
+    await expect(page.getByRole('status').filter({ hasText: 'WhatsApp number saved.' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Add your WhatsApp number' })).toHaveCount(0);
+    await expect(page.getByRole('region', { name: 'My account' })).toContainText('0661223344');
     await shop.close();
     await office.close();
   });

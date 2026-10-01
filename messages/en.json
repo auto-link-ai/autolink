@@ -837,7 +837,7 @@
         {
           "title": "What we collect",
           "body": [
-            "For the owner: an email address, a hashed password, the vehicle details you enter and, if you order, your delivery details.",
+            "For the owner: an email address, a mobile number (to reach you and send your alerts on WhatsApp), a hashed password, the vehicle details you enter and, if you order, your delivery details.",
             "For the person scanning: the reason chosen, the message written, an optional way to reach them back, and a random session id. No account is created."
           ]
         },
@@ -1082,8 +1082,8 @@
     "fields": {
       "name": "Full name",
       "email": "Email",
-      "phone": "Phone (optional)",
-      "phoneHint": "So we can reach you about an order.",
+      "phone": "WhatsApp number",
+      "phoneHint": "Algerian mobile, e.g. 05 12 34 56 78. To send your AutoLink alerts on WhatsApp. Never shown to anyone.",
       "password": "Password",
       "passwordHint": "At least 10 characters.",
       "show": "Show",
@@ -1099,7 +1099,8 @@
       "email_taken": "An account already uses this address. Sign in instead.",
       "invalid_credentials": "Wrong email or password.",
       "rate_limited": "Too many attempts. Try again in an hour.",
-      "server_error": "Something went wrong. Please try again in a moment."
+      "server_error": "Something went wrong. Please try again in a moment.",
+      "required": "This field is required."
     },
     "login": {
       "metaTitle": "Sign in — AutoLink",
@@ -1162,7 +1163,9 @@
     "addAnother": "Activate another sticker",
     "results": {
       "ok": "Change saved.",
-      "invalid": "Could not save. Check the fields."
+      "invalid": "Could not save. Check the fields.",
+      "phone_saved": "WhatsApp number saved.",
+      "phone_invalid": "Enter a valid Algerian mobile (05, 06 or 07)."
     },
     "status": {
       "UNASSIGNED": "Not activated",
@@ -1258,6 +1261,13 @@
         "rate_limited": "Too many attempts. Try again in an hour.",
         "server_error": "Something went wrong. Try again in a moment."
       }
+    },
+    "phone": {
+      "promptTitle": "Add your WhatsApp number",
+      "hint": "To send your AutoLink alerts on WhatsApp. It is never shown to whoever scans.",
+      "label": "WhatsApp number",
+      "save": "Save",
+      "change": "Change"
     }
   },
   "notifications": {

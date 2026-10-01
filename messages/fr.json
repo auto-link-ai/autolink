@@ -837,7 +837,7 @@
         {
           "title": "Ce que nous collectons",
           "body": [
-            "Pour le propriétaire : une adresse e-mail, un mot de passe chiffré, les détails du véhicule que vous saisissez et, si vous commandez, vos coordonnées de livraison.",
+            "Pour le propriétaire : une adresse e-mail, un numéro de mobile (pour vous joindre et vous envoyer vos alertes sur WhatsApp), un mot de passe chiffré, les détails du véhicule que vous saisissez et, si vous commandez, vos coordonnées de livraison.",
             "Pour la personne qui scanne : la raison choisie, le message écrit, un moyen de recontact facultatif, et un identifiant de session aléatoire. Aucun compte n'est créé."
           ]
         },
@@ -1082,8 +1082,8 @@
     "fields": {
       "name": "Nom et prénom",
       "email": "E-mail",
-      "phone": "Téléphone (facultatif)",
-      "phoneHint": "Pour qu’on puisse vous joindre au sujet d’une commande.",
+      "phone": "Numéro WhatsApp",
+      "phoneHint": "Mobile algérien, ex. 05 12 34 56 78. Pour vous envoyer vos alertes AutoLink sur WhatsApp. Jamais montré à personne.",
       "password": "Mot de passe",
       "passwordHint": "Au moins 10 caractères.",
       "show": "Afficher",
@@ -1099,7 +1099,8 @@
       "email_taken": "Un compte existe déjà avec cette adresse. Connectez-vous.",
       "invalid_credentials": "E-mail ou mot de passe incorrect.",
       "rate_limited": "Trop de tentatives. Réessayez dans une heure.",
-      "server_error": "Une erreur est survenue. Réessayez dans un instant."
+      "server_error": "Une erreur est survenue. Réessayez dans un instant.",
+      "required": "Ce champ est obligatoire."
     },
     "login": {
       "metaTitle": "Connexion — AutoLink",
@@ -1162,7 +1163,9 @@
     "addAnother": "Activer un autre autocollant",
     "results": {
       "ok": "Modification enregistrée.",
-      "invalid": "Modification impossible. Vérifiez les champs."
+      "invalid": "Modification impossible. Vérifiez les champs.",
+      "phone_saved": "Numéro WhatsApp enregistré.",
+      "phone_invalid": "Entrez un mobile algérien valide (05, 06 ou 07)."
     },
     "status": {
       "UNASSIGNED": "Non activé",
@@ -1258,6 +1261,13 @@
         "rate_limited": "Trop de tentatives. Réessayez dans une heure.",
         "server_error": "Une erreur est survenue. Réessayez dans un instant."
       }
+    },
+    "phone": {
+      "promptTitle": "Ajoutez votre numéro WhatsApp",
+      "hint": "Pour vous envoyer vos alertes AutoLink sur WhatsApp. Il n’est jamais montré à la personne qui scanne.",
+      "label": "Numéro WhatsApp",
+      "save": "Enregistrer",
+      "change": "Changer"
     }
   },
   "notifications": {

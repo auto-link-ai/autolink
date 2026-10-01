@@ -9,7 +9,7 @@ import { messagesRepository } from '@/lib/db/repositories/messages';
 import { rateLimitsRepository } from '@/lib/db/repositories/rateLimits';
 import { usersRepository } from '@/lib/db/repositories/users';
 import { hashSecret, verifySecret } from '@/lib/security/password';
-import { changePasswordSchema, fieldErrors, type ChangePasswordField } from '@/lib/validation/auth';
+import { changePasswordSchema, fieldErrors, ownerPhoneSchema, type ChangePasswordField } from '@/lib/validation/auth';
 import type { ChangePasswordState } from './passwordState';
 import { notificationSubscriptionsRepository } from '@/lib/db/repositories/notificationSubscriptions';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
@@ -153,4 +153,16 @@ export async function updateVehicleAction(formData: FormData): Promise<void> {
   // The repository filters by ownerId: someone else's vehicle simply does not update.
   const result = await vehiclesRepository.update(session.actor, vehicleId, parsed.data);
   back(locale, result.ok ? 'ok' : 'invalid');
+}
+
+/** The owner's own WhatsApp number: added after an old sign-up, or changed later. */
+export async function savePhoneAction(formData: FormData): Promise<void> {
+  const locale = toLocale(formData.get('locale'));
+  const session = await getOwnerSession();
+  if (!session) redirect(`/${locale}/login`);
+
+  const parsed = ownerPhoneSchema.safeParse({ phone: formData.get('phone') ?? '' });
+  if (!parsed.success) back(locale, 'phone_invalid');
+  const result = await usersRepository.updateProfile(session.actor, { phone: parsed.data.phone });
+  back(locale, result.ok ? 'phone_saved' : 'phone_invalid');
 }

@@ -41,10 +41,33 @@ export const optionalPhoneSchema = z
     return parsed.data;
   });
 
+/**
+ * Required at sign-up: the owner's WhatsApp number, to send their alerts there.
+ * Empty says « required », anything else must be an Algerian mobile.
+ */
+export const requiredPhoneSchema = z
+  .string()
+  .trim()
+  .transform((value, ctx) => {
+    if (value === '') {
+      ctx.addIssue({ code: 'custom', message: 'required' });
+      return z.NEVER;
+    }
+    const parsed = dzPhoneSchema.safeParse(value);
+    if (!parsed.success) {
+      ctx.addIssue({ code: 'custom', message: 'invalid_phone' });
+      return z.NEVER;
+    }
+    return parsed.data;
+  });
+
+/** An owner adding or changing their own WhatsApp number on the dashboard. */
+export const ownerPhoneSchema = z.object({ phone: requiredPhoneSchema });
+
 export const registerSchema = z.object({
   name: nameSchema,
   email: emailSchema,
-  phone: optionalPhoneSchema,
+  phone: requiredPhoneSchema,
   password: passwordSchema,
   locale: z.enum(locales).catch('fr'),
 });

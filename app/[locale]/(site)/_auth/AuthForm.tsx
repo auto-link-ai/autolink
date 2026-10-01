@@ -115,7 +115,17 @@ export function AuthForm({
 
         {mode === 'register' && labels.phone && (
           <Field id="auth-phone" label={labels.phone} hint={labels.phoneHint} error={error('phone')}>
-            <input id="auth-phone" name="phone" inputMode="tel" dir="ltr" autoComplete="tel" className={INPUT} />
+            <input
+              id="auth-phone"
+              name="phone"
+              type="tel"
+              inputMode="tel"
+              required
+              dir="ltr"
+              autoComplete="tel"
+              placeholder="05 12 34 56 78"
+              className={cx(INPUT, 'rtl:text-end')}
+            />
           </Field>
         )}
 

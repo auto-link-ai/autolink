@@ -44,6 +44,7 @@ function freshClient(browser: Browser) {
 async function fillRegistration(page: Page, email: string) {
   await page.getByLabel('Full name').fill('Amine Belkacem');
   await page.getByLabel('Email').fill(email);
+  await page.getByLabel('WhatsApp number').fill('0551 23 45 67');
   await page.getByLabel('Password').fill(PASSWORD);
   await page.getByRole('button', { name: 'Create my account' }).click();
 }

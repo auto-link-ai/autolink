@@ -61,6 +61,7 @@ test.describe('messages stopped for abusive words', () => {
     await home.goto('/en/register');
     await home.getByLabel('Full name').fill('Samir Owner');
     await home.getByLabel('Email').fill(`e2e-blocked-${run}@example.dz`);
+    await home.getByLabel('WhatsApp number').fill('0551 23 45 67');
     await home.getByLabel('Password').fill('e2e-blocked-password');
     await home.getByRole('button', { name: 'Create my account' }).click();
     await expect(home).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });

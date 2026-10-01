@@ -13,11 +13,13 @@ import { getSettings } from '@/lib/config/settings';
 import { carBookRepository } from '@/lib/db/repositories/carBook';
 import { messagesRepository } from '@/lib/db/repositories/messages';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
+import { usersRepository } from '@/lib/db/repositories/users';
 import { cx } from '@/lib/cx';
 import { isValidTagIdShape } from '@/lib/validation/tagId';
 import { signOutAction } from '../_auth/actions';
 import { pushPublicKey } from '@/lib/notifications/push';
 import { ChangePassword } from './_components/ChangePassword';
+import { PhoneCard } from './_components/PhoneCard';
 import { Inbox } from './_components/Inbox';
 import { NotifyToggle } from './_components/NotifyToggle';
 import { StickerCard } from './_components/StickerCard';
@@ -40,6 +42,9 @@ function first(value: string | string[] | undefined): string {
   return (Array.isArray(value) ? value[0] : value) ?? '';
 }
 
+/** The banners an action may come back with: `…invalid` ones are errors. */
+const RESULTS: ReadonlySet<string> = new Set(['ok', 'invalid', 'phone_saved', 'phone_invalid']);
+
 export default async function DashboardPage({ params, searchParams }: Props) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
@@ -50,14 +55,16 @@ export default async function DashboardPage({ params, searchParams }: Props) {
   const raw = await searchParams;
   const activated = first(raw.activated);
   const result = first(raw.result);
-  const [tags, messages, unreadByTag, dueByTag, settings] = await Promise.all([
+  const [tags, messages, unreadByTag, dueByTag, settings, profile] = await Promise.all([
     ownerTagsRepository.listForOwner(session.actor),
     messagesRepository.listForOwner(session.actor),
     messagesRepository.unreadByTag(session.actor),
     carBookRepository.dueForOwner(session.actor),
     getSettings(),
+    usersRepository.getProfile(session.actor),
   ]);
   const pushKey = pushPublicKey();
+  const phone = profile?.phone ?? null;
   const today = algiersToday();
   const nextDue = (publicTagId: string) => {
     const due = dueByTag.get(publicTagId);
@@ -84,17 +91,20 @@ export default async function DashboardPage({ params, searchParams }: Props) {
               {t('activated', { tagId: activated })}
             </p>
           )}
-          {(result === 'ok' || result === 'invalid') && (
+          {RESULTS.has(result) && (
             <p
               role="status"
               className={cx(
                 'mb-6 rounded-2xl px-5 py-4 text-[15px] font-medium',
-                result === 'ok' ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger',
+                result.endsWith('invalid') ? 'bg-danger/10 text-danger' : 'bg-success/10 text-success',
               )}
             >
-              {t(`results.${result}`)}
+              {t(`results.${result as 'ok'}`)}
             </p>
           )}
+
+          {/* Accounts made before the number was required: the one thing to add. */}
+          {!phone && <PhoneCard locale={locale} phone={null} variant="prompt" />}
 
           {/* First thing after signing in: without it, a message waits until they look. */}
           {tags.length > 0 && pushKey && (
@@ -155,6 +165,7 @@ export default async function DashboardPage({ params, searchParams }: Props) {
             <h2 id="account" className="mb-4 text-h3 text-text">
               {t('account.title')}
             </h2>
+            {phone && <PhoneCard locale={locale} phone={phone} variant="account" />}
             <ChangePassword
               locale={locale}
               labels={{

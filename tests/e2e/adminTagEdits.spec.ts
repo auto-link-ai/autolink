@@ -31,6 +31,7 @@ async function customerWith(browser: Browser, tag: { id: string }) {
   await page.goto('/en/register');
   await page.getByLabel('Full name').fill('Yacine Take');
   await page.getByLabel('Email').fill(`e2e-take-${run}@example.dz`);
+  await page.getByLabel('WhatsApp number').fill('0551 23 45 67');
   await page.getByLabel('Password').fill('e2e-take-back-password');
   await page.getByRole('button', { name: 'Create my account' }).click();
   await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });

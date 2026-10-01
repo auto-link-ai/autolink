@@ -76,7 +76,7 @@ test.describe('scanning a sticker', () => {
     await owner.goto('/en/register');
     await owner.getByLabel('Full name').fill(OWNER_NAME);
     await owner.getByLabel('Email').fill(OWNER_EMAIL);
-    await owner.getByLabel('Phone (optional)').fill(OWNER_PHONE);
+    await owner.getByLabel('WhatsApp number').fill(OWNER_PHONE);
     await owner.getByLabel('Password').fill(OWNER_PASSWORD);
     await owner.getByRole('button', { name: 'Create my account' }).click();
     await expect(owner).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });

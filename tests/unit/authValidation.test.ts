@@ -3,6 +3,7 @@ import {
   changePasswordSchema,
   fieldErrors,
   loginSchema,
+  ownerPhoneSchema,
   registerSchema,
   PASSWORD_MIN_LENGTH,
 } from '@/lib/validation/auth';
@@ -24,8 +25,13 @@ describe('registerSchema', () => {
     expect(parsed.phone).toBe('0551234567');
   });
 
-  it('treats an empty phone as "not given"', () => {
-    expect(registerSchema.parse({ ...account, phone: '' }).phone).toBeNull();
+  it('requires the WhatsApp number: empty is « required », not « invalid »', () => {
+    const empty = registerSchema.safeParse({ ...account, phone: '' });
+    expect(empty.success).toBe(false);
+    if (!empty.success) expect(fieldErrors(empty.error).phone).toBe('required');
+    const spaces = registerSchema.safeParse({ ...account, phone: '   ' });
+    if (!spaces.success) expect(fieldErrors(spaces.error).phone).toBe('required');
+    expect(spaces.success).toBe(false);
   });
 
   it('rejects a short password, and accepts one exactly at the minimum', () => {
@@ -107,5 +113,13 @@ describe('changePasswordSchema', () => {
     const result = changePasswordSchema.safeParse({ current: '', next: 'a-brand-new-one' });
     expect(result.success).toBe(false);
     if (!result.success) expect(fieldErrors(result.error).current).toBe('required');
+  });
+});
+
+describe('ownerPhoneSchema', () => {
+  it('takes the number as people type it, and refuses an empty or foreign one', () => {
+    expect(ownerPhoneSchema.parse({ phone: '06 61 22 33 44' }).phone).toBe('0661223344');
+    expect(ownerPhoneSchema.safeParse({ phone: '' }).success).toBe(false);
+    expect(ownerPhoneSchema.safeParse({ phone: '+33 6 12 34 56 78' }).success).toBe(false);
   });
 });

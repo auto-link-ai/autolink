@@ -45,6 +45,19 @@ test('arriving to link a sticker, sign-in offers to create the account first', a
   await expect(create).toHaveAttribute('href', `/en/register?next=${encodeURIComponent(CLAIM)}`);
 });
 
+test('creating an account needs a WhatsApp number', async ({ page }) => {
+  await page.goto('/en/register');
+  await page.getByLabel('Full name').fill('Amine Belkacem');
+  await page.getByLabel('Email').fill('nobody@example.dz');
+  await page.getByLabel('Password').fill('a-long-password');
+  const phone = page.getByLabel('WhatsApp number');
+  await expect(phone).toHaveAttribute('required', '');
+  await page.getByRole('button', { name: 'Create my account' }).click();
+  // Nothing is sent: the browser stops on the empty number.
+  await expect(page).toHaveURL(/\/en\/register$/);
+  expect(await phone.evaluate((input: HTMLInputElement) => input.validity.valueMissing)).toBe(true);
+});
+
 test('an ordinary sign-in shows no claim panel', async ({ page }) => {
   await page.goto('/en/login');
   await expect(page.getByText('One step left to activate your sticker')).toHaveCount(0);
@@ -70,6 +83,7 @@ test.describe('first-time customers and their accounts', () => {
 
     await page.getByLabel('Full name').fill('Yasmine Haddad');
     await page.getByLabel('Email').fill(`e2e-ux-claim-${run}@example.dz`);
+    await page.getByLabel('WhatsApp number').fill('0551 23 45 67');
     await page.getByLabel('Password').fill('e2e-ux-password-1');
     await page.getByRole('button', { name: 'Create my account' }).click();
 
@@ -88,6 +102,7 @@ test.describe('first-time customers and their accounts', () => {
     await page.goto('/en/register');
     await page.getByLabel('Full name').fill('Amine Belkacem');
     await page.getByLabel('Email').fill(email);
+    await page.getByLabel('WhatsApp number').fill('0551 23 45 67');
     await page.getByLabel('Password').fill('the-first-password');
     await page.getByRole('button', { name: 'Create my account' }).click();
     await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
