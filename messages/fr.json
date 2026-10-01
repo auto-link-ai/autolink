@@ -995,6 +995,12 @@
       "notes": "Note pour la livraison (facultatif)",
       "notesHint": "Un repère, un étage, une heure qui vous arrange."
     },
+    "commune": {
+      "placeholder": "Choisissez votre commune",
+      "wilayaFirst": "Choisissez d’abord la wilaya",
+      "other": "Autre… (je l’écris)",
+      "backToList": "Choisir dans la liste"
+    },
     "sections": {
       "quantity": "Combien d’autocollants ?",
       "contact": "Vos coordonnées",

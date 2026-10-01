@@ -995,6 +995,12 @@
       "notes": "Delivery note (optional)",
       "notesHint": "A landmark, a floor, a time that suits you."
     },
+    "commune": {
+      "placeholder": "Choose your commune",
+      "wilayaFirst": "Choose the wilaya first",
+      "other": "Other… (I’ll type it)",
+      "backToList": "Pick from the list"
+    },
     "sections": {
       "quantity": "How many stickers?",
       "contact": "Your details",

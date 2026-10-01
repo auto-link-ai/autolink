@@ -12,7 +12,7 @@ async function placeOrder(page: Page, name: string): Promise<string> {
   await page.locator('#order-name').fill(name);
   await page.locator('#order-phone').fill('0551 23 45 67');
   await page.locator('#order-wilaya').selectOption('16');
-  await page.locator('#order-commune').fill('Bab Ezzouar');
+  await page.locator('select#order-commune').selectOption('Bab Ezzouar');
   await page.locator('#order-address').fill('Cite 200 logements');
   await page.getByRole('button', { name: 'Order — pay on delivery' }).click();
   await expect(page).toHaveURL(/\/en\/order\/AL-/, { timeout: 60_000 });

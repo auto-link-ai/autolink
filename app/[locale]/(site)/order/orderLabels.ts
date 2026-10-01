@@ -20,6 +20,8 @@ export interface OrderFormLabels {
     | 'notesHint',
     string
   >;
+  /** The commune list: before a wilaya, its prompt, « other » and the way back. */
+  commune: Record<'placeholder' | 'wilayaFirst' | 'other' | 'backToList', string>;
   /** The three parts of the form, numbered on the page. */
   sections: Record<'quantity' | 'contact' | 'delivery', string>;
   quantity: {

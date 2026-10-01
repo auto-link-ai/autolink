@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { cx } from '@/lib/cx';
 import { ORDER_FIELD_LIMITS as L } from '@/lib/domain/constants';
 import type { OrderFormLabels } from '../orderLabels';
+import { CommuneField } from './CommuneField';
 
 export const INPUT =
   'h-13 w-full rounded-2xl border border-border-strong bg-white px-4 text-[16px] text-text outline-none placeholder:text-text-muted focus:border-accent focus:ring-3 focus:ring-accent/15 aria-[invalid=true]:border-danger';
@@ -91,10 +92,13 @@ export function AddressFields({
   wilayas,
   wilayaCode,
   onWilaya,
+  communeLanguage,
 }: GroupProps & {
   wilayas: { code: number; name: string }[];
   wilayaCode: number | '';
   onWilaya: (code: number | '') => void;
+  /** Which names the commune list shows: Arabic on the Arabic page. */
+  communeLanguage: 'ar' | 'fr';
 }) {
   const wilayaError = errorOf('wilayaCode');
   const communeError = errorOf('commune');
@@ -120,12 +124,14 @@ export function AddressFields({
       </Field>
 
       <Field id="order-commune" label={labels.fields.commune} error={communeError}>
-        <input
+        <CommuneField
+          key={wilayaCode}
           id="order-commune"
-          name="commune"
-          maxLength={L.commune.max}
+          wilayaCode={wilayaCode}
+          language={communeLanguage}
+          labels={labels.commune}
           className={INPUT}
-          {...invalid(communeError, 'order-commune')}
+          invalidProps={invalid(communeError, 'order-commune')}
         />
       </Field>
 

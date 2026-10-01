@@ -50,6 +50,30 @@ test('one card per car, and « or more » counts past three', async ({ page }) =
   await expect(page.getByText(/5 × 1\s500\sDA/)).toBeVisible();
 });
 
+test('the commune is picked from the chosen wilaya’s list, or typed with « other »', async ({ page }) => {
+  await page.goto('/fr/order');
+  const list = page.locator('select#order-commune');
+  // Ready once the page has loaded: a list waiting for the wilaya.
+  await expect(list).toBeVisible();
+  await expect(list.locator('option').first()).toHaveText('Choisissez d’abord la wilaya');
+
+  await page.getByLabel('Wilaya', { exact: true }).selectOption('16');
+  await expect(list.locator('option', { hasText: 'Bab Ezzouar' })).toHaveCount(1);
+  await list.selectOption('Bab Ezzouar');
+
+  // Another wilaya: its own communes, nothing chosen.
+  await page.getByLabel('Wilaya', { exact: true }).selectOption('31');
+  await expect(list.locator('option', { hasText: 'Bir El Djir' })).toHaveCount(1);
+  await expect(list).toHaveValue('');
+
+  // Not in the list: « Autre… » turns it into a text box, and back.
+  await list.selectOption({ label: 'Autre… (je l’écris)' });
+  await expect(page.locator('input#order-commune')).toBeFocused();
+  await page.locator('input#order-commune').fill('Hai Sabah');
+  await page.getByRole('button', { name: 'Choisir dans la liste' }).click();
+  await expect(list).toBeVisible();
+});
+
 test('an unknown order reference is a 404, and a malformed one too', async ({ page }) => {
   expect((await page.goto('/fr/order/AL-ZZZZZZ'))?.status()).toBe(404);
   expect((await page.goto('/fr/order/not-a-ref'))?.status()).toBe(404);
@@ -109,7 +133,7 @@ test.describe('ordering end to end', () => {
     await page.getByLabel('الولاية', { exact: true }).selectOption('16');
     await expect(page.locator('label').filter({ hasText: 'إلى المنزل' })).toContainText(/800\sDA/);
     await expect(page.locator('[data-order-total]')).toHaveText(/3\s800\sDA/);
-    await page.getByLabel('البلدية').fill('باب الزوار');
+    await page.getByLabel('البلدية').selectOption({ label: 'باب الزوار' });
     await page.getByLabel('العنوان').fill('حي 200 مسكن، عمارة ب');
     await page.getByRole('button', { name: 'اطلب الآن — الدفع عند الاستلام' }).click();
 

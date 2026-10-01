@@ -165,7 +165,14 @@ export function OrderForm({ locale, labels, wilayas, fees, unitPrice, currencyLa
       </Part>
 
       <Part number={3} title={labels.sections.delivery}>
-        <AddressFields labels={labels} errorOf={errorOf} wilayas={wilayas} wilayaCode={wilayaCode} onWilaya={setWilayaCode} />
+        <AddressFields
+          labels={labels}
+          errorOf={errorOf}
+          wilayas={wilayas}
+          wilayaCode={wilayaCode}
+          onWilaya={setWilayaCode}
+          communeLanguage={locale === 'ar' ? 'ar' : 'fr'}
+        />
         <DeliveryChoice
           labels={labels}
           deliveryType={deliveryType}

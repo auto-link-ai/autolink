@@ -17,7 +17,7 @@ const text = (min: number, max: number) =>
     .string()
     .trim()
     .transform((v) => v.replace(/\s+/g, ' '))
-    .pipe(z.string().min(min, 'too_short').max(max, 'too_long'));
+    .pipe(z.string().min(1, 'required').min(min, 'too_short').max(max, 'too_long'));
 
 const optionalText = (max: number) =>
   z
