@@ -88,9 +88,10 @@ test.describe('messages stopped for abusive words', () => {
     // Usage: the check is on, and today counts at least this test's two messages, one stopped.
     const usage = admin.getByRole('region', { name: 'Gemini usage' });
     await expect(usage).toContainText('Check on');
-    const today = usage.locator('div', { hasText: /^Today/ }).first();
-    await expect(today).not.toContainText('0 checks');
-    await expect(today).not.toContainText(/^Today0 stopped/);
+    // The « Today » card alone — not the row of three, whose « 30 checks » would read as « 0 checks ».
+    const today = usage.locator('div', { hasText: /^Today/, hasNotText: /Last 7 days/ });
+    await expect(today).not.toContainText(/^Today0 checks/);
+    await expect(today).not.toContainText(/checks0 stopped/);
 
     const entry = admin.locator('li').filter({ hasText: INSULT });
     await expect(entry).toContainText('Reason: Insulte (e2e).');
