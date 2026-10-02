@@ -29,8 +29,9 @@ interface Props {
   /** « Une question ? WhatsApp », when a number is set. */
   whatsapp: { href: string; label: string } | null;
   /**
-   * The ad page's short form (/offre): quantity, name, phone and wilaya only —
-   * commune and address are taken on the confirmation call, delivery is home.
+   * The ad page's short form (/offre): name, phone and wilaya only — one
+   * sticker, home delivery; commune, address (and more stickers, if wanted)
+   * are taken on the confirmation call.
    */
   short?: boolean;
 }
@@ -154,27 +155,27 @@ export function OrderForm({
       <input type="hidden" name="locale" value={locale} />
       {/* Honeypot: hidden from people, tempting for bots. */}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
-      {short && (
+      {short ? (
         <>
           <input type="hidden" name="form" value="short" />
+          <input type="hidden" name="quantity" value={quantity} />
           <input type="hidden" name="deliveryType" value="HOME" />
         </>
+      ) : (
+        <Part number={1} title={labels.sections.quantity}>
+          <QuantityCards
+            labels={labels}
+            maxQuantity={maxQuantity}
+            quantity={quantity}
+            onQuantity={setQuantity}
+            unitPrice={unitPrice}
+            currencyLabel={currencyLabel}
+            error={errorOf('quantity')}
+          />
+        </Part>
       )}
 
-      <Part number={1} title={labels.sections.quantity}>
-        <QuantityCards
-          labels={labels}
-          maxQuantity={maxQuantity}
-          quantity={quantity}
-          onQuantity={setQuantity}
-          unitPrice={unitPrice}
-          currencyLabel={currencyLabel}
-          error={errorOf('quantity')}
-          small={short}
-        />
-      </Part>
-
-      <Part number={2} title={labels.sections.contact}>
+      <Part number={short ? undefined : 2} title={labels.sections.contact}>
         <ContactFields labels={labels} errorOf={errorOf} phoneHint={!short} />
         {short && (
           <WilayaField labels={labels} errorOf={errorOf} wilayas={wilayas} wilayaCode={wilayaCode} onWilaya={setWilayaCode} />

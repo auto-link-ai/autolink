@@ -29,12 +29,16 @@ test('the order form is on the page, under the title and the live price', async 
   await expect(page.getByText(/^1\s500\sDA$/).first()).toBeVisible();
   await expect(page.locator('form#order-form')).toBeVisible();
   await expect(page.getByRole('button', { name: ORDER_BUTTON })).toBeVisible();
-  // The short form: name, phone and wilaya — commune, address and delivery come on the call.
+  // The short form: name, phone and wilaya for one sticker — the rest comes on the call.
   const form = page.locator('form#order-form');
   for (const label of ['الاسم الكامل', 'رقم الهاتف', 'الولاية']) {
     await expect(form.getByLabel(label, { exact: true })).toBeVisible();
   }
-  await expect(form.locator('#order-commune, #order-address, input[name="deliveryType"][type="radio"]')).toHaveCount(0);
+  await expect(
+    form.locator('#order-commune, #order-address, input[name="deliveryType"][type="radio"], input[name="quantity"][type="radio"]'),
+  ).toHaveCount(0);
+  await expect(form.getByText('كم ملصقًا تحتاج؟')).toHaveCount(0);
+  await expect(form.locator('input[type="hidden"][name="quantity"]')).toHaveValue('1');
 });
 
 test('every « اطلب » in the picture scrolls to the form; « شوف العرض » goes to the offer', async ({ page }) => {

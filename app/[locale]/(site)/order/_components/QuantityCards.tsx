@@ -7,13 +7,7 @@ import type { OrderFormLabels } from '../orderLabels';
 import { allowsMore, clampQuantity, quantityCards } from '../orderFieldOrder';
 
 const CARD =
-  'relative flex cursor-pointer flex-col items-center justify-center gap-0.5 rounded-2xl border-2 px-2 text-center transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-accent/30';
-
-/** Normal cards, or the short form's smaller ones (/offre). */
-const SIZE = {
-  normal: { card: 'py-3.5', count: 'text-[26px]', words: 'text-[13px]', price: 'mt-1 text-[13px] sm:text-sm' },
-  small: { card: 'py-2', count: 'text-[20px]', words: 'text-xs', price: 'mt-0.5 text-xs' },
-} as const;
+  'relative flex cursor-pointer flex-col items-center justify-center gap-0.5 rounded-2xl border-2 px-2 py-3.5 text-center transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-accent/30';
 
 function Tick() {
   return (
@@ -36,7 +30,6 @@ export function QuantityCards({
   unitPrice,
   currencyLabel,
   error,
-  small = false,
 }: {
   labels: OrderFormLabels;
   maxQuantity: number;
@@ -45,15 +38,11 @@ export function QuantityCards({
   unitPrice: number;
   currencyLabel: string;
   error?: string;
-  /** The ad page's short form: smaller cards. */
-  small?: boolean;
 }) {
   const cards = quantityCards(maxQuantity);
   const more = allowsMore(maxQuantity);
   const isMore = quantity > cards.length;
   const set = (value: number) => onQuantity(clampQuantity(value, maxQuantity));
-
-  const size = SIZE[small ? 'small' : 'normal'];
 
   return (
     <div className="flex flex-col gap-3">
@@ -63,7 +52,7 @@ export function QuantityCards({
           return (
             <label
               key={count}
-              className={cx(CARD, size.card, checked ? 'border-accent bg-accent-soft' : 'border-border bg-white hover:border-border-strong')}
+              className={cx(CARD, checked ? 'border-accent bg-accent-soft' : 'border-border bg-white hover:border-border-strong')}
             >
               <input
                 id={`order-quantity-${count}`}
@@ -75,9 +64,9 @@ export function QuantityCards({
                 className="sr-only"
               />
               {checked && <Tick />}
-              <span className={cx(size.count, 'leading-none font-extrabold text-text tabular-nums')}>{count}</span>
-              <span className={cx(size.words, 'font-semibold text-text-secondary')}>{labels.quantity.cars[index]}</span>
-              <span dir="ltr" className={cx(size.price, 'font-bold text-accent')}>
+              <span className="text-[26px] leading-none font-extrabold text-text tabular-nums">{count}</span>
+              <span className="text-[13px] font-semibold text-text-secondary">{labels.quantity.cars[index]}</span>
+              <span dir="ltr" className="mt-1 text-[13px] font-bold text-accent sm:text-sm">
                 {formatDzd(unitPrice * count, currencyLabel)}
               </span>
             </label>
@@ -85,7 +74,7 @@ export function QuantityCards({
         })}
         {more && (
           <label
-            className={cx(CARD, size.card, isMore ? 'border-accent bg-accent-soft' : 'border-border bg-white hover:border-border-strong')}
+            className={cx(CARD, isMore ? 'border-accent bg-accent-soft' : 'border-border bg-white hover:border-border-strong')}
           >
             <input
               id="order-quantity-more"
@@ -97,10 +86,10 @@ export function QuantityCards({
               className="sr-only"
             />
             {isMore && <Tick />}
-            <span dir="ltr" className={cx(size.count, 'leading-none font-extrabold text-text tabular-nums')}>
+            <span dir="ltr" className="text-[26px] leading-none font-extrabold text-text tabular-nums">
               {cards.length + 1}+
             </span>
-            <span className={cx(size.words, 'font-semibold text-text-secondary')}>{labels.quantity.more}</span>
+            <span className="text-[13px] font-semibold text-text-secondary">{labels.quantity.more}</span>
           </label>
         )}
       </div>

@@ -49,8 +49,9 @@ function Slice({ slice, first }: { slice: OfferSlice; first?: boolean }) {
 
 /**
  * The ad page as a cash-on-delivery page: the top of the design, the title and
- * the live price, a short order form — quantity, name, phone, wilaya; commune
- * and address are taken on the confirmation call — then the rest of the design,
+ * the live price, a short order form — name, phone, wilaya for one sticker;
+ * commune, address and any extra sticker are taken on the confirmation call —
+ * then the rest of the design,
  * whose « اطلب » buttons all come back up to the form. After ordering: the
  * usual confirmation page.
  */
