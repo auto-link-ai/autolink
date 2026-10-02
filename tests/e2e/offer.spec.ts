@@ -29,6 +29,12 @@ test('the order form is on the page, under the title and the live price', async 
   await expect(page.getByText(/^1\s500\sDA$/).first()).toBeVisible();
   await expect(page.locator('form#order-form')).toBeVisible();
   await expect(page.getByRole('button', { name: ORDER_BUTTON })).toBeVisible();
+  // The short form: name, phone and wilaya — commune, address and delivery come on the call.
+  const form = page.locator('form#order-form');
+  for (const label of ['الاسم الكامل', 'رقم الهاتف', 'الولاية']) {
+    await expect(form.getByLabel(label, { exact: true })).toBeVisible();
+  }
+  await expect(form.locator('#order-commune, #order-address, input[name="deliveryType"][type="radio"]')).toHaveCount(0);
 });
 
 test('every « اطلب » in the picture scrolls to the form; « شوف العرض » goes to the offer', async ({ page }) => {
@@ -65,25 +71,22 @@ test.describe('ordering from the ad page', () => {
     test.skip(testInfo.project.name !== 'desktop-chromium', 'Writes to the database: run once.');
   });
 
-  test('a customer orders in Arabic without leaving the page, then sees the confirmation', async ({ browser }) => {
+  test('a customer orders in Arabic with name, phone and wilaya, then sees the confirmation', async ({ browser }) => {
     test.setTimeout(120_000);
     const context = await browser.newContext({
       extraHTTPHeaders: { 'x-forwarded-for': `203.0.113.${Date.now() % 250}` },
     });
     const page = await context.newPage();
     await page.goto('/offre');
-    await expect(page.locator('select#order-commune')).toBeVisible();
-
     await page.getByLabel('الاسم الكامل').fill('سمير بن علي');
     await page.getByLabel('رقم الهاتف', { exact: true }).fill('0661 22 33 44');
     await page.getByLabel('الولاية', { exact: true }).selectOption('31');
-    await page.getByLabel('البلدية').selectOption({ label: 'بئر الجير' });
-    await page.getByLabel('العنوان').fill('حي الزيتون، عمارة 4');
     await page.getByRole('button', { name: ORDER_BUTTON }).click();
 
     await expect(page).toHaveURL(/\/ar\/order\/AL-[0-9A-HJKMNP-TV-Z]{6}$/, { timeout: 60_000 });
     await expect(page.getByText('سمير بن علي')).toBeVisible();
-    await expect(page.getByText('Bir El Djir')).toBeVisible();
+    // No address on this form: the confirmation says it is taken by phone.
+    await expect(page.getByText('يُؤكَّد عبر الهاتف')).toBeVisible();
     await context.close();
   });
 });

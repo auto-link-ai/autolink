@@ -61,7 +61,10 @@ export async function OrderDetail({
           { label: t('detail.customer'), value: order.customerName },
           { label: t('detail.phone'), value: order.phone, ltr: true },
           { label: t('detail.email'), value: order.email ?? '—', ltr: true },
-          { label: t('detail.address'), value: `${order.address}, ${order.commune} (${wilayaName})` },
+          {
+            label: t('detail.address'),
+            value: `${[order.address, order.commune].filter(Boolean).join(', ') || t('detail.toConfirm')} (${wilayaName})`,
+          },
           {
             label: t('detail.delivery'),
             value: t(order.deliveryType === 'HOME' ? 'detail.home' : 'detail.stopdesk'),

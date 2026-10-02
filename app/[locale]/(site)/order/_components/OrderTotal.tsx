@@ -15,12 +15,15 @@ export function OrderTotal({
   currencyLabel,
   quantity,
   totals,
+  note = true,
 }: {
   labels: OrderFormLabels;
   unitPrice: number;
   currencyLabel: string;
   quantity: number;
   totals: OrderTotals | null;
+  /** « Rien à payer maintenant… »; the ad page's short form goes without. */
+  note?: boolean;
 }) {
   return (
     <div className="rounded-2xl bg-surface-3 p-4 sm:p-5">
@@ -53,10 +56,12 @@ export function OrderTotal({
           </dd>
         </div>
       </dl>
-      <p className="mt-3 flex items-center gap-2 text-sm font-semibold text-success">
-        <CashIcon className="h-4.5 w-4.5 shrink-0" />
-        {labels.total.nothingNow}
-      </p>
+      {note && (
+        <p className="mt-3 flex items-center gap-2 text-sm font-semibold text-success">
+          <CashIcon className="h-4.5 w-4.5 shrink-0" />
+          {labels.total.nothingNow}
+        </p>
+      )}
     </div>
   );
 }

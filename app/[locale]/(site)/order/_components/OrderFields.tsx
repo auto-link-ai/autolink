@@ -54,7 +54,14 @@ export const invalid = (error: string | undefined, id: string) =>
   error ? ({ 'aria-invalid': true, 'aria-describedby': `${id}-error` } as const) : {};
 
 /** Who to call: the only two things we need to reach the customer. */
-export function ContactFields({ labels, errorOf }: GroupProps) {
+export function ContactFields({
+  labels,
+  errorOf,
+  phoneHint = true,
+}: GroupProps & {
+  /** The example under the phone field; the ad page's short form goes without. */
+  phoneHint?: boolean;
+}) {
   const nameError = errorOf('customerName');
   const phoneError = errorOf('phone');
   return (
@@ -69,7 +76,7 @@ export function ContactFields({ labels, errorOf }: GroupProps) {
           {...invalid(nameError, 'order-name')}
         />
       </Field>
-      <Field id="order-phone" label={labels.fields.phone} hint={labels.fields.phoneHint} error={phoneError}>
+      <Field id="order-phone" label={labels.fields.phone} hint={phoneHint ? labels.fields.phoneHint : undefined} error={phoneError}>
         <input
           id="order-phone"
           name="phone"
@@ -85,6 +92,36 @@ export function ContactFields({ labels, errorOf }: GroupProps) {
   );
 }
 
+interface WilayaProps {
+  wilayas: { code: number; name: string }[];
+  wilayaCode: number | '';
+  onWilaya: (code: number | '') => void;
+}
+
+/** The wilaya: it sets the delivery fee, so every form asks it. */
+export function WilayaField({ labels, errorOf, wilayas, wilayaCode, onWilaya }: GroupProps & WilayaProps) {
+  const wilayaError = errorOf('wilayaCode');
+  return (
+    <Field id="order-wilaya" label={labels.fields.wilaya} error={wilayaError}>
+      <select
+        id="order-wilaya"
+        name="wilayaCode"
+        value={wilayaCode}
+        onChange={(event) => onWilaya(event.target.value === '' ? '' : Number(event.target.value))}
+        className={INPUT}
+        {...invalid(wilayaError, 'order-wilaya')}
+      >
+        <option value="">{labels.fields.wilayaPlaceholder}</option>
+        {wilayas.map((wilaya) => (
+          <option key={wilaya.code} value={wilaya.code}>
+            {String(wilaya.code).padStart(2, '0')} — {wilaya.name}
+          </option>
+        ))}
+      </select>
+    </Field>
+  );
+}
+
 /** Where to deliver: wilaya (which sets the fee), commune, address. */
 export function AddressFields({
   labels,
@@ -93,35 +130,16 @@ export function AddressFields({
   wilayaCode,
   onWilaya,
   communeLanguage,
-}: GroupProps & {
-  wilayas: { code: number; name: string }[];
-  wilayaCode: number | '';
-  onWilaya: (code: number | '') => void;
-  /** Which names the commune list shows: Arabic on the Arabic page. */
-  communeLanguage: 'ar' | 'fr';
-}) {
-  const wilayaError = errorOf('wilayaCode');
+}: GroupProps &
+  WilayaProps & {
+    /** Which names the commune list shows: Arabic on the Arabic page. */
+    communeLanguage: 'ar' | 'fr';
+  }) {
   const communeError = errorOf('commune');
   const addressError = errorOf('address');
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      <Field id="order-wilaya" label={labels.fields.wilaya} error={wilayaError}>
-        <select
-          id="order-wilaya"
-          name="wilayaCode"
-          value={wilayaCode}
-          onChange={(event) => onWilaya(event.target.value === '' ? '' : Number(event.target.value))}
-          className={INPUT}
-          {...invalid(wilayaError, 'order-wilaya')}
-        >
-          <option value="">{labels.fields.wilayaPlaceholder}</option>
-          {wilayas.map((wilaya) => (
-            <option key={wilaya.code} value={wilaya.code}>
-              {String(wilaya.code).padStart(2, '0')} — {wilaya.name}
-            </option>
-          ))}
-        </select>
-      </Field>
+      <WilayaField labels={labels} errorOf={errorOf} wilayas={wilayas} wilayaCode={wilayaCode} onWilaya={onWilaya} />
 
       <Field id="order-commune" label={labels.fields.commune} error={communeError}>
         <CommuneField

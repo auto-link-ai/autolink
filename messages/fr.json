@@ -269,7 +269,8 @@
         "assignSubmit": "Assigner les étiquettes",
         "courier": "Transporteur",
         "tracking": "Numéro de suivi",
-        "saveShipping": "Enregistrer la livraison"
+        "saveShipping": "Enregistrer la livraison",
+        "toConfirm": "À confirmer par téléphone"
       },
       "form": {
         "edit": "Modifier la commande",
@@ -1070,7 +1071,8 @@
         "home": "À domicile",
         "stopdesk": "Au bureau du transporteur",
         "quantity": "Quantité",
-        "total": "Total à payer"
+        "total": "Total à payer",
+        "toConfirm": "À confirmer par téléphone"
       },
       "privateNote": "Les détails de cette commande ne s’affichent que sur l’appareil qui l’a passée. Gardez la référence et contactez-nous si besoin.",
       "next": {
@@ -1464,7 +1466,6 @@
     "yourCar": "Votre voiture"
   },
   "offer": {
-    "title": "Autocollant AutoLink — qu’on vous prévienne, sans voir votre numéro",
-    "subtitle": "Commandez ci-dessous et payez à la livraison."
+    "title": "Autocollant AutoLink — qu’on vous prévienne, sans voir votre numéro"
   }
 }

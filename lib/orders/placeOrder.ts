@@ -3,7 +3,7 @@ import { getSettings } from '@/lib/config/settings';
 import { getWilayas } from '@/lib/config/wilayas';
 import { ordersRepository } from '@/lib/db/repositories/orders';
 import { rateLimitsRepository } from '@/lib/db/repositories/rateLimits';
-import { orderFieldErrors, orderInputSchema, type OrderField } from '@/lib/validation/order';
+import { orderFieldErrors, orderInputSchema, shortOrderInputSchema, type OrderField } from '@/lib/validation/order';
 import { generateOrderRef } from './ref';
 import { computeOrderTotals } from './totals';
 
@@ -30,7 +30,9 @@ export async function placeOrder(
   if (typeof raw.website === 'string' && raw.website.trim() !== '') return { ok: false, kind: 'rejected' };
 
   const settings = await getSettings();
-  const parsed = orderInputSchema(settings.maxOrderQuantity).safeParse({
+  // The ad page's short form leaves commune and address to the confirmation call.
+  const schema = raw.form === 'short' ? shortOrderInputSchema : orderInputSchema;
+  const parsed = schema(settings.maxOrderQuantity).safeParse({
     quantity: raw.quantity,
     customerName: raw.customerName ?? '',
     phone: raw.phone ?? '',

@@ -43,8 +43,9 @@ const orderSchema = new Schema<Order>(
     phone: { type: String, required: true },
     email: { type: String, lowercase: true, trim: true, default: null },
     wilayaCode: { type: Number, required: true, min: WILAYA_CODE_MIN, max: WILAYA_CODE_MAX },
-    commune: { type: String, required: true, trim: true },
-    address: { type: String, required: true, trim: true },
+    // Empty for orders from the ad page's short form: taken on the confirmation call.
+    commune: { type: String, trim: true, default: '' },
+    address: { type: String, trim: true, default: '' },
     deliveryType: { type: String, enum: DELIVERY_TYPES, required: true },
     deliveryNotes: { type: String, trim: true, default: null },
     // Effective maximum comes from settings.maxOrderQuantity; this is the storage ceiling.

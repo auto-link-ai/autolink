@@ -2,7 +2,6 @@ import { getTranslations } from 'next-intl/server';
 import { OrderForm } from '@/app/[locale]/(site)/order/OrderForm';
 import { loadOrderFormData, orderFormLabels } from '@/app/[locale]/(site)/order/orderFormData';
 import type { Locale } from '@/i18n/locales';
-import { deliveryFreeEverywhere } from '@/lib/orders/totals';
 import { OfferHeader } from './_components/OfferHeader';
 import { OFFER_ANCHOR, OFFER_SLICES, type OfferSlice } from './slices';
 
@@ -50,9 +49,10 @@ function Slice({ slice, first }: { slice: OfferSlice; first?: boolean }) {
 
 /**
  * The ad page as a cash-on-delivery page: the top of the design, the title and
- * the live price, the order form itself — the very form of the order page, same
- * rules and prices — then the rest of the design, whose « اطلب » buttons all
- * come back up to the form. After ordering: the usual confirmation page.
+ * the live price, a short order form — quantity, name, phone, wilaya; commune
+ * and address are taken on the confirmation call — then the rest of the design,
+ * whose « اطلب » buttons all come back up to the form. After ordering: the
+ * usual confirmation page.
  */
 export default async function OfferPage() {
   const [first, ...rest] = OFFER_SLICES as [OfferSlice, ...OfferSlice[]];
@@ -69,11 +69,7 @@ export default async function OfferPage() {
         <Slice slice={first} first />
         {data ? (
           <>
-            <OfferHeader
-              locale={LOCALE}
-              priceLabel={data.pricing.unitPriceLabel}
-              freeDelivery={deliveryFreeEverywhere(data.settings.deliveryFees)}
-            />
+            <OfferHeader locale={LOCALE} priceLabel={data.pricing.unitPriceLabel} />
             <div className="bg-surface px-3 pb-8 sm:px-4">
               <OrderForm
                 locale={LOCALE}
@@ -84,6 +80,7 @@ export default async function OfferPage() {
                 currencyLabel={data.settings.currencyLabel}
                 maxQuantity={data.settings.maxOrderQuantity}
                 whatsapp={data.whatsapp}
+                short
               />
             </div>
           </>

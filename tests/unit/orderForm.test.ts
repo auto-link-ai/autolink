@@ -7,7 +7,7 @@ import {
   quantityCards,
   TUCKED_AWAY,
 } from '@/app/[locale]/(site)/order/orderFieldOrder';
-import { orderInputSchema } from '@/lib/validation/order';
+import { orderInputSchema, shortOrderInputSchema } from '@/lib/validation/order';
 
 describe('the one-page order form', () => {
   it('shows every field of the order, each once', () => {
@@ -40,5 +40,41 @@ describe('the one-page order form', () => {
     expect(clampQuantity(11, 10)).toBe(10);
     expect(clampQuantity(4.7, 10)).toBe(4);
     expect(clampQuantity(Number.NaN, 10)).toBe(1);
+  });
+});
+
+describe('the ad page’s short form', () => {
+  const order = {
+    quantity: '2',
+    customerName: 'Samir Benali',
+    phone: '0661 22 33 44',
+    email: '',
+    wilayaCode: '31',
+    commune: '',
+    address: '',
+    deliveryType: 'HOME',
+    deliveryNotes: '',
+  };
+
+  it('takes an order without commune or address: they are asked on the call', () => {
+    const parsed = shortOrderInputSchema(10).safeParse(order);
+    expect(parsed.success).toBe(true);
+    if (parsed.success) expect([parsed.data.commune, parsed.data.address]).toEqual(['', '']);
+  });
+
+  it('also takes them missing altogether — the short form has no such fields', () => {
+    const { commune: _commune, address: _address, ...withoutThem } = order;
+    expect(shortOrderInputSchema(10).safeParse(withoutThem).success).toBe(true);
+  });
+
+  it('still needs a name, a mobile and the wilaya', () => {
+    expect(shortOrderInputSchema(10).safeParse({ ...order, customerName: '' }).success).toBe(false);
+    expect(shortOrderInputSchema(10).safeParse({ ...order, phone: '' }).success).toBe(false);
+    expect(shortOrderInputSchema(10).safeParse({ ...order, wilayaCode: '' }).success).toBe(false);
+  });
+
+  it('leaves the order page’s rules as they were: commune and address required', () => {
+    const parsed = orderInputSchema(10).safeParse(order);
+    expect(parsed.success).toBe(false);
   });
 });

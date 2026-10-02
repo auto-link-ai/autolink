@@ -51,6 +51,18 @@ export function orderInputSchema(maxQuantity: number) {
   });
 }
 
+/**
+ * The ad page's short form (/offre): commune and address are taken on the
+ * confirmation call instead, so here they may be empty.
+ */
+export function shortOrderInputSchema(maxQuantity: number) {
+  return orderInputSchema(maxQuantity).extend({
+    // Not on the form at all, or empty: both mean « taken on the call ».
+    commune: z.string().trim().max(L.commune.max, 'too_long').default(''),
+    address: z.string().trim().max(L.address.max, 'too_long').default(''),
+  });
+}
+
 export type OrderInput = z.infer<ReturnType<typeof orderInputSchema>>;
 export type OrderField = keyof OrderInput;
 

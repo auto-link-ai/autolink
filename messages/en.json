@@ -269,7 +269,8 @@
         "assignSubmit": "Assign tags",
         "courier": "Courier",
         "tracking": "Tracking number",
-        "saveShipping": "Save delivery details"
+        "saveShipping": "Save delivery details",
+        "toConfirm": "To be confirmed by phone"
       },
       "form": {
         "edit": "Edit the order",
@@ -1070,7 +1071,8 @@
         "home": "To my address",
         "stopdesk": "To the courier desk",
         "quantity": "Quantity",
-        "total": "Total to pay"
+        "total": "Total to pay",
+        "toConfirm": "To be confirmed by phone"
       },
       "privateNote": "The details of this order are shown only on the device that placed it. Keep the reference and contact us if you need anything.",
       "next": {
@@ -1464,7 +1466,6 @@
     "yourCar": "Your car"
   },
   "offer": {
-    "title": "AutoLink sticker — let people reach you, without seeing your number",
-    "subtitle": "Order below and pay on delivery."
+    "title": "AutoLink sticker — let people reach you, without seeing your number"
   }
 }

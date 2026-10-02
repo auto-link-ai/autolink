@@ -93,7 +93,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
               <div>
                 <dt className="text-sm text-text-muted">{t('summary.address')}</dt>
                 <dd className="font-semibold text-text">
-                  {order.address}, {order.commune}
+                  {[order.address, order.commune].filter(Boolean).join(', ') || t('summary.toConfirm')}
                   {wilayaName && ` (${wilayaName})`}
                 </dd>
               </div>
