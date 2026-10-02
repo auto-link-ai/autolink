@@ -22,7 +22,8 @@ export interface Crumb {
 
 /**
  * Where the owner is, and the way back: a breadcrumb whose last step is the
- * current page, then the page's one heading.
+ * current page, then the page's one heading. On a phone the path would wrap
+ * over two lines, so it shows only the way back: « ‹ » and the step before.
  */
 export async function BookHeader({
   crumbs,
@@ -34,10 +35,22 @@ export async function BookHeader({
   children?: ReactNode;
 }) {
   const t = await getTranslations('care');
+  const back = crumbs.findLast((crumb) => crumb.href);
   return (
     <header>
       <nav aria-label={t('breadcrumb')}>
-        <ol className="flex flex-wrap items-center gap-x-1 gap-y-0.5 text-sm">
+        {back?.href && (
+          <PendingLink
+            href={back.href}
+            className="inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-accent underline-offset-4 hover:underline sm:hidden"
+          >
+            <span aria-hidden="true" className="inline-block text-lg leading-none rtl:rotate-180">
+              ‹
+            </span>
+            {back.label}
+          </PendingLink>
+        )}
+        <ol className="hidden flex-wrap items-center gap-x-1 gap-y-0.5 text-sm sm:flex">
           {crumbs.map((crumb, i) => (
             <li key={crumb.label} className="flex items-center gap-1">
               {i > 0 && (

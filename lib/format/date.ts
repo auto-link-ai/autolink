@@ -7,9 +7,16 @@ const INTL_LOCALE: Record<Locale, string> = {
   en: 'en-GB',
 };
 
+/**
+ * How a date is written. Arabic's medium style is all digits (« 2026/09/29 »),
+ * hard to read at a glance: it writes the month out (« 29 سبتمبر 2026 »).
+ * French and English already do in their medium style (« 29 sept. 2026 »).
+ */
+const DATE_STYLE: Record<Locale, 'long' | 'medium'> = { ar: 'long', fr: 'medium', en: 'medium' };
+
 export function formatDateTime(date: Date, locale: Locale): string {
   return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
-    dateStyle: 'medium',
+    dateStyle: DATE_STYLE[locale],
     timeStyle: 'short',
     timeZone: 'Africa/Algiers',
   }).format(date);
@@ -20,7 +27,7 @@ export function formatDateTime(date: Date, locale: Locale): string {
  * so it never shows as the day before anywhere.
  */
 export function formatDay(date: Date, locale: Locale): string {
-  return new Intl.DateTimeFormat(INTL_LOCALE[locale], { dateStyle: 'medium', timeZone: 'UTC' }).format(date);
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], { dateStyle: DATE_STYLE[locale], timeZone: 'UTC' }).format(date);
 }
 
 const MINUTE = 60_000;

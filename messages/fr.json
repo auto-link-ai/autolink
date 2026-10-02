@@ -1164,7 +1164,7 @@
     "metaTitle": "Mes autocollants — AutoLink",
     "eyebrow": "Votre espace",
     "title": "Mes autocollants",
-    "subtitle": "{count} autocollant(s) sur votre compte.",
+    "subtitle": "{count, plural, =0 {Aucun autocollant sur votre compte pour l’instant.} one {# autocollant sur votre compte.} other {# autocollants sur votre compte.}}",
     "signOut": "Se déconnecter",
     "activated": "Autocollant {tagId} activé ! Ajoutez maintenant votre voiture ci-dessous.",
     "addAnother": "Activer un autre autocollant",

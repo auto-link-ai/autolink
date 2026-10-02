@@ -6,6 +6,11 @@ import { publicSite } from '@/lib/config/site';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { href } from './links';
 
+/**
+ * The site's footer. On a phone it stays short — the links wrap on two or
+ * three lines instead of one per line, their headings kept for screen readers
+ * only; from tablet width, the usual columns.
+ */
 export async function SiteFooter({ locale }: { locale: Locale }) {
   const t = await getTranslations('site');
   const common = await getTranslations('common');
@@ -33,18 +38,18 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
   return (
     <footer className="pb-8 pt-6">
       <div className="container-page">
-        <div className="rounded-xl bg-white px-6 py-10 shadow-card-sm md:px-12 md:py-14">
-          <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div className="rounded-xl bg-white px-5 py-7 shadow-card-sm md:px-12 md:py-14">
+          <div className="grid gap-4 md:grid-cols-[1.4fr_1fr_1fr] md:gap-10">
             <div className="max-w-sm">
-              <Wordmark className="h-13" />
-              <p className="mt-4 text-sm leading-relaxed text-text-secondary">{t('footer.tagline')}</p>
-              <p className="mt-3 text-sm font-bold text-accent">{common('tagline')}</p>
+              <Wordmark className="h-10 md:h-13" />
+              <p className="mt-3 text-sm leading-relaxed text-text-secondary md:mt-4">{t('footer.tagline')}</p>
+              <p className="mt-2 text-sm font-bold text-accent md:mt-3">{common('tagline')}</p>
             </div>
 
             {columns.map((column) => (
               <div key={column.title}>
-                <h2 className="text-sm font-bold text-text-muted">{column.title}</h2>
-                <ul className="mt-3 flex flex-col">
+                <h2 className="text-sm font-bold text-text-muted max-md:sr-only">{column.title}</h2>
+                <ul className="flex flex-wrap gap-x-5 md:mt-3 md:flex-col md:gap-0">
                   {column.links.map((link) => (
                     <li key={link.href}>
                       <Link
@@ -60,7 +65,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
             ))}
           </div>
 
-          <div className="mt-10 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-5 flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between md:mt-10 md:pt-6">
             <p className="text-[13px] text-text-muted">
               {t('footer.rights', { year: new Date().getFullYear(), company: publicSite().companyName })}
             </p>

@@ -1164,7 +1164,7 @@
     "metaTitle": "My stickers — AutoLink",
     "eyebrow": "Your account",
     "title": "My stickers",
-    "subtitle": "{count} sticker(s) on your account.",
+    "subtitle": "{count, plural, =0 {No stickers on your account yet.} one {# sticker on your account.} other {# stickers on your account.}}",
     "signOut": "Sign out",
     "activated": "Sticker {tagId} activated! Now add your car below.",
     "addAnother": "Activate another sticker",
