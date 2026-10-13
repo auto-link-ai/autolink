@@ -45,9 +45,9 @@ type Candidate = Pick<DueReminder, 'kind' | 'ref' | 'dueDate'> & {
 };
 
 const VEHICLE_DUES = [
-  { kind: 'INSURANCE', path: 'care.insurance.expiryDate', pick: (v: Vehicle) => v.care?.insurance },
-  { kind: 'INSPECTION', path: 'care.inspection.nextDueDate', pick: (v: Vehicle) => v.care?.inspection },
-  { kind: 'VIGNETTE', path: 'care.vignette.nextDueDate', pick: (v: Vehicle) => v.care?.vignette },
+  { kind: 'INSURANCE', path: 'care.insurance.expiryDate', pick: (v: Pick<Vehicle, 'care'>) => v.care?.insurance },
+  { kind: 'INSPECTION', path: 'care.inspection.nextDueDate', pick: (v: Pick<Vehicle, 'care'>) => v.care?.inspection },
+  { kind: 'VIGNETTE', path: 'care.vignette.nextDueDate', pick: (v: Pick<Vehicle, 'care'>) => v.care?.vignette },
 ] as const;
 
 const REMINDED_PATH: Record<Exclude<CareDueKind, 'OIL_CHANGE'>, string> = {
