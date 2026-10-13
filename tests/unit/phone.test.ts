@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dzPhoneSchema, isValidDzPhone, normalizeDzPhone } from '@/lib/validation/phone';
+import { dzPhoneSchema, findDzPhone, isValidDzPhone, normalizeDzPhone } from '@/lib/validation/phone';
 
 describe('normalizeDzPhone', () => {
   it.each([
@@ -42,5 +42,20 @@ describe('dzPhoneSchema', () => {
     const result = dzPhoneSchema.safeParse('12345');
     expect(result.success).toBe(false);
     expect(result.error?.issues[0]?.message).toBe('invalid_phone');
+  });
+});
+
+describe('findDzPhone', () => {
+  it('finds the number a scanner left, alone or inside a sentence', () => {
+    expect(findDzPhone('0550 12 34 56')).toBe('0550123456');
+    expect(findDzPhone('Karim, 0661-00-11-22, merci')).toBe('0661001122');
+    expect(findDzPhone('+213 7 70 12 34 56')).toBe('0770123456');
+    expect(findDzPhone('اتصل ٠٥٥٠١٢٣٤٥٦')).toBe('0550123456');
+  });
+
+  it('answers null when there is no mobile to call back', () => {
+    expect(findDzPhone('karim@example.dz')).toBeNull();
+    expect(findDzPhone('021 12 34 56')).toBeNull();
+    expect(findDzPhone('')).toBeNull();
   });
 });

@@ -102,12 +102,12 @@ test.describe('scanning a sticker', () => {
     const inbox = page.getByRole('region', { name: 'Messages' });
     await expect(inbox.getByText(REPORT)).toBeVisible();
     await expect(inbox.getByText(SENDER_CONTACT)).toBeVisible();
-    await expect(inbox.getByText(`Received through ${owner.tagId}`).first()).toBeVisible();
+    await expect(inbox.getByText(owner.tagId, { exact: true }).first()).toBeVisible();
     // The one-tap report arrives too, its category standing in for the words.
     await expect(inbox.getByRole('heading', { name: 'Blocking access' })).toBeVisible();
     await expect(page.getByText('2 unread').first()).toBeVisible();
     // And the header says so on every page, not only here.
-    await expect(page.getByRole('banner').getByRole('link', { name: /My stickers/ })).toContainText('2');
+    await expect(page.getByRole('banner').getByRole('link', { name: /Messages/ })).toContainText('2');
 
     await inbox.getByRole('button', { name: 'Mark as read' }).first().click();
     await expect(page.getByRole('status')).toHaveText('Change saved.');

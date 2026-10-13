@@ -35,6 +35,19 @@ export function isValidDzPhone(input: string): boolean {
   return normalizeDzPhone(input) !== null;
 }
 
+const MOBILE_IN_TEXT = /(?:\+213|00213|0)[\s.\-()]*[567](?:[\s.\-()]*\d){8}/;
+
+/**
+ * The Algerian mobile somewhere in free text — a scanner's « contact » may be
+ * just the number, or « Karim, 0550 12 34 56 ». Null when there is none.
+ */
+export function findDzPhone(text: string): string | null {
+  const whole = normalizeDzPhone(text);
+  if (whole) return whole;
+  const match = MOBILE_IN_TEXT.exec(toAsciiDigits(text));
+  return match ? normalizeDzPhone(match[0]) : null;
+}
+
 /** Validates and normalizes. Output is `0XXXXXXXXX`. */
 export const dzPhoneSchema = z.string().transform((value, ctx) => {
   const normalized = normalizeDzPhone(value);

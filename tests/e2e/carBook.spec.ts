@@ -48,7 +48,7 @@ test.describe('the car book', () => {
     await page.getByRole('link', { name: 'Car book', exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/en/dashboard/car/${tagId}$`));
     await expect(page.getByRole('heading', { name: 'My car book', level: 1 })).toBeVisible();
-    await expect(page.getByRole('navigation', { name: 'Where you are' })).toContainText('My stickers');
+    await expect(page.getByRole('navigation', { name: 'Where you are' })).toContainText('Messages');
 
     // The car on top, opening its details; then one card per part, each still to fill in.
     const car = page.getByRole('link', { name: /^Renault Clio/ });
@@ -190,13 +190,13 @@ test.describe('the car book', () => {
     // A computer: two tabs in the header, the current one marked, a badge for what is due.
     await page.goto('/en/dashboard');
     const tabs = page.getByRole('navigation', { name: 'My space' });
-    await expect(tabs.getByRole('link', { name: /^My stickers/ })).toHaveAttribute('aria-current', 'page');
+    await expect(tabs.getByRole('link', { name: /^Messages/ })).toHaveAttribute('aria-current', 'page');
     const bookTab = tabs.getByRole('link', { name: /^Car book\s*\d+ dates? coming up or passed$/ });
     await expect(bookTab).not.toHaveAttribute('aria-current');
     await bookTab.click();
     await expect(page).toHaveURL(new RegExp(`/en/dashboard/car/${tagId}$`));
     await expect(tabs.getByRole('link', { name: /^Car book/ })).toHaveAttribute('aria-current', 'true');
-    await expect(tabs.getByRole('link', { name: /^My stickers/ })).not.toHaveAttribute('aria-current');
+    await expect(tabs.getByRole('link', { name: /^Messages/ })).not.toHaveAttribute('aria-current');
 
     // A phone: the same two, in a bar at the bottom of the screen, on every page.
     await page.setViewportSize({ width: 390, height: 844 });
@@ -205,9 +205,9 @@ test.describe('the car book', () => {
     await expect(bar).toBeVisible();
     expect((await bar.boundingBox())!.y).toBeGreaterThan(844 - 120);
     await expect(bar.getByRole('link', { name: /^Car book/ })).toHaveAttribute('aria-current', 'true');
-    await bar.getByRole('link', { name: /^My stickers/ }).click();
+    await bar.getByRole('link', { name: /^Messages/ }).click();
     await expect(page).toHaveURL(/\/en\/dashboard$/);
-    await expect(bar.getByRole('link', { name: /^My stickers/ })).toHaveAttribute('aria-current', 'page');
+    await expect(bar.getByRole('link', { name: /^Messages/ })).toHaveAttribute('aria-current', 'page');
     await page.goto('/en/faq');
     await expect(bar).toBeVisible();
     await expect(bar.getByRole('link', { name: /^Car book/ })).not.toHaveAttribute('aria-current');

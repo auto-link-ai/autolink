@@ -521,11 +521,11 @@
       "account": "My account",
       "signedIn": "Signed in",
       "signedInAs": "Signed in as",
-      "myStickers": "My stickers",
       "unreadMessages": "{count} unread message(s)",
       "carBook": "Car book",
       "carBookDue": "{count, plural, one {# date coming up or passed} other {# dates coming up or passed}}",
-      "owner": "My space"
+      "owner": "My space",
+      "messages": "Messages"
     },
     "install": {
       "button": "Install the app",
@@ -1176,7 +1176,7 @@
       "next": "Now",
       "stick": "Stick it inside the windscreen, at the bottom on the passenger side: readable from outside, without blocking your view.",
       "test": "Test it: scan it with another phone and send yourself a message.",
-      "dates": "Add your dates — insurance, roadworthiness test, vignette, oil change — to be reminded in time.",
+      "dates": "Add your dates — insurance, contrôle technique, vignette, oil change — to be reminded in time.",
       "messages": "See my messages",
       "addDates": "Add my dates"
     },
@@ -1207,7 +1207,9 @@
     "results": {
       "ok": "Change saved.",
       "invalid": "Could not save. Check the fields.",
-      "pin_changed": "PIN changed. Your other devices are signed out."
+      "pin_changed": "PIN changed. Your other devices are signed out.",
+      "reminders_on": "WhatsApp reminders on: you'll be told before each date.",
+      "reminders_off": "WhatsApp reminders off."
     },
     "status": {
       "UNASSIGNED": "Not activated",
@@ -1256,17 +1258,17 @@
     },
     "inbox": {
       "title": "Messages",
-      "empty": "No messages yet. You will be told as soon as someone writes.",
+      "empty": "When someone scans your sticker, their message arrives here and on your WhatsApp.",
       "unread": "{count} unread",
-      "from": "Received through {tagId}",
       "contact": "Contact left:",
       "noContact": "No contact left.",
       "markRead": "Mark as read",
       "archive": "Archive",
-      "results": {
-        "ok": "Message updated.",
-        "invalid": "That did not work."
-      }
+      "emptyTitle": "No messages — all good 👍",
+      "yourCar": "Your car",
+      "call": "Call",
+      "whatsapp": "Reply on WhatsApp",
+      "whatsappText": "Hello, I'm the owner of the car: I got your message through AutoLink."
     },
     "notify": {
       "title": "Know straight away",
@@ -1296,7 +1298,20 @@
       "wrongCurrent": "That's not your current PIN.",
       "samePin": "Choose a different PIN from the current one."
     },
-    "hello": "Hello {name}"
+    "hello": "Hello {name}",
+    "summary": "{count, plural, =0 {No new messages.} one {# new message.} other {# new messages.}}",
+    "notificationsTitle": "Staying informed",
+    "upcoming": {
+      "title": "Coming up",
+      "yourCar": "Your car"
+    },
+    "reminders": {
+      "title": "Reminders on WhatsApp",
+      "body": "Contrôle technique, insurance, vignette, oil change: a message {days, plural, one {# day} other {# days}} before each date in your car book, to",
+      "turnOn": "Turn on WhatsApp reminders",
+      "turnOff": "Turn off WhatsApp reminders",
+      "alertsNote": "Messages left on your stickers always reach your WhatsApp, reminders on or off."
+    }
   },
   "notifications": {
     "newMessage": {

@@ -521,11 +521,11 @@
       "account": "Mon compte",
       "signedIn": "Connecté",
       "signedInAs": "Connecté en tant que",
-      "myStickers": "Mes autocollants",
       "unreadMessages": "{count} message(s) non lu(s)",
       "carBook": "Carnet",
       "carBookDue": "{count, plural, one {# date proche ou dépassée} other {# dates proches ou dépassées}}",
-      "owner": "Mon espace"
+      "owner": "Mon espace",
+      "messages": "Messages"
     },
     "install": {
       "button": "Installer l'application",
@@ -1207,7 +1207,9 @@
     "results": {
       "ok": "Modification enregistrée.",
       "invalid": "Modification impossible. Vérifiez les champs.",
-      "pin_changed": "Code PIN changé. Vos autres appareils sont déconnectés."
+      "pin_changed": "Code PIN changé. Vos autres appareils sont déconnectés.",
+      "reminders_on": "Rappels WhatsApp activés : vous serez prévenu avant chaque date.",
+      "reminders_off": "Rappels WhatsApp désactivés."
     },
     "status": {
       "UNASSIGNED": "Non activé",
@@ -1256,17 +1258,17 @@
     },
     "inbox": {
       "title": "Messages reçus",
-      "empty": "Aucun message pour l’instant. Vous serez prévenu dès qu’on vous écrit.",
+      "empty": "Quand quelqu'un scanne votre autocollant, son message arrive ici et sur votre WhatsApp.",
       "unread": "{count} non lu(s)",
-      "from": "Reçu via {tagId}",
       "contact": "Contact laissé :",
       "noContact": "Aucun contact laissé.",
       "markRead": "Marquer comme lu",
       "archive": "Archiver",
-      "results": {
-        "ok": "Message mis à jour.",
-        "invalid": "Action impossible."
-      }
+      "emptyTitle": "Aucun message — tout va bien 👍",
+      "yourCar": "Votre voiture",
+      "call": "Appeler",
+      "whatsapp": "Répondre sur WhatsApp",
+      "whatsappText": "Bonjour, je suis le propriétaire de la voiture : j'ai bien reçu votre message via AutoLink."
     },
     "notify": {
       "title": "Soyez prévenu tout de suite",
@@ -1296,7 +1298,20 @@
       "wrongCurrent": "Ce n'est pas votre code PIN actuel.",
       "samePin": "Choisissez un code différent de l'actuel."
     },
-    "hello": "Bonjour {name}"
+    "hello": "Bonjour {name}",
+    "summary": "{count, plural, =0 {Pas de nouveau message.} one {# nouveau message.} other {# nouveaux messages.}}",
+    "notificationsTitle": "Être prévenu",
+    "upcoming": {
+      "title": "À venir",
+      "yourCar": "Votre voiture"
+    },
+    "reminders": {
+      "title": "Rappels sur WhatsApp",
+      "body": "Contrôle technique, assurance, vignette, vidange : un message {days, plural, one {# jour} other {# jours}} avant chaque date de votre carnet, au",
+      "turnOn": "Activer les rappels sur WhatsApp",
+      "turnOff": "Désactiver les rappels sur WhatsApp",
+      "alertsNote": "Les messages laissés sur vos autocollants arrivent toujours sur WhatsApp, que les rappels soient activés ou non."
+    }
   },
   "notifications": {
     "newMessage": {

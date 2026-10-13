@@ -46,3 +46,14 @@ export async function changePinAction(_prev: ChangePinState, formData: FormData)
   }
   redirect(`/${locale}/dashboard?result=pin_changed`);
 }
+
+/** Car book reminders on WhatsApp, switched on or off by the owner (off until they choose). */
+export async function setWhatsAppRemindersAction(formData: FormData): Promise<void> {
+  const locale = toLocale(formData.get('locale'));
+  const session = await getOwnerSession();
+  if (!session) redirect(`/${locale}/login`);
+
+  const on = formData.get('on') === '1';
+  const result = await usersRepository.setWhatsAppReminders(session.actor, on);
+  redirect(`/${locale}/dashboard?result=${result.ok ? (on ? 'reminders_on' : 'reminders_off') : 'invalid'}#reminders`);
+}

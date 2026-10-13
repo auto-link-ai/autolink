@@ -79,7 +79,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
         {
           section: 'stickers',
           href: href(locale, '/dashboard'),
-          label: t('myStickers'),
+          label: t('messages'),
           badge: counts.unread,
           badgeLabel: t('unreadMessages', { count: counts.unread }),
         },

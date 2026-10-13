@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { PendingLink } from '@/components/ui/PendingLink';
 import type { Locale } from '@/i18n/locales';
 import { cx } from '@/lib/cx';
-import { BookIcon, StickerIcon } from './icons';
+import { BookIcon, ChatIcon } from './icons';
 import { ownerSectionOf, type OwnerSection } from './ownerSection';
 
 export interface OwnerNavItem {
@@ -19,7 +19,8 @@ export interface OwnerNavItem {
   urgent?: boolean;
 }
 
-const ICONS = { stickers: StickerIcon, carBook: BookIcon } as const;
+// The dashboard is the owner's messages first: its tab says so.
+const ICONS = { stickers: ChatIcon, carBook: BookIcon } as const;
 
 /** Where the owner is: `page` on the section's own address, `true` anywhere inside it. */
 function useCurrent(locale: Locale) {

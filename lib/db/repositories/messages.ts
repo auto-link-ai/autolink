@@ -144,8 +144,9 @@ export const messagesRepository = {
     if (!ownerId) return [];
     await connectToDatabase();
 
+    // Unread first ('UNREAD' sorts after 'READ'), then newest: what needs a look comes first.
     const messages = await MessageModel.find({ ownerId, status: { $ne: 'ARCHIVED' } })
-      .sort({ createdAt: -1 })
+      .sort({ status: -1, createdAt: -1 })
       .limit(limit)
       .lean();
     if (messages.length === 0) return [];
