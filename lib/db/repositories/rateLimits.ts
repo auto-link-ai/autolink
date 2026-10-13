@@ -27,6 +27,16 @@ export const rateLimitsRepository = {
   },
 
   /**
+   * Forgets the given counters — after a PIN reset proves who the owner is,
+   * or when an admin unlocks an account. Keys are built on the server, as for `hit`.
+   */
+  async clear(keys: string[]): Promise<void> {
+    if (keys.length === 0) return;
+    await connectToDatabase();
+    await RateLimitModel.deleteMany({ key: { $in: keys } });
+  },
+
+  /**
    * Counts one hit against `key` and reports whether it is within `limit` for
    * the current window. A single atomic update: it increments inside a live
    * window, or starts a new window (count 1) once the previous one has expired.

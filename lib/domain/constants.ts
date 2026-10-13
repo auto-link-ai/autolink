@@ -35,6 +35,16 @@ export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];
 export const NOTIFICATION_ATTEMPT_STATUSES = ['SENT', 'FAILED', 'SKIPPED'] as const;
 export type NotificationAttemptStatus = (typeof NOTIFICATION_ATTEMPT_STATUSES)[number];
 
+/** What a WhatsApp verification code proves the phone for. */
+export const PHONE_CODE_PURPOSES = ['ACTIVATE', 'RESET_PIN'] as const;
+export type PhoneCodePurpose = (typeof PHONE_CODE_PURPOSES)[number];
+
+/**
+ * WhatsApp verification codes (lib/auth/codes.ts). How many may be *sent* is a
+ * rate limit and lives in settings; these describe one code.
+ */
+export const VERIFICATION_CODE = { length: 6, ttlMinutes: 10, maxAttempts: 5, resendSeconds: 60 } as const;
+
 export const DELIVERY_TYPES = ['HOME', 'STOPDESK'] as const;
 export type DeliveryType = (typeof DELIVERY_TYPES)[number];
 

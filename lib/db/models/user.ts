@@ -14,6 +14,14 @@ export interface User {
   locale: Locale;
   emailNotifications: boolean;
   emailVerifiedAt: Date | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  /** argon2id over HMAC(PIN_SECRET, pin) — see lib/security/pin.ts. */
+  pinHash?: string | null;
+  /** Copied into the session; bumping it signs every other device out. */
+  sessionVersion: number;
+  /** Car book reminders on WhatsApp too. Off until the owner switches them on. */
+  whatsappReminders: boolean;
   status: UserStatus;
   lastLoginAt: Date | null;
   createdAt: Date;
@@ -34,6 +42,11 @@ const userSchema = new Schema<User>(
     locale: { type: String, enum: locales, default: 'fr' },
     emailNotifications: { type: Boolean, default: true },
     emailVerifiedAt: { type: Date, default: null },
+    firstName: { type: String, trim: true, default: null },
+    lastName: { type: String, trim: true, default: null },
+    pinHash: { type: String, select: false },
+    sessionVersion: { type: Number, default: 0, min: 0 },
+    whatsappReminders: { type: Boolean, default: false },
     status: { type: String, enum: USER_STATUSES, default: 'ACTIVE' },
     lastLoginAt: { type: Date, default: null },
   },

@@ -45,6 +45,13 @@ function toAppSettings(doc: Setting): AppSettings {
     })),
     maxOrderQuantity: doc.maxOrderQuantity,
     careReminderDays: doc.careReminderDays,
+    careOverdueDays: doc.careOverdueDays,
+    pinAttemptsPer15Min: doc.pinAttemptsPer15Min,
+    pinAttemptsPerDay: doc.pinAttemptsPerDay,
+    codesPerPhonePerDay: doc.codesPerPhonePerDay,
+    codesPerTagPerDay: doc.codesPerTagPerDay,
+    codesPerIpPerHour: doc.codesPerIpPerHour,
+    codesPerDay: doc.codesPerDay,
   };
 }
 

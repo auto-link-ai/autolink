@@ -90,6 +90,20 @@ describe('sendWhatsAppTemplate', () => {
     expect(JSON.parse(init!.body as string).template.components).toHaveLength(1);
   });
 
+  it('sends another approved template when asked, and to a stand-in address in tests', async () => {
+    vi.stubEnv('WHATSAPP_API_BASE', 'http://127.0.0.1:3198/');
+    await sendWhatsAppTemplate({ ...SEND, template: 'autolink_code' });
+    const [url, init] = fetchMock.mock.calls[0]!;
+    expect(url).toBe('http://127.0.0.1:3198/v22.0/1098765432/messages');
+    expect(JSON.parse(init!.body as string).template.name).toBe('autolink_code');
+  });
+
+  it('needs no default template when the call names its own', async () => {
+    vi.stubEnv('WHATSAPP_TEMPLATE_NAME', '');
+    await expect(sendWhatsAppTemplate({ ...SEND, template: 'autolink_code' })).resolves.toEqual({ status: 'SENT' });
+    await expect(sendWhatsAppTemplate(SEND)).resolves.toEqual({ status: 'SKIPPED', reason: 'not_configured' });
+  });
+
   it('skips, without calling anyone, when it is not configured', async () => {
     vi.stubEnv('WHATSAPP_ACCESS_TOKEN', '');
     await expect(sendWhatsAppTemplate(SEND)).resolves.toEqual({ status: 'SKIPPED', reason: 'not_configured' });

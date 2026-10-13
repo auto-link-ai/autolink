@@ -46,14 +46,20 @@ export default defineConfig({
     timeout: 180_000,
     // Its own build directory: a `pnpm dev` you already have open writes to
     // .next, and two dev servers sharing one build corrupt each other.
-    // The message check runs against a local stand-in (tests/e2e/geminiMock.ts,
-    // started by the warm-up): tests never call Google, or depend on it.
-    // WhatsApp is off, even with real keys in .env: tests never text a real number.
+    // The message check and WhatsApp run against local stand-ins
+    // (tests/e2e/geminiMock.ts, whatsappMock.ts — started by the warm-up): tests
+    // never call Google or Meta, and never text a real number, whatever .env holds.
     env: {
       NEXT_DIST_DIR: '.next-e2e',
       GEMINI_API_KEY: 'e2e-stand-in',
       GEMINI_API_BASE: 'http://127.0.0.1:3199',
-      WHATSAPP_ACCESS_TOKEN: '',
+      WHATSAPP_API_BASE: 'http://127.0.0.1:3198',
+      WHATSAPP_ACCESS_TOKEN: 'e2e-stand-in',
+      WHATSAPP_PHONE_NUMBER_ID: 'e2e-stand-in',
+      WHATSAPP_TEMPLATE_NAME: 'e2e_alert',
+      WHATSAPP_CODE_TEMPLATE_NAME: 'e2e_code',
+      WHATSAPP_REMINDER_TEMPLATE_NAME: 'e2e_reminder',
+      WHATSAPP_TEMPLATE_LANGUAGE: 'ar',
     },
   },
 });

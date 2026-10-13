@@ -18,7 +18,8 @@
     "admin:create": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/admin-create.ts",
     "admin:password": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/admin-password.ts",
     "reset:ratelimits": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/reset-rate-limits.ts",
-    "backfill:user-ids": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/backfill-user-ids.ts"
+    "backfill:user-ids": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/backfill-user-ids.ts",
+    "owners:purge-legacy": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/purge-legacy-owners.ts"
   },
   "dependencies": {
     "argon2": "^0.45.1",

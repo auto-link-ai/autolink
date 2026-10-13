@@ -3,6 +3,7 @@ import path from 'node:path';
 import { chromium, type FullConfig } from '@playwright/test';
 import { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_STATE, hasAdminCredentials } from './adminSession';
 import { startGeminiMock } from './geminiMock';
+import { startWhatsAppMock } from './whatsappMock';
 
 /**
  * Runs once, before any worker starts:
@@ -52,10 +53,13 @@ const ADMIN_ROUTES = [
   '/en/admin/settings',
 ];
 
-/** Returns the teardown: the Gemini stand-in stops when the run ends. */
+/** Returns the teardown: the Gemini and WhatsApp stand-ins stop when the run ends. */
 export default async function warmUp(config: FullConfig): Promise<() => Promise<void>> {
   const baseURL = config.projects[0]?.use.baseURL ?? 'http://localhost:3100';
-  const stopGemini = await startGeminiMock();
+  const stopMocks = await Promise.all([startGeminiMock(), startWhatsAppMock()]);
+  const stopStandIns = async () => {
+    await Promise.all(stopMocks.map((stop) => stop()));
+  };
 
   for (const route of ROUTES) {
     try {
@@ -65,7 +69,7 @@ export default async function warmUp(config: FullConfig): Promise<() => Promise<
     }
   }
 
-  if (!hasAdminCredentials) return stopGemini;
+  if (!hasAdminCredentials) return stopStandIns;
 
   await mkdir(path.dirname(ADMIN_STATE), { recursive: true });
   const browser = await chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || undefined });
@@ -81,5 +85,5 @@ export default async function warmUp(config: FullConfig): Promise<() => Promise<
   } finally {
     await browser.close();
   }
-  return stopGemini;
+  return stopStandIns;
 }

@@ -16,11 +16,20 @@ export interface WhatsAppTemplateSend {
   to: string;
   body: string[];
   buttonSuffix?: string;
+  /** Another approved template (codes, reminders). Default: WHATSAPP_TEMPLATE_NAME, the owner alert. */
+  template?: string;
 }
 
 export type WhatsAppResult = { status: 'SENT' } | { status: 'SKIPPED'; reason: string } | { status: 'FAILED'; error: string };
 
 const DEFAULT_API_VERSION = 'v22.0';
+// Tests point this at a local stand-in (tests/e2e/whatsappMock.ts), as GEMINI_API_BASE does for Gemini.
+const DEFAULT_API_BASE = 'https://graph.facebook.com';
+
+/** The sending account is set up; which templates exist is a separate question. */
+export function isWhatsAppConfigured(): boolean {
+  return Boolean(process.env.WHATSAPP_ACCESS_TOKEN?.trim() && process.env.WHATSAPP_PHONE_NUMBER_ID?.trim());
+}
 
 /** 0550123456 → 213550123456: the international digits the API wants. */
 export function toWhatsAppNumber(phone: string): string | null {
@@ -44,9 +53,9 @@ export function whatsAppTemplateLanguage(): string {
 export async function sendWhatsAppTemplate(send: WhatsAppTemplateSend): Promise<WhatsAppResult> {
   const token = process.env.WHATSAPP_ACCESS_TOKEN?.trim();
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID?.trim();
-  const template = process.env.WHATSAPP_TEMPLATE_NAME?.trim();
+  const template = send.template?.trim() || process.env.WHATSAPP_TEMPLATE_NAME?.trim();
   if (!token || !phoneNumberId || !template) {
-    console.info('[whatsapp] skipped: WHATSAPP_ACCESS_TOKEN / _PHONE_NUMBER_ID / _TEMPLATE_NAME are not set');
+    console.info('[whatsapp] skipped: WHATSAPP_ACCESS_TOKEN / _PHONE_NUMBER_ID / the template name are not set');
     return { status: 'SKIPPED', reason: 'not_configured' };
   }
   const to = toWhatsAppNumber(send.to);
@@ -65,8 +74,9 @@ export async function sendWhatsAppTemplate(send: WhatsAppTemplateSend): Promise<
   }
 
   const version = process.env.WHATSAPP_API_VERSION?.trim() || DEFAULT_API_VERSION;
+  const base = (process.env.WHATSAPP_API_BASE?.trim() || DEFAULT_API_BASE).replace(/\/$/, '');
   try {
-    const response = await fetch(`https://graph.facebook.com/${version}/${phoneNumberId}/messages`, {
+    const response = await fetch(`${base}/${version}/${phoneNumberId}/messages`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({

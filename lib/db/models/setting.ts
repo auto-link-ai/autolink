@@ -36,6 +36,16 @@ export interface Setting {
   maxOrderQuantity: number;
   /** Car book: how many days before a due date the owner is reminded. */
   careReminderDays: number;
+  /** Car book: a date further in the past than this is not reminded at all. */
+  careOverdueDays: number;
+  /** PIN tries per phone number (known or not), per 15 minutes and per day. */
+  pinAttemptsPer15Min: number;
+  pinAttemptsPerDay: number;
+  /** WhatsApp verification codes sent: per number, per sticker, per IP, and in all. */
+  codesPerPhonePerDay: number;
+  codesPerTagPerDay: number;
+  codesPerIpPerHour: number;
+  codesPerDay: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -69,6 +79,17 @@ const settingSchema = new Schema<Setting>(
     deliveryFees: { type: [deliveryFeeSchema], default: [] },
     maxOrderQuantity: { type: Number, default: 10, min: 1 },
     careReminderDays: { type: Number, default: 7, min: 1, max: 60 },
+    careOverdueDays: { type: Number, default: 30, min: 0, max: 365 },
+    // A 4-digit PIN has 10,000 values: at 10 tries a day per number, guessing
+    // one takes years — and the WhatsApp reset clears the count for the owner.
+    pinAttemptsPer15Min: { type: Number, default: 5, min: 1 },
+    pinAttemptsPerDay: { type: Number, default: 10, min: 1 },
+    // Each code is a paid WhatsApp message. Per IP stays loose: mobile carriers
+    // put many customers behind one address.
+    codesPerPhonePerDay: { type: Number, default: 5, min: 1 },
+    codesPerTagPerDay: { type: Number, default: 5, min: 1 },
+    codesPerIpPerHour: { type: Number, default: 20, min: 1 },
+    codesPerDay: { type: Number, default: 500, min: 1 },
   },
   { timestamps: true, collection: 'settings' },
 );

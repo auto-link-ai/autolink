@@ -15,6 +15,7 @@ import { MessageModel } from '@/lib/db/models/message';
 import { NotificationAttemptModel } from '@/lib/db/models/notificationAttempt';
 import { NotificationSubscriptionModel } from '@/lib/db/models/notificationSubscription';
 import { OrderModel } from '@/lib/db/models/order';
+import { PhoneCodeModel } from '@/lib/db/models/phoneCode';
 import { RateLimitModel } from '@/lib/db/models/rateLimit';
 import { ServiceRecordModel } from '@/lib/db/models/serviceRecord';
 import { SettingModel } from '@/lib/db/models/setting';
@@ -37,6 +38,7 @@ const ALL_MODELS: ReadonlyArray<Pick<Model<unknown>, 'syncIndexes' | 'collection
   AdminUserModel,
   AuditLogModel,
   RateLimitModel,
+  PhoneCodeModel,
   ApiUsageModel,
   ServiceRecordModel,
   SettingModel,

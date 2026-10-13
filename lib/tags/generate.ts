@@ -53,6 +53,11 @@ export function generateMessagePublicId(): string {
   return 'MSG-' + encodeCrockford(randomBytes(7), 10);
 }
 
+/** 'CHL-' + 16 Crockford characters (80 bits): the browser's handle for a WhatsApp code challenge. */
+export function generateChallengeId(): string {
+  return 'CHL-' + encodeCrockford(randomBytes(10), 16);
+}
+
 /** 'BLK-' + 10 Crockford characters: the admin's handle for a blocked message. */
 export function generateBlockedMessageId(): string {
   return 'BLK-' + encodeCrockford(randomBytes(7), 10);
