@@ -21,7 +21,6 @@
     "backfill:user-ids": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/backfill-user-ids.ts"
   },
   "dependencies": {
-    "@auth/mongodb-adapter": "^3.11.3",
     "argon2": "^0.45.1",
     "jszip": "^3.10.2",
     "mongoose": "^9.10.1",
@@ -42,7 +41,7 @@
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^24",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
