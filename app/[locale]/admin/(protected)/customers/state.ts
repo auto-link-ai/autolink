@@ -1,12 +1,26 @@
+import type { CustomerContactInput } from '@/lib/validation/auth';
+
 /**
- * State for the reset-password form. It lives outside the "use server" file,
- * which may only export async functions.
+ * State for the two forms of the customer panel that answer in place: the
+ * contact correction and the temporary PIN. It lives outside the "use server"
+ * file, which may only export async functions.
  */
-export interface ResetPasswordState {
-  status: 'idle' | 'done' | 'error';
-  /** Shown once, right after the reset. Never stored, never put in a URL. */
-  password?: string;
-  error?: 'not_found' | 'not_allowed' | 'invalid' | 'server_error';
+export type ContactField = keyof CustomerContactInput;
+
+export interface ContactState {
+  status: 'idle' | 'error';
+  /** Codes from lib/validation/auth.ts, or `phone_taken`. */
+  fieldErrors?: Partial<Record<ContactField, string>>;
+  formError?: 'not_found' | 'not_allowed';
 }
 
-export const RESET_PASSWORD_INITIAL: ResetPasswordState = { status: 'idle' };
+export const CONTACT_INITIAL: ContactState = { status: 'idle' };
+
+export interface TemporaryPinState {
+  status: 'idle' | 'done' | 'error';
+  /** Shown once, right after it is made. Never stored, never put in a URL. */
+  pin?: string;
+  error?: 'not_found' | 'not_allowed' | 'server_error';
+}
+
+export const TEMPORARY_PIN_INITIAL: TemporaryPinState = { status: 'idle' };

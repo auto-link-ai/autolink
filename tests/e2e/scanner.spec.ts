@@ -1,8 +1,6 @@
-import { readFile } from 'node:fs/promises';
 import { expect, test, type Browser, type BrowserContext, type Page } from '@playwright/test';
-import JSZip from 'jszip';
-import { adminContext, hasAdminCredentials } from './adminSession';
-import { linkSticker } from './linkSticker';
+import { hasAdminCredentials } from './adminSession';
+import { createOwner, editCar, formatPhone, freshClient, signIn, type Owner } from './owner';
 
 /**
  * The whole point of the product: a stranger scans a sticker on a car, writes
@@ -10,14 +8,12 @@ import { linkSticker } from './linkSticker';
  * the other's details.
  */
 
-const run = Date.now().toString(36);
-const OWNER_EMAIL = `e2e-scan-${run}@example.dz`;
-const OWNER_PASSWORD = 'e2e-scanner-password';
-const OWNER_NAME = 'Amine Belkacem';
-const OWNER_PHONE = '0551234567';
 const PLATE = '12345-116-16';
 const REPORT = 'Your lights are still on, level -2 of the car park.';
 const SENDER_CONTACT = '0770 11 22 33';
+
+/** The owner, made by the first test: their number and PIN sign in for the rest. */
+let owner: Owner;
 
 /**
  * One sign-in for the whole file. The owner login limiter allows 10 an hour,
@@ -29,13 +25,9 @@ async function ownerPage(browser: Browser): Promise<Page> {
   if (!ownerSession) {
     // Granted up front: Chromium answers the permission request instead of
     // silently leaving it at "default", which no test could then explain.
-    ownerSession = await browser.newContext({ permissions: ['notifications'] });
+    ownerSession = await freshClient(browser, { permissions: ['notifications'] });
     const page = await ownerSession.newPage();
-    await page.goto('/en/login');
-    await page.getByLabel('Email').fill(OWNER_EMAIL);
-    await page.getByLabel('Password').fill(OWNER_PASSWORD);
-    await page.getByRole('button', { name: 'Sign in' }).click();
-    await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
+    await signIn(page, owner.phone, owner.pin);
     return page;
   }
   const page = await ownerSession.newPage();
@@ -50,8 +42,6 @@ test.describe('scanning a sticker', () => {
     test.skip(testInfo.project.name !== 'desktop-chromium', 'Writes to the database: run once.');
   });
 
-  let tag = { id: '' };
-
   test.afterAll(async () => {
     await ownerSession?.close();
     ownerSession = null;
@@ -59,29 +49,11 @@ test.describe('scanning a sticker', () => {
 
   test('an owner activates a sticker', async ({ browser }) => {
     test.setTimeout(180_000);
-    const office = await adminContext(browser);
-    const admin = await office.newPage();
-    await admin.goto('/en/admin/tags');
-    await admin.getByLabel('Batch name').fill('E2E scanner');
-    await admin.getByLabel('Quantity').fill('1');
-    const download = admin.waitForEvent('download');
-    await admin.getByRole('button', { name: 'Generate and download' }).click();
-    const zip = await JSZip.loadAsync(await readFile((await (await download).path())!));
-    const [id] = (await zip.file('tags.csv')!.async('string')).split('\r\n')[1]!.split(',');
-    tag = { id: id! };
-    await office.close();
-
-    const home = await browser.newContext();
-    const owner = await home.newPage();
-    await owner.goto('/en/register');
-    await owner.getByLabel('Full name').fill(OWNER_NAME);
-    await owner.getByLabel('Email').fill(OWNER_EMAIL);
-    await owner.getByLabel('WhatsApp number').fill(OWNER_PHONE);
-    await owner.getByLabel('Password').fill(OWNER_PASSWORD);
-    await owner.getByRole('button', { name: 'Create my account' }).click();
-    await expect(owner).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
-
-    await linkSticker(owner, tag.id, { make: 'Peugeot', model: '208', colour: 'Blue', plate: PLATE });
+    const home = await freshClient(browser);
+    const page = await home.newPage();
+    owner = await createOwner(page, { firstName: 'Amine', lastName: 'Belkacem', brand: 'Peugeot', model: '208' });
+    // What activation does not ask: the colour strangers may see, the plate they never do.
+    await editCar(page, owner.tagId, { colour: 'Blue', plate: PLATE });
     await home.close();
   });
 
@@ -91,14 +63,14 @@ test.describe('scanning a sticker', () => {
     const street = await browser.newContext();
     const page = await street.newPage();
 
-    const response = await page.goto(`/t/${tag.id}`);
+    const response = await page.goto(`/t/${owner.tagId}`);
     expect(response?.status()).toBe(200);
     // The car, because the owner chose to show it.
     await expect(page.getByText('Peugeot 208 · Blue')).toBeVisible();
 
     // Nothing that belongs to the owner.
     const shown = await page.locator('body').innerText();
-    for (const secret of [OWNER_EMAIL, OWNER_PHONE, OWNER_NAME, PLATE]) {
+    for (const secret of [owner.phone, formatPhone(owner.phone), owner.firstName, owner.lastName, PLATE]) {
       expect(shown, secret).not.toContain(secret);
     }
 
@@ -116,7 +88,7 @@ test.describe('scanning a sticker', () => {
     test.setTimeout(120_000);
     const street = await browser.newContext();
     const page = await street.newPage();
-    await page.goto(`/t/${tag.id}`);
+    await page.goto(`/t/${owner.tagId}`);
     await page.getByRole('radio', { name: 'Blocking access' }).check();
     await page.getByRole('button', { name: 'Send to the owner' }).click();
     await expect(page.getByRole('heading', { name: 'Message sent' })).toBeVisible({ timeout: 60_000 });
@@ -130,7 +102,7 @@ test.describe('scanning a sticker', () => {
     const inbox = page.getByRole('region', { name: 'Messages' });
     await expect(inbox.getByText(REPORT)).toBeVisible();
     await expect(inbox.getByText(SENDER_CONTACT)).toBeVisible();
-    await expect(inbox.getByText(`Received through ${tag.id}`).first()).toBeVisible();
+    await expect(inbox.getByText(`Received through ${owner.tagId}`).first()).toBeVisible();
     // The one-tap report arrives too, its category standing in for the words.
     await expect(inbox.getByRole('heading', { name: 'Blocking access' })).toBeVisible();
     await expect(page.getByText('2 unread').first()).toBeVisible();
@@ -192,16 +164,16 @@ test.describe('scanning a sticker', () => {
 
   test('a switched-off sticker looks exactly like one that never existed', async ({ browser }) => {
     test.setTimeout(180_000);
-    const owner = await ownerPage(browser);
+    const dashboard = await ownerPage(browser);
     // It asks first: switching off makes the owner unreachable.
-    await owner.locator('summary', { hasText: 'Switch off' }).click();
-    await expect(owner.getByText('cannot write to you')).toBeVisible();
-    await owner.getByRole('button', { name: 'Yes, switch it off' }).click();
-    await expect(owner.getByRole('status')).toHaveText('Change saved.');
+    await dashboard.locator('summary', { hasText: 'Switch off' }).click();
+    await expect(dashboard.getByText('cannot write to you')).toBeVisible();
+    await dashboard.getByRole('button', { name: 'Yes, switch it off' }).click();
+    await expect(dashboard.getByRole('status')).toHaveText('Change saved.');
 
     const street = await browser.newContext();
     const page = await street.newPage();
-    const off = await page.goto(`/t/${tag.id}`);
+    const off = await page.goto(`/t/${owner.tagId}`);
     const offText = await page.locator('main').innerText();
     const unknown = await page.goto('/t/AUT-ZZZZZZZZ');
     const unknownText = await page.locator('main').innerText();

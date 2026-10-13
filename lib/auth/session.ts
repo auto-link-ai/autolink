@@ -8,12 +8,15 @@ import { usersRepository } from '@/lib/db/repositories/users';
 
 export interface OwnerSession {
   actor: OwnerActor;
-  email: string;
+  phone: string;
+  firstName: string;
 }
 
 /**
- * Verifies the session cookie AND that the account still exists and is active
- * (rule 6: a token is only the first gate). Cached per request.
+ * Verifies the session cookie AND that the account still exists, is active,
+ * and still has the session version the token was issued with — a new PIN
+ * moves it on, which signs out every other device (rule 6: a token is only the
+ * first gate). Cached per request.
  */
 export const getOwnerSession = cache(async (): Promise<OwnerSession | null> => {
   const session = await auth();
@@ -21,8 +24,8 @@ export const getOwnerSession = cache(async (): Promise<OwnerSession | null> => {
   if (!userId) return null;
 
   const user = await usersRepository.findById(userId);
-  if (!user || user.status !== 'ACTIVE') return null;
-  return { actor: { kind: 'owner', userId: user.id }, email: user.email };
+  if (!user || user.status !== 'ACTIVE' || session.user.sv !== user.sessionVersion) return null;
+  return { actor: { kind: 'owner', userId: user.id }, phone: user.phone, firstName: user.firstName };
 });
 
 /** For customer pages and actions: sends them to sign in, then back here. */

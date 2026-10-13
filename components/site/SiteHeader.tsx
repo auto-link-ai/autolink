@@ -9,6 +9,7 @@ import { algiersToday, countDueSoon } from '@/lib/care/due';
 import { getSettings } from '@/lib/config/settings';
 import { carBookRepository } from '@/lib/db/repositories/carBook';
 import { messagesRepository } from '@/lib/db/repositories/messages';
+import { formatPhone } from '@/lib/format/phone';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { InstallApp } from './InstallApp';
 import { KeepSignedIn } from './KeepSignedIn';
@@ -28,7 +29,7 @@ async function ownerCounts(session: OwnerSession) {
   return { unread, due };
 }
 
-/** Top of the menu, signed in: who, and the way out. The email is only ever shown to its owner. */
+/** Top of the menu, signed in: who, and the way out. The number is only ever shown to its owner. */
 async function accountOf(session: OwnerSession, locale: Locale): Promise<MenuAccount> {
   const [t, tDashboard] = await Promise.all([getTranslations('site.nav'), getTranslations('dashboard')]);
   return {
@@ -40,8 +41,9 @@ async function accountOf(session: OwnerSession, locale: Locale): Promise<MenuAcc
           <span aria-hidden="true" className="h-2 w-2 rounded-full bg-success" />
           {t('signedInAs')}
         </p>
-        <p dir="ltr" className="mt-0.5 truncate text-[15px] font-bold text-text rtl:text-end">
-          {session.email}
+        <p className="mt-0.5 truncate text-[15px] font-bold text-text">{session.firstName}</p>
+        <p dir="ltr" className="truncate text-sm text-text-secondary rtl:text-end">
+          {formatPhone(session.phone)}
         </p>
         <form action={signOutAction} className="mt-3">
           <input type="hidden" name="locale" value={locale} />

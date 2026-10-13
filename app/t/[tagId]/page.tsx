@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Wordmark } from '@/components/Wordmark';
 import { locales } from '@/i18n/locales';
 import { getOwnerSession } from '@/lib/auth/session';
@@ -12,7 +12,6 @@ import { turnstileSiteKey } from '@/lib/security/turnstile';
 import { MESSAGE_CATEGORIES } from '@/lib/domain/constants';
 import { carLabel } from '@/lib/vehicles/carName';
 import { setScannerLanguageAction } from './actions';
-import { LinkSticker } from './LinkSticker';
 import { OwnerPanel } from './OwnerPanel';
 import { ReportForm, type ReportLabels } from './ReportForm';
 
@@ -26,18 +25,19 @@ type Props = {
 /**
  * The page a stranger reaches by scanning a sticker on a car — the whole point
  * of the product. It shows no more than the owner allowed, and sending a
- * message never reveals who they are. A sticker nobody has linked yet shows
- * instead how to link it: its buyer scans it straight out of the packaging.
+ * message never reveals who they are. A sticker nobody has activated yet goes
+ * straight to the activation screen: its buyer scans it out of the packaging.
  */
 export default async function ScanPage({ params, searchParams }: Props) {
   const { tagId } = await params;
   const raw = await searchParams;
   const locale = await resolveScannerLocale();
-  const t = await getTranslations({ locale, namespace: 'scanner' });
 
   const tag = await scannerTagsRepository.findForScanner(tagId);
   // Unknown, malformed, deactivated, suspended, lost: one answer for all.
   if (!tag) notFound();
+  if (tag.state === 'waiting') redirect(`/${locale}/activate?t=${encodeURIComponent(tag.publicTagId)}`);
+  const t = await getTranslations({ locale, namespace: 'scanner' });
 
   // The owner, signed in, scanning their own sticker gets their car instead of
   // the message form. Decided here on the server; for everyone else — other
@@ -99,9 +99,7 @@ export default async function ScanPage({ params, searchParams }: Props) {
         </form>
       </header>
 
-      {tag.state === 'waiting' ? (
-        <LinkSticker publicTagId={tag.publicTagId} locale={locale} signedIn={owner !== null} />
-      ) : mine ? (
+      {mine ? (
         <OwnerPanel
           summary={mine}
           items={dueItems(mine.due, algiersToday(), settings.careReminderDays)}

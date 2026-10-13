@@ -1,8 +1,6 @@
-import { readFile } from 'node:fs/promises';
-import { expect, test, type Browser, type BrowserContext, type Page } from '@playwright/test';
-import JSZip from 'jszip';
-import { adminContext, hasAdminCredentials } from './adminSession';
-import { linkSticker } from './linkSticker';
+import { expect, test, type BrowserContext, type Page } from '@playwright/test';
+import { hasAdminCredentials } from './adminSession';
+import { createOwner, editCar, formatPhone, freshClient, submitSignIn, type Owner } from './owner';
 
 /**
  * The owner's private car book: an overview, one page per section, read
@@ -10,35 +8,12 @@ import { linkSticker } from './linkSticker';
  * sticker — and invisible to everyone else.
  */
 
-const run = Date.now().toString(36);
-const OWNER = { email: `e2e-book-${run}@example.dz`, password: 'e2e-car-book-password' };
-const OTHER = { email: `e2e-book-other-${run}@example.dz`, password: 'e2e-car-book-other-pw' };
 /** Words that exist only in this owner's car book. None may reach anyone else. */
 const PRIVATE = { oil: 'Quartz 9000 5W-30', insurer: 'Assurances Tassili', notes: 'Spare key with my brother' };
 
 /** A calendar day `days` from now, as a date input wants it. */
 function inDays(days: number): string {
   return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-}
-
-let address = 0;
-function freshClient(browser: Browser) {
-  address++;
-  return browser.newContext({ extraHTTPHeaders: { 'x-forwarded-for': `198.51.100.${(Date.now() + address) % 250}` } });
-}
-
-async function register(browser: Browser, who: { email: string; password: string }): Promise<BrowserContext> {
-  const context = await freshClient(browser);
-  const page = await context.newPage();
-  await page.goto('/en/register');
-  await page.getByLabel('Full name').fill('Karim Meziane');
-  await page.getByLabel('Email').fill(who.email);
-  await page.getByLabel('WhatsApp number').fill('0551 23 45 67');
-  await page.getByLabel('Password').fill(who.password);
-  await page.getByRole('button', { name: 'Create my account' }).click();
-  await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
-  await page.close();
-  return context;
 }
 
 async function expectNothingPrivate(page: Page) {
@@ -55,26 +30,19 @@ test.describe('the car book', () => {
   });
 
   let owner: BrowserContext;
+  /** Who `owner` is signed in as: their number and PIN sign in again from the scan page. */
+  let account: Owner;
   let tagId = '';
   test.afterAll(async () => owner?.close());
 
   test('the menu opens the car book: an overview, every section still to fill in', async ({ browser }) => {
     test.setTimeout(180_000);
-    const office = await adminContext(browser);
-    const admin = await office.newPage();
-    await admin.goto('/en/admin/tags');
-    await admin.getByLabel('Batch name').fill('E2E car book');
-    await admin.getByLabel('Quantity').fill('1');
-    const download = admin.waitForEvent('download');
-    await admin.getByRole('button', { name: 'Generate and download' }).click();
-    const zip = await JSZip.loadAsync(await readFile((await (await download).path())!));
-    const [id] = (await zip.file('tags.csv')!.async('string')).split('\r\n')[1]!.split(',');
-    tagId = id!;
-    await office.close();
-
-    owner = await register(browser, OWNER);
+    owner = await freshClient(browser);
     const page = await owner.newPage();
-    await linkSticker(page, tagId, { make: 'Renault', model: 'Clio', colour: 'Grey' });
+    account = await createOwner(page, { firstName: 'Karim', lastName: 'Meziane', brand: 'Renault', model: 'Clio' });
+    tagId = account.tagId;
+    // Activation asks for the make and model; the colour comes from the dashboard.
+    await editCar(page, tagId, { colour: 'Grey' });
 
     // One car: the "Car book" tab goes straight to it.
     await page.getByRole('link', { name: 'Car book', exact: true }).click();
@@ -256,17 +224,18 @@ test.describe('the car book', () => {
   test('the header says who is signed in, and signs them out', async ({ browser }) => {
     test.setTimeout(120_000);
     // An account of its own: signing out here must not end the owner's session used after.
-    const who = { email: `e2e-book-out-${run}@example.dz`, password: 'e2e-sign-out-password' };
-    const context = await register(browser, who);
+    const context = await freshClient(browser);
     const page = await context.newPage();
+    const who = await createOwner(page, { firstName: 'Lina' });
     await page.goto('/en/faq');
 
-    const account = page.getByRole('banner').getByRole('button', { name: 'My account, Signed in' });
-    await expect(account).toBeVisible();
-    await account.click();
+    const accountButton = page.getByRole('banner').getByRole('button', { name: 'My account, Signed in' });
+    await expect(accountButton).toBeVisible();
+    await accountButton.click();
     const menu = page.locator('#mobile-menu');
     await expect(menu).toContainText('Signed in as');
-    await expect(menu).toContainText(who.email);
+    await expect(menu).toContainText(who.firstName);
+    await expect(menu).toContainText(formatPhone(who.phone));
 
     await menu.getByRole('button', { name: 'Sign out' }).click();
     await expect(page).toHaveURL(/\/en$/);
@@ -303,8 +272,9 @@ test.describe('the car book', () => {
     await expectNothingPrivate(stranger);
     await street.close();
 
-    const someoneElse = await register(browser, OTHER);
+    const someoneElse = await freshClient(browser);
     const page = await someoneElse.newPage();
+    await createOwner(page, { firstName: 'Sofiane' });
     await page.goto(`/t/${tagId}`);
     await expect(page.getByRole('button', { name: 'Send to the owner' })).toBeVisible();
     await expectNothingPrivate(page);
@@ -326,16 +296,14 @@ test.describe('the car book', () => {
 
   test('signing in from the scan page brings the owner back to their car', async ({ browser }) => {
     test.setTimeout(120_000);
-    const phone = await freshClient(browser);
-    const page = await phone.newPage();
+    const device = await freshClient(browser);
+    const page = await device.newPage();
     await page.goto(`/t/${tagId}`);
     await page.getByRole('link', { name: 'Is this your car? Sign in' }).click();
-    await page.getByLabel('Email').fill(OWNER.email);
-    await page.getByLabel('Password').fill(OWNER.password);
-    await page.getByRole('button', { name: 'Sign in' }).click();
+    await submitSignIn(page, account.phone, account.pin);
     await expect(page).toHaveURL(new RegExp(`/t/${tagId}$`), { timeout: 60_000 });
     await expect(page.getByRole('heading', { name: 'This is your car' })).toBeVisible();
-    await phone.close();
+    await device.close();
   });
 
   test('the daily reminder job is closed to the public, and finds what is due', async ({ request }) => {

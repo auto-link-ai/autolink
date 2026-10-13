@@ -8,18 +8,16 @@ const INPUT =
   'h-11 w-full rounded-2xl border border-border bg-white px-3 text-[15px] text-text outline-none focus:border-accent';
 
 /**
- * The car a sticker is on: make, model, colour (with the usual colours to pick
- * from), plate, and whether strangers may see the first three. Used to
- * describe the car after linking, and to change it later.
+ * The car a sticker is on: make, model, colour (optional, with the usual
+ * colours to pick from), plate, and whether strangers may see the first three.
+ * Addressed by the sticker id — the car's own id never reaches the browser.
  */
 export async function VehicleForm({
   locale,
-  vehicleId,
   vehicle,
   publicTagId,
 }: {
   locale: Locale;
-  vehicleId: string;
   vehicle: NonNullable<OwnerTagRow['vehicle']>;
   publicTagId: string;
 }) {
@@ -29,7 +27,7 @@ export async function VehicleForm({
   return (
     <form action={updateVehicleAction} className="mt-4 grid gap-4 sm:grid-cols-2">
       <input type="hidden" name="locale" value={locale} />
-      <input type="hidden" name="vehicleId" value={vehicleId} />
+      <input type="hidden" name="publicTagId" value={publicTagId} />
       <label className="flex flex-col gap-1.5 text-sm font-bold text-text">
         {t('brand')}
         <input name="brand" defaultValue={vehicle.brand} maxLength={40} required className={INPUT} />
@@ -40,7 +38,7 @@ export async function VehicleForm({
       </label>
       <label className="flex flex-col gap-1.5 text-sm font-bold text-text">
         {t('color')}
-        <input name="color" defaultValue={vehicle.color} maxLength={30} required list={colorsId} className={INPUT} />
+        <input name="color" defaultValue={vehicle.color} maxLength={30} list={colorsId} className={INPUT} />
         <datalist id={colorsId}>
           {(t.raw('colors') as string[]).map((colour) => (
             <option key={colour} value={colour} />

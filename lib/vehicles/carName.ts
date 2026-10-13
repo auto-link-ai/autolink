@@ -1,8 +1,8 @@
 /**
- * A sticker is linked first and described later, so a car may have no make,
- * model or colour yet. Everything that names a car goes through here and gets
- * null until it has a name — each caller then says « Votre voiture » in its
- * own language.
+ * Activation asks for the make and model; the colour is optional, and stickers
+ * linked before that have no car details at all. Everything that names a car
+ * goes through here and gets null until it has a name — each caller then says
+ * « Votre voiture » in its own language.
  */
 
 /** « Peugeot 3008 », or null while the owner has not said which car it is. */
@@ -18,7 +18,7 @@ export function carLabel(car: { brand: string; model: string; color: string }): 
   return car.color.trim() ? `${name} · ${car.color.trim()}` : name;
 }
 
-/** True once make, model and colour are all there. */
-export function carDescribed(car: { brand: string; model: string; color: string }): boolean {
-  return Boolean(car.brand.trim() && car.model.trim() && car.color.trim());
+/** True once make and model are there; the colour is optional. */
+export function carDescribed(car: { brand: string; model: string }): boolean {
+  return Boolean(car.brand.trim() && car.model.trim());
 }

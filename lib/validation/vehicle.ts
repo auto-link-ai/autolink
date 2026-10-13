@@ -18,7 +18,13 @@ const text = (min: number, max: number) =>
 export const vehicleSchema = z.object({
   brand: text(VEHICLE_FIELD_LIMITS.brand.min, VEHICLE_FIELD_LIMITS.brand.max),
   model: text(VEHICLE_FIELD_LIMITS.model.min, VEHICLE_FIELD_LIMITS.model.max),
-  color: text(VEHICLE_FIELD_LIMITS.color.min, VEHICLE_FIELD_LIMITS.color.max),
+  // Optional: activation asks only for make and model.
+  color: z
+    .string()
+    .trim()
+    .transform((value) => value.replace(/\s+/g, ' '))
+    .pipe(z.string().max(VEHICLE_FIELD_LIMITS.color.max, 'too_long'))
+    .refine((value) => value === '' || value.length >= VEHICLE_FIELD_LIMITS.color.min, 'too_short'),
   // Private: stored for the owner only, never rendered on a public route.
   plateNumber: z
     .string()

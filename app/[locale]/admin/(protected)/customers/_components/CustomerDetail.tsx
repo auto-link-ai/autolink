@@ -2,15 +2,17 @@ import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
 import { cx } from '@/lib/cx';
+import type { AdminCustomerRow } from '@/lib/db/repositories/customersAdminQueries';
 import type { OwnerTagRow } from '@/lib/db/repositories/tagsOwner';
-import type { AdminCustomerRow } from '@/lib/db/repositories/users';
 import { formatDateTime } from '@/lib/format/date';
+import { formatPhone } from '@/lib/format/phone';
 import { deleteCustomerAction } from '../accountActions';
-import { setCustomerStatusAction, updateCustomerContactAction } from '../actions';
-import { ResetPasswordForm } from './ResetPasswordForm';
+import { setCustomerStatusAction, unlockCustomerPinAction } from '../actions';
+import { ContactForm } from './ContactForm';
+import { TemporaryPinForm } from './TemporaryPinForm';
 import { carLabel } from '@/lib/vehicles/carName';
 
-const INPUT = 'h-11 w-full rounded-sm border border-border-strong bg-surface px-3 text-sm text-text focus:border-accent';
+const CONTACT_ERRORS = ['required', 'too_short', 'too_long', 'invalid_phone', 'phone_taken'] as const;
 
 /** One account opened from the list: who they are, their stickers, and support actions. */
 export async function CustomerDetail({
@@ -28,6 +30,10 @@ export async function CustomerDetail({
 }) {
   const t = await getTranslations('admin.customers');
   const blocked = customer.status === 'BLOCKED';
+  const fullName = `${customer.firstName} ${customer.lastName}`.trim();
+  // Who the confirmations name. The number stays unspaced: spaced, its groups
+  // would come out in reverse order inside Arabic text.
+  const who = fullName || customer.phone;
 
   const hidden = (
     <>
@@ -44,7 +50,7 @@ export async function CustomerDetail({
     >
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h2 id="customer-detail" className="text-h3 text-text">
-          {customer.name ?? t('detail.noName')}
+          {fullName || t('detail.noName')}
         </h2>
         <span
           className={cx(
@@ -56,10 +62,9 @@ export async function CustomerDetail({
         </span>
       </div>
 
-      <dl className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="mt-5 grid gap-4 sm:grid-cols-3">
         {[
-          { label: t('detail.email'), value: customer.email, ltr: true },
-          { label: t('detail.phone'), value: customer.phone ?? '—', ltr: true },
+          { label: t('detail.phone'), value: formatPhone(customer.phone), ltr: true },
           { label: t('detail.registered'), value: formatDateTime(customer.createdAt, locale) },
           {
             label: t('detail.lastLogin'),
@@ -101,49 +106,49 @@ export async function CustomerDetail({
 
       {canEdit ? (
         <div className="mt-6 flex flex-col gap-5 border-t border-border pt-5">
-          <form action={updateCustomerContactAction} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto] lg:items-end">
-            {hidden}
-            <label className="flex flex-col gap-1.5 text-sm font-semibold text-text">
-              {t('detail.name')}
-              <input name="name" defaultValue={customer.name ?? ''} maxLength={80} required className={INPUT} />
-            </label>
-            <label className="flex flex-col gap-1.5 text-sm font-semibold text-text">
-              {t('detail.email')}
-              <input
-                name="email"
-                type="email"
-                defaultValue={customer.email}
-                maxLength={254}
-                required
-                dir="ltr"
-                className={`${INPUT} rtl:text-end`}
-              />
-            </label>
-            <label className="flex flex-col gap-1.5 text-sm font-semibold text-text">
-              {t('detail.phone')}
-              <input name="phone" defaultValue={customer.phone ?? ''} maxLength={20} dir="ltr" className={INPUT} />
-            </label>
-            <Button type="submit" variant="secondary" size="sm">
-              {t('detail.save')}
-            </Button>
-          </form>
+          {/* Keyed by account, so opening another customer never carries over
+              this one's errors or freshly issued PIN. */}
+          <ContactForm
+            key={`contact-${customer.publicUserId}`}
+            locale={locale}
+            publicUserId={customer.publicUserId}
+            returnSearch={returnSearch}
+            values={{ firstName: customer.firstName, lastName: customer.lastName, phone: formatPhone(customer.phone) }}
+            labels={{
+              fields: { firstName: t('detail.firstName'), lastName: t('detail.lastName'), phone: t('detail.phone') },
+              phoneHint: t('detail.phoneHint'),
+              submit: t('detail.save'),
+              working: t('detail.saving'),
+              errors: Object.fromEntries(CONTACT_ERRORS.map((code) => [code, t(`errors.${code}`)])),
+              formErrors: { not_found: t('results.not_found'), not_allowed: t('results.not_allowed') },
+            }}
+          />
 
-          <ResetPasswordForm
+          <TemporaryPinForm
+            key={`pin-${customer.publicUserId}`}
             locale={locale}
             publicUserId={customer.publicUserId}
             labels={{
-              submit: t('detail.resetPassword'),
-              working: t('detail.resetting'),
-              hint: t('detail.resetHint'),
-              done: t('detail.resetDone'),
+              submit: t('detail.tempPin'),
+              working: t('detail.tempPinWorking'),
+              hint: t('detail.tempPinHint'),
+              done: t('detail.tempPinDone'),
+              next: t('detail.tempPinNext'),
               errors: {
                 not_found: t('results.not_found'),
                 not_allowed: t('results.not_allowed'),
-                invalid: t('results.invalid'),
-                server_error: t('detail.resetFailed'),
+                server_error: t('detail.tempPinFailed'),
               },
             }}
           />
+
+          <form action={unlockCustomerPinAction}>
+            {hidden}
+            <Button type="submit" variant="secondary" size="sm">
+              {t('detail.unlockPin')}
+            </Button>
+            <span className="ms-3 text-sm text-text-muted">{t('detail.unlockPinHint')}</span>
+          </form>
 
           {blocked ? (
             <form action={setCustomerStatusAction}>
@@ -161,7 +166,7 @@ export async function CustomerDetail({
                 {t('detail.block')}
               </summary>
               <div className="mt-3 rounded-sm border border-danger/30 bg-danger/5 p-4">
-                <p className="text-sm text-text">{t('detail.blockConfirm', { email: customer.email })}</p>
+                <p className="text-sm text-text">{t('detail.blockConfirm', { name: who })}</p>
                 <form action={setCustomerStatusAction} className="mt-3">
                   {hidden}
                   <input type="hidden" name="status" value="BLOCKED" />
@@ -179,7 +184,7 @@ export async function CustomerDetail({
               {t('detail.delete')}
             </summary>
             <div className="mt-3 rounded-sm border border-danger/30 bg-danger/5 p-4">
-              <p className="text-sm text-text">{t('detail.deleteConfirm', { email: customer.email, count: stickers.length })}</p>
+              <p className="text-sm text-text">{t('detail.deleteConfirm', { name: who, count: stickers.length })}</p>
               <form action={deleteCustomerAction} className="mt-3">
                 {hidden}
                 <Button type="submit" variant="danger" size="sm">

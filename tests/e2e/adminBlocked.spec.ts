@@ -1,8 +1,6 @@
-import { readFile } from 'node:fs/promises';
 import { expect, test, type Browser, type BrowserContext } from '@playwright/test';
-import JSZip from 'jszip';
 import { adminContext, hasAdminCredentials } from './adminSession';
-import { linkSticker } from './linkSticker';
+import { createOwner, freshClient } from './owner';
 
 /**
  * Abusive messages, end to end, with the local Gemini stand-in
@@ -44,28 +42,9 @@ test.describe('messages stopped for abusive words', () => {
 
   test('an insult is refused and kept in the box; rephrased, it goes through', async ({ browser }) => {
     test.setTimeout(240_000);
-    const office = await adminContext(browser);
-    const admin = await office.newPage();
-    await admin.goto('/en/admin/tags');
-    await admin.getByLabel('Batch name').fill(`E2E blocked ${run}`);
-    await admin.getByLabel('Quantity').fill('1');
-    const download = admin.waitForEvent('download');
-    await admin.getByRole('button', { name: 'Generate and download' }).click();
-    const zip = await JSZip.loadAsync(await readFile((await (await download).path())!));
-    const [id] = (await zip.file('tags.csv')!.async('string')).split('\r\n')[1]!.split(',');
-    tagId = id!;
-    await office.close();
-
-    owner = await stranger(browser);
+    owner = await freshClient(browser);
     const home = await owner.newPage();
-    await home.goto('/en/register');
-    await home.getByLabel('Full name').fill('Samir Owner');
-    await home.getByLabel('Email').fill(`e2e-blocked-${run}@example.dz`);
-    await home.getByLabel('WhatsApp number').fill('0551 23 45 67');
-    await home.getByLabel('Password').fill('e2e-blocked-password');
-    await home.getByRole('button', { name: 'Create my account' }).click();
-    await expect(home).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
-    await linkSticker(home, tagId, { make: 'Renault', model: 'Symbol', colour: 'Grey' });
+    tagId = (await createOwner(home, { firstName: 'Samir', lastName: 'Owner', brand: 'Renault', model: 'Symbol' })).tagId;
     await home.close();
 
     const { street, page } = await send(browser, tagId, INSULT);

@@ -10,12 +10,13 @@ import { requireAdmin } from '@/lib/admin/auth';
 import { missingSiteDetails } from '@/lib/config/site';
 import { orderListSearch } from '@/lib/admin/orderListQuery';
 import { customerListSearch } from '@/lib/admin/customerListQuery';
+import { adminCustomersQueries } from '@/lib/db/repositories/customersAdminQueries';
 import { adminOrdersRepository } from '@/lib/db/repositories/ordersAdmin';
 import { tagsRepository } from '@/lib/db/repositories/tags';
-import { usersRepository } from '@/lib/db/repositories/users';
 import { ORDER_STATUSES, TAG_STATUSES } from '@/lib/domain/constants';
 import { formatDzd } from '@/lib/format/currency';
 import { formatAge } from '@/lib/format/date';
+import { formatPhone } from '@/lib/format/phone';
 import { getWilayas } from '@/lib/config/wilayas';
 
 type Props = { params: Promise<{ locale: string }> };
@@ -35,15 +36,16 @@ export default async function AdminOverviewPage({ params }: Props) {
   const t = await getTranslations('admin.overview');
   const tOrders = await getTranslations('admin.orders');
   const tTags = await getTranslations('admin.tags');
+  const tCustomers = await getTranslations('admin.customers');
 
   const [orderCounts, tagCounts, customers, pendingOrders, activations, newCustomers, wilayas] =
     await Promise.all([
       adminOrdersRepository.countByStatus(session.actor),
       tagsRepository.countByStatus(session.actor),
-      usersRepository.countSummary(session.actor),
+      adminCustomersQueries.countSummary(session.actor),
       adminOrdersRepository.list(session.actor, { status: 'PENDING' }, 1),
       tagsRepository.recentlyActivated(session.actor, FEED_SIZE),
-      usersRepository.listForAdmin(session.actor, {}, 1),
+      adminCustomersQueries.listForAdmin(session.actor, {}, 1),
       getWilayas(),
     ]);
 
@@ -51,6 +53,8 @@ export default async function AdminOverviewPage({ params }: Props) {
     const w = wilayas.find((x) => x.code === code);
     return w ? (locale === 'ar' ? w.nameAr : locale === 'en' ? w.nameEn : w.nameFr) : String(code);
   };
+  const customerName = (c: { firstName: string; lastName: string }) =>
+    `${c.firstName} ${c.lastName}`.trim() || tCustomers('detail.noName');
 
   // Customers never see a placeholder, so this is the one place it shows up.
   const missing = missingSiteDetails();
@@ -196,20 +200,22 @@ export default async function AdminOverviewPage({ params }: Props) {
           ) : (
             <ul className="divide-y divide-border">
               {newCustomers.items.slice(0, FEED_SIZE).map((customer) => (
-                <li key={customer.email} className="flex items-baseline justify-between gap-3 py-2.5 text-sm">
-                  {customer.publicUserId ? (
-                    <NextLink
-                      href={`${customersPath}${customerListSearch({ page: 1, id: customer.publicUserId })}`}
-                      dir="ltr"
-                      className="truncate font-semibold text-accent hover:underline"
-                    >
-                      {customer.email}
-                    </NextLink>
-                  ) : (
-                    <span dir="ltr" className="truncate font-semibold text-text">
-                      {customer.email}
+                <li key={customer.publicUserId || customer.phone} className="flex items-baseline justify-between gap-3 py-2.5 text-sm">
+                  <span className="min-w-0 truncate">
+                    {customer.publicUserId ? (
+                      <NextLink
+                        href={`${customersPath}${customerListSearch({ page: 1, id: customer.publicUserId })}`}
+                        className="font-semibold text-accent hover:underline"
+                      >
+                        {customerName(customer)}
+                      </NextLink>
+                    ) : (
+                      <span className="font-semibold text-text">{customerName(customer)}</span>
+                    )}{' '}
+                    <span dir="ltr" className="text-text-secondary">
+                      {formatPhone(customer.phone)}
                     </span>
-                  )}
+                  </span>
                   <span className="shrink-0 text-text-muted">{formatAge(customer.createdAt, locale)}</span>
                 </li>
               ))}

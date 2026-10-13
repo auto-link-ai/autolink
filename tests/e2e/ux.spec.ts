@@ -1,141 +1,65 @@
-import { expect, test, type Browser } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { hasAdminCredentials } from './adminSession';
+import { fillActivation, freshClient, newStickers, PIN } from './owner';
 
 /**
  * The friction fixes, checked where people meet them.
  *
- * Contexts here present their own client address: the sign-in limiter counts
- * per address, and the rest of the suite already spends most of its hour from
- * 127.0.0.1. Real customers never share one, so this is the honest setup.
+ * Contexts that write present their own client address (owner.ts, freshClient):
+ * the activation and sign-in limiters count per address, and the rest of the
+ * suite already spends most of its hour from 127.0.0.1. Real customers never
+ * share one, so this is the honest setup.
  */
-const run = Date.now().toString(36);
-const CLAIM = '/en/activate?t=AUT-7K3M9QXZ';
-
-let address = 0;
-function freshClient(browser: Browser) {
-  address++;
-  return browser.newContext({ extraHTTPHeaders: { 'x-forwarded-for': `203.0.113.${(Date.now() + address) % 250}` } });
-}
 
 // ---- Public pages: no database writes -------------------------------------------------
 
-test('a password can be shown and hidden again', async ({ page }) => {
+test('a PIN is typed on the number keypad, and shows as dots', async ({ page }) => {
   await page.goto('/en/login');
-  const field = page.getByLabel('Password');
-  await field.fill('a-long-password');
-  await expect(field).toHaveAttribute('type', 'password');
-  await page.getByRole('button', { name: 'Show' }).click();
-  await expect(field).toHaveAttribute('type', 'text');
-  await page.getByRole('button', { name: 'Hide' }).click();
-  await expect(field).toHaveAttribute('type', 'password');
+  const pin = page.getByLabel('PIN', { exact: true });
+  await expect(pin).toHaveAttribute('type', 'password');
+  await expect(pin).toHaveAttribute('inputmode', 'numeric');
+  await expect(pin).toHaveAttribute('maxlength', '4');
+  await expect(page.getByLabel('WhatsApp number')).toHaveAttribute('inputmode', 'tel');
 });
 
-test('sign-in says what to do about a forgotten password', async ({ page }) => {
+test('sign-in says what to do about a forgotten PIN', async ({ page }) => {
   await page.goto('/en/login');
-  await expect(page.getByText('Forgot your password?')).toBeVisible();
-  await page.getByRole('link', { name: 'Write to us and we will reset it.' }).click();
-  await expect(page).toHaveURL(/\/en\/contact$/);
+  await expect(page.getByText('Forgot your PIN?')).toBeVisible();
+  await page.getByRole('link', { name: 'Get a code on WhatsApp' }).click();
+  await expect(page).toHaveURL(/\/en\/forgot-pin$/);
+  await expect(page.getByRole('button', { name: 'Get the code on WhatsApp' })).toBeVisible();
 });
 
-test('arriving to link a sticker, sign-in offers to create the account first', async ({ page }) => {
-  await page.goto(`/en/login?next=${encodeURIComponent(CLAIM)}`);
-  await expect(page.getByText('One step left to activate your sticker')).toBeVisible();
-  await expect(page.getByText('AUT-7K3M9QXZ')).toBeVisible();
-  const create = page.getByRole('link', { name: 'Create my account' });
-  await expect(create).toHaveAttribute('href', `/en/register?next=${encodeURIComponent(CLAIM)}`);
-});
-
-test('creating an account needs a WhatsApp number', async ({ page }) => {
-  await page.goto('/en/register');
-  await page.getByLabel('Full name').fill('Amine Belkacem');
-  await page.getByLabel('Email').fill('nobody@example.dz');
-  await page.getByLabel('Password').fill('a-long-password');
-  const phone = page.getByLabel('WhatsApp number');
-  await expect(phone).toHaveAttribute('required', '');
-  await page.getByRole('button', { name: 'Create my account' }).click();
-  // Nothing is sent: the browser stops on the empty number.
-  await expect(page).toHaveURL(/\/en\/register$/);
-  expect(await phone.evaluate((input: HTMLInputElement) => input.validity.valueMissing)).toBe(true);
-});
-
-test('an ordinary sign-in shows no claim panel', async ({ page }) => {
+test('someone new is sent from sign-in to activating their sticker, where an account starts', async ({ page }) => {
   await page.goto('/en/login');
-  await expect(page.getByText('One step left to activate your sticker')).toHaveCount(0);
+  await expect(page.getByText('New here?')).toBeVisible();
+  await page.getByRole('link', { name: 'Activate your sticker' }).click();
+  await expect(page).toHaveURL(/\/en\/activate$/);
+  await expect(page.getByLabel('Sticker id')).toBeVisible();
 });
 
 // ---- With a disposable database -------------------------------------------------------
 
-test.describe('first-time customers and their accounts', () => {
-  test.describe.configure({ mode: 'serial' });
+test.describe('a first-time customer activating a sticker', () => {
   test.skip(!hasAdminCredentials, 'Set E2E_ADMIN_EMAIL, E2E_ADMIN_PASSWORD and a disposable MONGODB_DB_NAME.');
   test.beforeEach(({}, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop-chromium', 'Writes to the database: run once.');
   });
 
-  test('a sticker that cannot be linked: the new account lands on the link page, which says why', async ({ browser }) => {
+  test('activating needs a WhatsApp number: the browser stops on an empty one', async ({ browser }) => {
     test.setTimeout(120_000);
+    const tagId = (await newStickers(browser))[0]!;
     const context = await freshClient(browser);
     const page = await context.newPage();
+    await page.goto(`/t/${tagId}`);
+    await fillActivation(page, { firstName: 'Amine', lastName: 'Belkacem', phone: '', brand: 'Renault', model: 'Symbol', pin: PIN });
 
-    await page.goto(`/en/login?next=${encodeURIComponent(CLAIM)}`);
-    await page.getByRole('link', { name: 'Create my account' }).click();
-    await expect(page.getByText('This sticker will be linked to your account')).toBeVisible();
-
-    await page.getByLabel('Full name').fill('Yasmine Haddad');
-    await page.getByLabel('Email').fill(`e2e-ux-claim-${run}@example.dz`);
-    await page.getByLabel('WhatsApp number').fill('0551 23 45 67');
-    await page.getByLabel('Password').fill('e2e-ux-password-1');
-    await page.getByRole('button', { name: 'Create my account' }).click();
-
-    // AUT-7K3M9QXZ was never made: the account exists, the sticker is not linked, and the page says so.
-    await expect(page).toHaveURL(/\/en\/activate\?t=AUT-7K3M9QXZ&error=invalid$/, { timeout: 60_000 });
-    await expect(page.getByRole('alert').filter({ hasText: "This sticker can't be linked" })).toBeVisible();
-    await context.close();
-  });
-
-  test('changing the password: the new one works and the old one no longer does', async ({ browser }) => {
-    test.setTimeout(180_000);
-    const email = `e2e-ux-pw-${run}@example.dz`;
-    const context = await freshClient(browser);
-    const page = await context.newPage();
-
-    await page.goto('/en/register');
-    await page.getByLabel('Full name').fill('Amine Belkacem');
-    await page.getByLabel('Email').fill(email);
-    await page.getByLabel('WhatsApp number').fill('0551 23 45 67');
-    await page.getByLabel('Password').fill('the-first-password');
-    await page.getByRole('button', { name: 'Create my account' }).click();
-    await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
-
-    // A fresh load: the redirect after registering is still rendering when the
-    // URL changes, and a click in that window is lost to the next render.
-    await page.goto('/en/dashboard');
-    await page.locator('summary', { hasText: 'Change my password' }).click();
-    await expect(page.getByLabel('Current password')).toBeVisible();
-    // A wrong current password is refused on the field, and changes nothing.
-    await page.getByLabel('Current password').fill('not-the-password');
-    await page.getByLabel('New password').fill('the-second-password');
-    await page.getByRole('button', { name: 'Save the new password' }).click();
-    await expect(page.getByText('That is not your current password.')).toBeVisible();
-
-    await page.getByLabel('Current password').fill('the-first-password');
-    await page.getByLabel('New password').fill('the-second-password');
-    await page.getByRole('button', { name: 'Save the new password' }).click();
-    await expect(page.getByText('Password changed.')).toBeVisible();
-
-    await page.getByRole('button', { name: 'Sign out' }).click();
-    await expect(page).toHaveURL(/\/en$/);
-    await page.goto('/en/login');
-    await page.getByLabel('Email').fill(email);
-    await page.getByLabel('Password').fill('the-first-password');
-    await page.getByRole('button', { name: 'Sign in' }).click();
-    await expect(page.locator('form p[role="alert"]')).toHaveText('Wrong email or password.');
-    // A wrong password costs a retype of the password, not of the whole form.
-    await expect(page.getByLabel('Email')).toHaveValue(email);
-
-    await page.getByLabel('Password').fill('the-second-password');
-    await page.getByRole('button', { name: 'Sign in' }).click();
-    await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
+    const phone = page.getByLabel('WhatsApp number');
+    await expect(phone).toHaveAttribute('required', '');
+    await page.getByRole('button', { name: 'Get my code on WhatsApp' }).click();
+    // Nothing is sent: the browser stops on the empty number.
+    expect(await phone.evaluate((input: HTMLInputElement) => input.validity.valueMissing)).toBe(true);
+    await expect(page.getByLabel('Code received on WhatsApp')).toHaveCount(0);
     await context.close();
   });
 });

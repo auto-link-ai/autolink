@@ -13,13 +13,12 @@ import { getSettings } from '@/lib/config/settings';
 import { carBookRepository } from '@/lib/db/repositories/carBook';
 import { messagesRepository } from '@/lib/db/repositories/messages';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
-import { usersRepository } from '@/lib/db/repositories/users';
 import { cx } from '@/lib/cx';
-import { isValidTagIdShape } from '@/lib/validation/tagId';
+import { formatPhone } from '@/lib/format/phone';
+import { authErrorLabels } from '../_auth/labels';
 import { signOutAction } from '../_auth/actions';
 import { pushPublicKey } from '@/lib/notifications/push';
-import { ChangePassword } from './_components/ChangePassword';
-import { PhoneCard } from './_components/PhoneCard';
+import { ChangePin } from './_components/ChangePin';
 import { Inbox } from './_components/Inbox';
 import { NotifyToggle } from './_components/NotifyToggle';
 import { StickerCard } from './_components/StickerCard';
@@ -43,7 +42,7 @@ function first(value: string | string[] | undefined): string {
 }
 
 /** The banners an action may come back with: `…invalid` ones are errors. */
-const RESULTS: ReadonlySet<string> = new Set(['ok', 'invalid', 'phone_saved', 'phone_invalid']);
+const RESULTS: ReadonlySet<string> = new Set(['ok', 'invalid', 'pin_changed']);
 
 export default async function DashboardPage({ params, searchParams }: Props) {
   const { locale } = await params;
@@ -53,18 +52,15 @@ export default async function DashboardPage({ params, searchParams }: Props) {
   const t = await getTranslations('dashboard');
 
   const raw = await searchParams;
-  const activated = first(raw.activated);
   const result = first(raw.result);
-  const [tags, messages, unreadByTag, dueByTag, settings, profile] = await Promise.all([
+  const [tags, messages, unreadByTag, dueByTag, settings] = await Promise.all([
     ownerTagsRepository.listForOwner(session.actor),
     messagesRepository.listForOwner(session.actor),
     messagesRepository.unreadByTag(session.actor),
     carBookRepository.dueForOwner(session.actor),
     getSettings(),
-    usersRepository.getProfile(session.actor),
   ]);
   const pushKey = pushPublicKey();
-  const phone = profile?.phone ?? null;
   const today = algiersToday();
   const nextDue = (publicTagId: string) => {
     const due = dueByTag.get(publicTagId);
@@ -77,7 +73,10 @@ export default async function DashboardPage({ params, searchParams }: Props) {
       <section className="pb-16 md:pb-24">
         <div className="container-page max-w-225">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3 text-[15px] text-text-secondary">
-            <span dir="ltr">{session.email}</span>
+            <span>
+              {t('hello', { name: session.firstName })} ·{' '}
+              <span dir="ltr" className="whitespace-nowrap">{formatPhone(session.phone)}</span>
+            </span>
             <form action={signOutAction}>
               <input type="hidden" name="locale" value={locale} />
               <button type="submit" className="min-h-11 font-bold text-accent hover:underline">
@@ -86,11 +85,6 @@ export default async function DashboardPage({ params, searchParams }: Props) {
             </form>
           </div>
 
-          {isValidTagIdShape(activated) && (
-            <p role="status" className="mb-6 rounded-2xl bg-success/10 px-5 py-4 text-[15px] font-medium text-success">
-              {t('activated', { tagId: activated })}
-            </p>
-          )}
           {RESULTS.has(result) && (
             <p
               role="status"
@@ -102,9 +96,6 @@ export default async function DashboardPage({ params, searchParams }: Props) {
               {t(`results.${result as 'ok'}`)}
             </p>
           )}
-
-          {/* Accounts made before the number was required: the one thing to add. */}
-          {!phone && <PhoneCard locale={locale} phone={null} variant="prompt" />}
 
           {/* First thing after signing in: without it, a message waits until they look. */}
           {tags.length > 0 && pushKey && (
@@ -165,29 +156,24 @@ export default async function DashboardPage({ params, searchParams }: Props) {
             <h2 id="account" className="mb-4 text-h3 text-text">
               {t('account.title')}
             </h2>
-            {phone && <PhoneCard locale={locale} phone={phone} variant="account" />}
-            <ChangePassword
+            <div className="mb-4 rounded-xl bg-white p-6 shadow-card-sm">
+              <p className="text-sm font-bold text-text">{t('account.phone')}</p>
+              <p dir="ltr" className="mt-1 text-[17px] font-bold text-text rtl:text-end">
+                {formatPhone(session.phone)}
+              </p>
+              <p className="mt-1 text-sm text-text-muted">{t('account.phoneHint')}</p>
+            </div>
+            <ChangePin
               locale={locale}
               labels={{
-                title: t('account.changePassword'),
+                title: t('account.changePin'),
                 current: t('account.current'),
-                next: t('account.next'),
-                nextHint: t('account.nextHint'),
+                pin: t('account.newPin'),
+                pinHint: t('account.pinHint'),
+                pinConfirm: t('account.pinConfirm'),
                 submit: t('account.submit'),
                 working: t('account.working'),
-                done: t('account.done'),
-                show: t('account.show'),
-                hide: t('account.hide'),
-                errors: {
-                  invalid: t('account.errors.invalid'),
-                  required: t('account.errors.required'),
-                  too_long: t('account.errors.too_long'),
-                  password_too_short: t('account.errors.password_too_short'),
-                  same_password: t('account.errors.same_password'),
-                  wrong_current: t('account.errors.wrong_current'),
-                  rate_limited: t('account.errors.rate_limited'),
-                  server_error: t('account.errors.server_error'),
-                },
+                errors: { ...(await authErrorLabels()), wrong_current: t('account.wrongCurrent'), same_pin: t('account.samePin') },
               }}
             />
           </section>

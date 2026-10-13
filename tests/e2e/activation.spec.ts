@@ -1,15 +1,16 @@
 import { readFile } from 'node:fs/promises';
-import { expect, test, type Browser, type Page } from '@playwright/test';
+import { expect, test, type BrowserContext } from '@playwright/test';
 import JSZip from 'jszip';
-import { describeCar, linkSticker } from './linkSticker';
+import { addSticker, chooseCar, createOwner, editCar, freshClient } from './owner';
+
+const CANNOT_ACTIVATE = "This sticker can't be activated: it already is, or the ID is wrong.";
 
 // ---- Public pages: no database writes -------------------------------------------------
 
-test('linking asks you to sign in first, and remembers the sticker', async ({ page }) => {
-  await page.goto('/en/activate?t=AUT-7K3M9QXZ');
-  await expect(page).toHaveURL(/\/en\/login\?next=/);
-  const next = decodeURIComponent(new URL(page.url()).searchParams.get('next') ?? '');
-  expect(next).toBe('/en/activate?t=AUT-7K3M9QXZ');
+test('an account starts with a sticker: the old sign-up address leads to activation', async ({ page }) => {
+  await page.goto('/en/register');
+  await expect(page).toHaveURL(/\/en\/activate$/);
+  await expect(page.getByLabel('Sticker id')).toBeVisible();
 });
 
 test('the dashboard is closed to strangers', async ({ page }) => {
@@ -18,10 +19,21 @@ test('the dashboard is closed to strangers', async ({ page }) => {
 });
 
 test('account pages are never indexed', async ({ page }) => {
-  for (const path of ['/en/login', '/en/register']) {
+  for (const path of ['/en/login', '/en/forgot-pin', '/en/activate']) {
     await page.goto(path);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
   }
+});
+
+test('a sticker that cannot be activated says so, scanned or typed by hand', async ({ page }) => {
+  await page.goto('/en/activate?t=AUT-7K3M9QXZ');
+  await expect(page.getByRole('alert').filter({ hasText: CANNOT_ACTIVATE })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Get my code on WhatsApp' })).toHaveCount(0);
+
+  await page.getByRole('link', { name: 'Try another ID' }).click();
+  await page.getByLabel('Sticker id').fill('aut-zzzz zzzz');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByRole('alert').filter({ hasText: CANNOT_ACTIVATE })).toBeVisible();
 });
 
 // ---- The gate: needs a disposable database and an admin account -----------------------
@@ -29,27 +41,7 @@ test('account pages are never indexed', async ({ page }) => {
 const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL;
 const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD;
 
-const PASSWORD = 'e2e-activation-pass';
-const run = Date.now().toString(36);
-const customer = (n: number) => `e2e-owner-${run}-${n}@example.dz`;
-
-const CANNOT_LINK = "This sticker can't be linked: it's already activated on an account, or the id is wrong.";
-
-let address = 0;
-function freshClient(browser: Browser) {
-  address++;
-  return browser.newContext({ extraHTTPHeaders: { 'x-forwarded-for': `198.51.100.${(Date.now() + address) % 250}` } });
-}
-
-async function fillRegistration(page: Page, email: string) {
-  await page.getByLabel('Full name').fill('Amine Belkacem');
-  await page.getByLabel('Email').fill(email);
-  await page.getByLabel('WhatsApp number').fill('0551 23 45 67');
-  await page.getByLabel('Password').fill(PASSWORD);
-  await page.getByRole('button', { name: 'Create my account' }).click();
-}
-
-test.describe('linking a sticker: scan it, sign in, it is yours', () => {
+test.describe('activating a sticker: scan it, say who you are, it is yours', () => {
   test.describe.configure({ mode: 'serial' });
   test.skip(
     !ADMIN_EMAIL || !ADMIN_PASSWORD,
@@ -60,6 +52,9 @@ test.describe('linking a sticker: scan it, sign in, it is yours', () => {
   });
 
   const tags: string[] = [];
+  /** A second owner, signed in, who tries to take the first one's sticker. */
+  let other: BrowserContext;
+  test.afterAll(async () => other?.close());
 
   test('a batch ships one QR per sticker, holding its public address only', async ({ page }) => {
     test.setTimeout(180_000);
@@ -86,30 +81,23 @@ test.describe('linking a sticker: scan it, sign in, it is yours', () => {
     }
   });
 
-  test('scanned out of the box, a new sticker offers to link it; creating the account links it', async ({ browser }) => {
+  test('scanned out of the box, a sticker opens its activation; then its owner sees their car, anyone else the message form', async ({
+    browser,
+  }) => {
     test.setTimeout(180_000);
     const context = await freshClient(browser);
     const page = await context.newPage();
 
+    // Nobody can write to a sticker that has no owner yet: it opens its activation instead.
     await page.goto(`/t/${tags[0]}`);
-    await expect(page.getByRole('heading', { name: "This sticker isn't activated yet." })).toBeVisible();
-    // Nobody can write to a sticker that has no owner yet.
+    await expect(page).toHaveURL(new RegExp(`/en/activate\\?t=${tags[0]}$`));
     await expect(page.getByRole('button', { name: 'Send to the owner' })).toHaveCount(0);
+    await createOwner(page, { tagId: tags[0], brand: 'Peugeot', model: '208' });
 
-    await page.getByRole('link', { name: 'Create my account' }).click();
-    await expect(page).toHaveURL(/\/en\/register\?next=/);
-    await expect(page.getByText('This sticker will be linked to your account')).toBeVisible();
-    await expect(page.getByText(tags[0]!).first()).toBeVisible();
-    await fillRegistration(page, customer(1));
-
-    // Linked on the way: straight to the dashboard, which asks for the car.
-    await expect(page).toHaveURL(new RegExp(`/en/dashboard\\?activated=${tags[0]}$`), { timeout: 60_000 });
-    await expect(page.getByText(`Sticker ${tags[0]} activated! Now add your car below.`)).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Your car', exact: true })).toBeVisible();
-    await describeCar(page, tags[0]!, { make: 'Peugeot', model: '208', colour: 'Blue', plate: '12345-116-16' });
-    await expect(page.getByRole('heading', { name: /^Peugeot 208/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Peugeot 208' })).toBeVisible();
     await expect(page.getByText('Active', { exact: true })).toBeVisible();
-    // The plate is the owner's business; it is not part of the card.
+    // The plate is the owner's business: kept, but not part of the card.
+    await editCar(page, tags[0]!, { plate: '12345-116-16' });
     await expect(page.locator('h3', { hasText: '12345-116-16' })).toHaveCount(0);
 
     // Scanned again by its owner: their car. By anyone else: the message form.
@@ -123,46 +111,44 @@ test.describe('linking a sticker: scan it, sign in, it is yours', () => {
     await context.close();
   });
 
-  test('signed in, one tap links a new sticker — and a linked one cannot be taken', async ({ browser }) => {
-    test.setTimeout(180_000);
-    const context = await freshClient(browser);
-    const page = await context.newPage();
-    await page.goto('/en/register');
-    await fillRegistration(page, customer(2));
-    await expect(page.getByRole('heading', { name: 'No stickers yet' })).toBeVisible({ timeout: 60_000 });
+  test('signed in, the next sticker only asks which car — scanned, or its id typed by hand', async ({ browser }) => {
+    test.setTimeout(240_000);
+    other = await freshClient(browser);
+    const page = await other.newPage();
+    await createOwner(page, { firstName: 'Yasmine' });
 
-    await linkSticker(page, tags[1]!);
-    await expect(page.getByRole('region', { name: 'Add your car' })).toBeVisible();
-
-    // Someone else's sticker shows its message form, never a way to take it…
-    await page.goto(`/t/${tags[0]}`);
-    await expect(page.getByRole('button', { name: 'Link this sticker to my account' })).toHaveCount(0);
-    // …and asking for it directly gets the same answer as a sticker that never existed.
-    await page.goto(`/en/activate?t=${tags[0]}`);
-    await page.getByRole('button', { name: 'Link this sticker to my account' }).click();
-    await expect(page.getByRole('alert').filter({ hasText: CANNOT_LINK })).toBeVisible();
+    await addSticker(page, tags[1]!, { brand: 'Dacia', model: 'Logan' });
+    // A camera that will not scan: the id printed under the QR, typed any old way.
     await page.goto('/en/activate');
-    await page.getByLabel('Sticker id').fill('AUT-ZZZZZZZZ');
-    await page.getByRole('button', { name: 'Link this sticker to my account' }).click();
-    await expect(page.getByRole('alert').filter({ hasText: CANNOT_LINK })).toBeVisible();
+    await page.getByLabel('Sticker id').fill(tags[2]!.toLowerCase().replace('-', ' '));
+    await page.getByRole('button', { name: 'Continue' }).click();
+    await expect(page.getByText(tags[2]!)).toBeVisible();
+    await chooseCar(page, { brand: 'Kia', model: 'Picanto' });
+    await page.getByRole('button', { name: 'Activate this sticker' }).click();
+    await expect(page.getByRole('heading', { name: "It's activated: your Kia Picanto can now be reached." })).toBeVisible({
+      timeout: 60_000,
+    });
 
-    await page.goto('/en/dashboard');
-    await expect(page.getByText(tags[1]!).first()).toBeVisible();
-    await expect(page.getByText(tags[0]!)).toHaveCount(0);
-    await context.close();
+    await page.getByRole('link', { name: 'See my messages' }).click();
+    for (const id of [tags[1]!, tags[2]!]) await expect(page.getByText(id).first()).toBeVisible();
+    await page.close();
   });
 
-  test('signing in to an existing account from the scan links it too', async ({ browser }) => {
-    test.setTimeout(180_000);
-    const context = await freshClient(browser);
-    const page = await context.newPage();
-    await page.goto(`/t/${tags[2]}`);
-    await page.getByRole('link', { name: 'I already have an account' }).click();
-    await expect(page.getByText('One step left to activate your sticker')).toBeVisible();
-    await page.getByLabel('Email').fill(customer(2));
-    await page.getByLabel('Password').fill(PASSWORD);
-    await page.getByRole('button', { name: 'Sign in' }).click();
-    await expect(page).toHaveURL(new RegExp(`/en/dashboard\\?activated=${tags[2]}$`), { timeout: 60_000 });
-    await context.close();
+  test('a sticker someone activated cannot be taken: it answers like one that never existed', async () => {
+    const page = await other.newPage();
+    // Someone else's sticker shows its message form, never a way to take it…
+    await page.goto(`/t/${tags[0]}`);
+    await expect(page.getByRole('button', { name: 'Send to the owner' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Activate this sticker' })).toHaveCount(0);
+    // …and asked for directly, it gets the same answer as a sticker that never existed.
+    await page.goto(`/en/activate?t=${tags[0]}`);
+    await expect(page.getByRole('alert').filter({ hasText: CANNOT_ACTIVATE })).toBeVisible();
+    const taken = await page.locator('main').innerText();
+    await page.goto('/en/activate?t=AUT-ZZZZZZZZ');
+    expect(await page.locator('main').innerText()).toBe(taken);
+
+    await page.goto('/en/dashboard');
+    await expect(page.getByText(tags[0]!)).toHaveCount(0);
+    await page.close();
   });
 });

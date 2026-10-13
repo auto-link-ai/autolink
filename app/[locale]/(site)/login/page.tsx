@@ -2,16 +2,15 @@ import type { Metadata } from 'next';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound, redirect } from 'next/navigation';
+import { InstalledHint } from '@/components/site/InstalledHint';
 import { href } from '@/components/site/links';
 import { PageHero } from '@/components/site/sections/SectionHeading';
 import { routing } from '@/i18n/routing';
 import { getOwnerSession } from '@/lib/auth/session';
 import { pageMetadata } from '@/lib/site/seo';
-import { claimTagIdFromNext } from '@/lib/activation/claimLink';
-import { AuthForm, type AuthLabels } from '../_auth/AuthForm';
-import { ClaimWelcome } from '../_auth/ClaimWelcome';
+import { authErrorLabels } from '../_auth/labels';
+import { PinLoginForm } from '../_auth/PinLoginForm';
 import { safeNext } from '../_auth/state';
-import { InstalledHint } from '@/components/site/InstalledHint';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,44 +37,29 @@ export default async function LoginPage({ params, searchParams }: Props) {
   // Already signed in: go where they were heading.
   if (await getOwnerSession()) redirect(safeNext(next, locale));
 
-  const claimTagId = claimTagIdFromNext(next);
-  const registerHref = `${href(locale, '/register')}${next ? `?next=${encodeURIComponent(next)}` : ''}`;
-
-  const labels: AuthLabels = {
-    email: t('fields.email'),
-    password: t('fields.password'),
-    show: t('fields.show'),
-    hide: t('fields.hide'),
-    forgot: t('login.forgot'),
-    forgotLink: t('login.forgotLink'),
-    forgotHref: href(locale, '/contact'),
-    submit: t('login.submit'),
-    submitting: t('login.submitting'),
-    switchText: t('login.switchText'),
-    switchLink: t('login.switchLink'),
-    errors: {
-      invalid: t('errors.invalid'),
-      invalid_credentials: t('errors.invalid_credentials'),
-      rate_limited: t('errors.rate_limited'),
-      server_error: t('errors.server_error'),
-    },
-  };
-
   return (
     <>
       <PageHero eyebrow={t('login.eyebrow')} title={t('login.title')} subtitle={t('login.subtitle')} />
       <section className="pb-16 md:pb-24">
         <div className="container-page max-w-130">
           <InstalledHint text={t('login.installedHint')} />
-          {claimTagId && (
-            <ClaimWelcome
-              tagId={claimTagId}
-              title={t('claim.loginTitle')}
-              body={t('claim.loginBody')}
-              cta={{ label: t('claim.loginCta'), href: registerHref, secondary: t('claim.loginSecondary') }}
-            />
-          )}
-          <AuthForm mode="login" locale={locale} next={next} labels={labels} switchHref={registerHref} />
+          <PinLoginForm
+            locale={locale}
+            next={next}
+            labels={{
+              phone: t('fields.phone'),
+              pin: t('fields.pin'),
+              forgot: t('login.forgot'),
+              forgotLink: t('login.forgotLink'),
+              forgotHref: href(locale, '/forgot-pin'),
+              submit: t('login.submit'),
+              submitting: t('login.submitting'),
+              newHere: t('login.newHere'),
+              newHereLink: t('login.newHereLink'),
+              newHereHref: href(locale, '/activate'),
+              errors: await authErrorLabels(),
+            }}
+          />
         </div>
       </section>
     </>

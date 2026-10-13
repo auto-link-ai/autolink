@@ -5,13 +5,12 @@ import { z } from 'zod';
 import { toLocale } from '@/i18n/locales';
 import { getAdminSession } from '@/lib/admin/auth';
 import { customerListReturnPath } from '@/lib/admin/customerListQuery';
+import { issueTemporaryPin, unlockPin } from '@/lib/admin/customerPins';
 import { adminCustomersRepository } from '@/lib/db/repositories/customersAdmin';
-import { usersRepository } from '@/lib/db/repositories/users';
 import { USER_STATUSES } from '@/lib/domain/constants';
-import { generateReadablePassword, hashSecret } from '@/lib/security/password';
-import { customerContactSchema, emailSchema } from '@/lib/validation/auth';
+import { customerContactSchema, fieldErrors } from '@/lib/validation/auth';
 import { isValidPublicUserId } from '@/lib/validation/publicUserId';
-import { RESET_PASSWORD_INITIAL, type ResetPasswordState } from './state';
+import type { ContactField, ContactState, TemporaryPinState } from './state';
 
 const idSchema = z.string().refine(isValidPublicUserId, { message: 'invalid' });
 
@@ -38,61 +37,72 @@ export async function setCustomerStatusAction(formData: FormData): Promise<void>
     .safeParse({ publicUserId: formData.get('publicUserId'), status: formData.get('status') });
   if (!parsed.success) redirect(customerListReturnPath(locale, returnSearch, 'invalid'));
 
-  const result = await usersRepository.setStatus(session.actor, parsed.data.publicUserId, parsed.data.status);
+  const result = await adminCustomersRepository.setStatus(session.actor, parsed.data.publicUserId, parsed.data.status);
   redirect(customerListReturnPath(locale, returnSearch, result.ok ? 'ok' : 'not_found'));
 }
 
-/** Fix a mistyped name, phone or email. The email must stay unique. */
-export async function updateCustomerContactAction(formData: FormData): Promise<void> {
+/**
+ * Fix a mistyped name, or move the customer to a new number once support has
+ * checked it is them. The number is their sign-in, so it must stay unique.
+ * Errors come back under their field; a save goes back to the list.
+ */
+export async function updateCustomerContactAction(_prev: ContactState, formData: FormData): Promise<ContactState> {
+  const locale = toLocale(formData.get('locale'));
+  const session = await requireAdminRole(locale);
+  if (session.actor.role !== 'ADMIN') return { status: 'error', formError: 'not_allowed' };
+
+  const publicUserId = formData.get('publicUserId');
+  if (!isValidPublicUserId(publicUserId)) return { status: 'error', formError: 'not_found' };
+  const parsed = customerContactSchema.safeParse({
+    firstName: formData.get('firstName') ?? '',
+    lastName: formData.get('lastName') ?? '',
+    phone: formData.get('phone') ?? '',
+  });
+  if (!parsed.success) return { status: 'error', fieldErrors: fieldErrors<ContactField>(parsed.error) };
+
+  const result = await adminCustomersRepository.updateContact(session.actor, publicUserId, parsed.data);
+  if (!result.ok) {
+    return result.reason === 'phone_taken'
+      ? { status: 'error', fieldErrors: { phone: 'phone_taken' } }
+      : { status: 'error', formError: 'not_found' };
+  }
+  redirect(customerListReturnPath(locale, formData.get('returnSearch'), 'ok'));
+}
+
+/**
+ * A temporary PIN for a customer who cannot get in (lib/admin/customerPins.ts).
+ * It comes back once, through the form's own state — never through a redirect
+ * parameter, so it stays out of the URL, the browser history and the server log.
+ */
+export async function issueTemporaryPinAction(
+  _prev: TemporaryPinState,
+  formData: FormData,
+): Promise<TemporaryPinState> {
+  const locale = toLocale(formData.get('locale'));
+  const session = await requireAdminRole(locale);
+  if (session.actor.role !== 'ADMIN') return { status: 'error', error: 'not_allowed' };
+
+  const publicUserId = formData.get('publicUserId');
+  if (!isValidPublicUserId(publicUserId)) return { status: 'error', error: 'not_found' };
+
+  try {
+    const pin = await issueTemporaryPin(session.actor, publicUserId);
+    return pin ? { status: 'done', pin } : { status: 'error', error: 'not_found' };
+  } catch (error) {
+    console.error('[admin/customers] temporary PIN failed:', error instanceof Error ? error.message : error);
+    return { status: 'error', error: 'server_error' };
+  }
+}
+
+/** The customer tried their PIN too often: their tries are forgotten, they may try again now. */
+export async function unlockCustomerPinAction(formData: FormData): Promise<void> {
   const locale = toLocale(formData.get('locale'));
   const session = await requireAdminRole(locale);
   const returnSearch = formData.get('returnSearch');
   if (session.actor.role !== 'ADMIN') redirect(customerListReturnPath(locale, returnSearch, 'not_allowed'));
 
   const publicUserId = formData.get('publicUserId');
-  const contact = customerContactSchema.safeParse({
-    name: formData.get('name') ?? '',
-    phone: formData.get('phone') ?? '',
-  });
-  const email = emailSchema.safeParse(formData.get('email') ?? '');
-  if (!isValidPublicUserId(publicUserId) || !contact.success || !email.success) {
-    redirect(customerListReturnPath(locale, returnSearch, 'invalid'));
-  }
-
-  const result = await usersRepository.updateContact(session.actor, publicUserId, contact.data);
-  if (!result.ok) redirect(customerListReturnPath(locale, returnSearch, 'not_found'));
-  const changed = await adminCustomersRepository.updateEmail(session.actor, publicUserId, email.data);
-  redirect(customerListReturnPath(locale, returnSearch, changed.ok ? 'ok' : changed.reason));
-}
-
-/**
- * Issues a new password for a locked-out customer and returns it once, through
- * the form's own state — never through a redirect parameter, so it stays out of
- * the URL, the browser history and the server log.
- */
-export async function resetCustomerPasswordAction(
-  _prev: ResetPasswordState,
-  formData: FormData,
-): Promise<ResetPasswordState> {
-  const locale = toLocale(formData.get('locale'));
-  const session = await getAdminSession();
-  if (!session) redirect(`/${locale}/admin/login`);
-  if (session.actor.role !== 'ADMIN') return { status: 'error', error: 'not_allowed' };
-
-  const publicUserId = formData.get('publicUserId');
-  if (!isValidPublicUserId(publicUserId)) return { status: 'error', error: 'invalid' };
-
-  try {
-    const password = generateReadablePassword();
-    const result = await usersRepository.setPasswordHashById(
-      session.actor,
-      publicUserId,
-      await hashSecret(password),
-    );
-    if (!result.ok) return { status: 'error', error: 'not_found' };
-    return { status: 'done', password };
-  } catch (error) {
-    console.error('[admin/customers] password reset failed:', error instanceof Error ? error.message : error);
-    return { ...RESET_PASSWORD_INITIAL, status: 'error', error: 'server_error' };
-  }
+  if (!isValidPublicUserId(publicUserId)) redirect(customerListReturnPath(locale, returnSearch, 'invalid'));
+  const unlocked = await unlockPin(session.actor, publicUserId);
+  redirect(customerListReturnPath(locale, returnSearch, unlocked ? 'unlocked' : 'not_found'));
 }

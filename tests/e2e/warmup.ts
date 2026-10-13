@@ -24,7 +24,7 @@ const ROUTES = [
   // The order-detail route, which also serves its not-found state.
   '/fr/order/AL-000000',
   '/en/login',
-  '/en/register',
+  '/en/forgot-pin',
   '/en/dashboard',
   '/en/activate',
   '/en/admin/login',

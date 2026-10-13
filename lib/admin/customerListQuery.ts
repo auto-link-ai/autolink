@@ -7,17 +7,17 @@ export interface CustomerListQuery {
   status?: UserStatus;
   /** Raw search text as typed, echoed back into the input. */
   q?: string;
-  /** What the search resolved to: a phone (exact) or an email fragment. */
+  /** What the search resolved to: a phone (exact) or a name fragment. */
   phone?: string;
-  email?: string;
+  name?: string;
   page: number;
   /** The account opened in the detail panel. */
   id?: string;
 }
 
-export const CUSTOMER_RESULTS = ['ok', 'not_found', 'not_allowed', 'invalid', 'deleted', 'email_taken'] as const;
+export const CUSTOMER_RESULTS = ['ok', 'not_found', 'not_allowed', 'invalid', 'deleted', 'unlocked'] as const;
 /** The results that report something done, shown in green. */
-export const CUSTOMER_SUCCESS_RESULTS: ReadonlySet<string> = new Set(['ok', 'deleted']);
+export const CUSTOMER_SUCCESS_RESULTS: ReadonlySet<string> = new Set(['ok', 'deleted', 'unlocked']);
 export type CustomerResultCode = (typeof CUSTOMER_RESULTS)[number];
 
 type RawParams = Record<string, string | string[] | undefined>;
@@ -32,14 +32,14 @@ export function parseCustomerListQuery(params: RawParams): CustomerListQuery {
   const pageNumber = Number.parseInt(first(params.page) ?? '1', 10);
   const id = first(params.id);
 
-  // Digits look like a phone; anything else is matched against the email.
+  // A whole Algerian mobile is matched exactly; anything else is a name fragment.
   const phone = q ? normalizeDzPhone(q) : null;
 
   return {
     status: (USER_STATUSES as readonly string[]).includes(status ?? '') ? (status as UserStatus) : undefined,
     q,
     phone: phone ?? undefined,
-    email: q && !phone ? q : undefined,
+    name: q && !phone ? q : undefined,
     page: Number.isFinite(pageNumber) && pageNumber > 0 ? Math.min(pageNumber, 100_000) : 1,
     id: isValidPublicUserId(id) ? id : undefined,
   };

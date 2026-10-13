@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import JSZip from 'jszip';
 import { adminContext, hasAdminCredentials } from './adminSession';
-import { linkSticker } from './linkSticker';
+import { addSticker, createOwner, freshClient } from './owner';
 
 /**
  * Cleaning up stickers: an unused one deleted, a test batch emptied until it
@@ -26,16 +26,9 @@ async function generate(page: Page, label: string, quantity: number): Promise<{ 
 }
 
 async function customerWith(browser: Browser, tag: { id: string }) {
-  const shop = await browser.newContext({ extraHTTPHeaders: { 'x-forwarded-for': `198.51.100.${Date.now() % 250}` } });
+  const shop = await freshClient(browser);
   const page = await shop.newPage();
-  await page.goto('/en/register');
-  await page.getByLabel('Full name').fill('Yacine Take');
-  await page.getByLabel('Email').fill(`e2e-take-${run}@example.dz`);
-  await page.getByLabel('WhatsApp number').fill('0551 23 45 67');
-  await page.getByLabel('Password').fill('e2e-take-back-password');
-  await page.getByRole('button', { name: 'Create my account' }).click();
-  await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
-  await linkSticker(page, tag.id, { make: 'Dacia', model: 'Logan', colour: 'White' });
+  await createOwner(page, { tagId: tag.id, firstName: 'Yacine', lastName: 'Take', brand: 'Dacia', model: 'Logan' });
   return { shop, page };
 }
 
@@ -77,7 +70,7 @@ test.describe('an admin cleaning up stickers', () => {
     await office.close();
   });
 
-  test('a sticker is taken back from its customer, and is free to link again', async ({ browser }) => {
+  test('a sticker is taken back from its customer, and is free to activate again', async ({ browser }) => {
     test.setTimeout(240_000);
     const office = await adminContext(browser);
     const admin = await office.newPage();
@@ -94,12 +87,10 @@ test.describe('an admin cleaning up stickers', () => {
     await expect(admin.getByRole('status')).toContainText('Sticker taken back');
     await expect(admin.getByRole('row', { name: new RegExp(tag!.id) })).toContainText('Unassigned');
 
-    // The customer no longer has it; scanned, it waits for an owner again — whoever links it next.
+    // The customer no longer has it; scanned, it opens its activation again — for whoever activates it next.
     await page.goto('/en/dashboard');
     await expect(page.getByText(tag!.id)).toHaveCount(0);
-    await page.goto(`/t/${tag!.id}`);
-    await expect(page.getByRole('heading', { name: "This sticker isn't activated yet." })).toBeVisible();
-    await linkSticker(page, tag!.id);
+    await addSticker(page, tag!.id);
 
     await shop.close();
     await office.close();

@@ -30,13 +30,16 @@ describe('parseCustomerListQuery', () => {
   it('reads a phone number as a phone', () => {
     const query = parseCustomerListQuery({ q: '0551 23 45 67' });
     expect(query.phone).toBe('0551234567');
-    expect(query.email).toBeUndefined();
+    expect(query.name).toBeUndefined();
+    expect(parseCustomerListQuery({ q: '+213 551 23 45 67' }).phone).toBe('0551234567');
   });
 
-  it('reads anything else as an email fragment', () => {
-    const query = parseCustomerListQuery({ q: 'amine@' });
-    expect(query.email).toBe('amine@');
+  it('reads anything else as a name fragment', () => {
+    const query = parseCustomerListQuery({ q: 'Belka' });
+    expect(query.name).toBe('Belka');
     expect(query.phone).toBeUndefined();
+    // Only a whole number is a phone.
+    expect(parseCustomerListQuery({ q: '0551' }).name).toBe('0551');
   });
 
   it('keeps only a known status and a well-formed account id', () => {
@@ -62,8 +65,8 @@ describe('parseCustomerListQuery', () => {
 describe('customerListSearch', () => {
   it('drops defaults and keeps the rest', () => {
     expect(customerListSearch({ page: 1 })).toBe('');
-    expect(customerListSearch({ status: 'ACTIVE', q: 'a@b', page: 3, id: ID })).toBe(
-      `?status=ACTIVE&q=a%40b&page=3&id=${ID}`,
+    expect(customerListSearch({ status: 'ACTIVE', q: 'Amine B', page: 3, id: ID })).toBe(
+      `?status=ACTIVE&q=Amine+B&page=3&id=${ID}`,
     );
   });
 });
@@ -87,6 +90,8 @@ describe('parseCustomerResult', () => {
   it('accepts only known codes', () => {
     expect(parseCustomerResult('ok')).toBe('ok');
     expect(parseCustomerResult('not_allowed')).toBe('not_allowed');
+    expect(parseCustomerResult('unlocked')).toBe('unlocked');
+    expect(parseCustomerResult('email_taken')).toBeNull();
     expect(parseCustomerResult('<script>')).toBeNull();
     expect(parseCustomerResult(undefined)).toBeNull();
   });

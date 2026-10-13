@@ -49,6 +49,18 @@ export const notificationSubscriptionsRepository = {
     return { ok: result.deletedCount === 1 };
   },
 
+  /**
+   * SYSTEM ONLY (lib/auth/pinChange.ts): after a new PIN, every device stops
+   * receiving alerts — a lost phone included. The owner's own browser
+   * subscribes again by itself on its next visit to the dashboard.
+   */
+  async removeAllForUser(_system: SystemActor, userId: string): Promise<void> {
+    const id = toObjectId(userId);
+    if (!id) return;
+    await connectToDatabase();
+    await NotificationSubscriptionModel.deleteMany({ userId: id });
+  },
+
   async countForOwner(owner: OwnerActor): Promise<number> {
     const userId = toObjectId(owner.userId);
     if (!userId) return 0;

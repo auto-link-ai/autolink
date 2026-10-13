@@ -9,6 +9,7 @@
  * Returned objects never include `_id`; tags are identified by `publicTagId`.
  */
 import 'server-only';
+import type { ClientSession } from 'mongoose';
 import { connectToDatabase } from '@/lib/db/connect';
 import { TagModel } from '@/lib/db/models/tag';
 import { UserModel } from '@/lib/db/models/user';
@@ -25,59 +26,64 @@ export interface OwnerTagRow {
   publicTagId: string;
   status: TagStatus;
   activatedAt: Date | null;
-  vehicleId: string | null;
   vehicle: { brand: string; model: string; color: string; plateNumber: string | null; showDetailsPublicly: boolean } | null;
 }
 
 export type ClaimResult = { ok: true } | { ok: false; reason: 'taken' };
 
+/** Thrown inside a transaction so that everything else in it rolls back too. */
+export class StickerTakenError extends Error {
+  constructor() {
+    super('sticker is not free');
+    this.name = 'StickerTakenError';
+  }
+}
+
+/**
+ * Links a free sticker (`UNASSIGNED`, no owner) to `owner` with a new car,
+ * inside the caller's transaction. Throws `StickerTakenError` when it is not
+ * free — including when someone else won the race between the check and the
+ * update — so the caller's transaction rolls back whatever it did before (a
+ * new account, say) instead of committing half an activation.
+ */
+export async function claimWithin(
+  session: ClientSession,
+  owner: OwnerActor,
+  publicTagId: string,
+  vehicle: NewVehicle,
+): Promise<void> {
+  const ownerId = toObjectId(owner.userId);
+  if (!ownerId) throw new StickerTakenError();
+  const free = await TagModel.exists({ publicTagId, status: 'UNASSIGNED', ownerId: null }).session(session);
+  if (!free) throw new StickerTakenError();
+  const vehicleId = await vehiclesRepository.create(owner, vehicle, session);
+  const result = await TagModel.updateOne(
+    { publicTagId, status: 'UNASSIGNED', ownerId: null },
+    { $set: { status: 'ACTIVE', ownerId, vehicleId: toObjectId(vehicleId), activatedAt: new Date() } },
+    { session },
+  );
+  if (result.modifiedCount !== 1) throw new StickerTakenError();
+  await auditLogsRepository.append(
+    { kind: 'system' },
+    { action: 'TAG_ACTIVATE', targetType: 'tag', targetId: publicTagId, metadata: { userId: owner.userId } },
+    session,
+  );
+}
+
 export const ownerTagsRepository = {
   /**
-   * Creates the vehicle and links the sticker in one transaction. Only a
-   * sticker nobody owns (`UNASSIGNED`, no owner) links; the same filter on the
-   * update means two people racing for one sticker cannot both win.
+   * A signed-in owner adding a sticker: the car and the link, in one
+   * transaction. Two people racing for one sticker cannot both win.
    */
   async claim(owner: OwnerActor, publicTagId: string, vehicle: NewVehicle): Promise<ClaimResult> {
-    const ownerId = toObjectId(owner.userId);
-    if (!ownerId) return { ok: false, reason: 'taken' };
     const mongoose = await connectToDatabase();
-
-    let claimed = false;
-    await mongoose.connection.transaction(async (session) => {
-      const free = await TagModel.exists({ publicTagId, status: 'UNASSIGNED', ownerId: null }).session(session);
-      if (!free) return;
-      const vehicleId = await vehiclesRepository.create(owner, vehicle, session);
-      const result = await TagModel.updateOne(
-        { publicTagId, status: 'UNASSIGNED', ownerId: null },
-        {
-          $set: {
-            status: 'ACTIVE',
-            ownerId,
-            vehicleId: toObjectId(vehicleId),
-            activatedAt: new Date(),
-          },
-        },
-        { session },
-      );
-      claimed = result.modifiedCount === 1;
-      if (!claimed) {
-        // Someone else claimed it first: undo the vehicle we just created.
-        await VehicleModel.deleteOne({ _id: toObjectId(vehicleId) }, { session });
-        return;
-      }
-      await auditLogsRepository.append(
-        { kind: 'system' },
-        {
-          action: 'TAG_ACTIVATE',
-          targetType: 'tag',
-          targetId: publicTagId,
-          metadata: { userId: owner.userId },
-        },
-        session,
-      );
-    });
-
-    return claimed ? { ok: true } : { ok: false, reason: 'taken' };
+    try {
+      await mongoose.connection.transaction((session) => claimWithin(session, owner, publicTagId, vehicle));
+      return { ok: true };
+    } catch (error) {
+      if (error instanceof StickerTakenError) return { ok: false, reason: 'taken' };
+      throw error;
+    }
   },
 
   /** "My stickers": the owner's tags with the vehicle each is attached to. */
@@ -104,7 +110,6 @@ export const ownerTagsRepository = {
         publicTagId: tag.publicTagId,
         status: tag.status,
         activatedAt: tag.activatedAt,
-        vehicleId: tag.vehicleId?.toString() ?? null,
         vehicle: vehicle
           ? {
               brand: vehicle.brand,

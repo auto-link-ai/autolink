@@ -103,13 +103,12 @@ export async function StickerCard({
       </a>
 
       {tag.vehicle &&
-        tag.vehicleId &&
         (carDescribed(tag.vehicle) ? (
           <details className="group mt-4 border-t border-border pt-3">
             <summary className="inline-flex min-h-11 cursor-pointer list-none items-center text-[15px] font-bold text-accent">
               {t('card.edit')}
             </summary>
-            <VehicleForm locale={locale} vehicleId={tag.vehicleId} vehicle={tag.vehicle} publicTagId={tag.publicTagId} />
+            <VehicleForm locale={locale} vehicle={tag.vehicle} publicTagId={tag.publicTagId} />
           </details>
         ) : (
           // Linked first, described now: the one thing left to do, so it is open and in colour.
@@ -121,7 +120,7 @@ export async function StickerCard({
               {t('card.addCar')}
             </h4>
             <p className="mt-1 text-sm leading-relaxed text-text-secondary">{t('card.addCarHint')}</p>
-            <VehicleForm locale={locale} vehicleId={tag.vehicleId} vehicle={tag.vehicle} publicTagId={tag.publicTagId} />
+            <VehicleForm locale={locale} vehicle={tag.vehicle} publicTagId={tag.publicTagId} />
           </section>
         ))}
 

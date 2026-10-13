@@ -107,7 +107,7 @@ export const messagesRepository = {
    * SYSTEM ONLY (notify.ts): what the owner's alerts are built from. Push uses
    * the car and the kind of problem, never the body — a lock screen is a public
    * place. The body, name and number are for the WhatsApp template, sent to
-   * the owner's own number.
+   * the owner's own number; the name is their first name, as a greeting.
    */
   async findForNotification(publicId: string): Promise<{
     category: MessageCategory;
@@ -126,14 +126,14 @@ export const messagesRepository = {
 
     const [vehicle, owner] = await Promise.all([
       VehicleModel.findById(message.vehicleId, { brand: 1, model: 1, color: 1 }).lean(),
-      UserModel.findById(message.ownerId, { locale: 1, name: 1, phone: 1 }).lean(),
+      UserModel.findById(message.ownerId, { locale: 1, firstName: 1, phone: 1 }).lean(),
     ]);
     return {
       category: message.category,
       vehicleLabel: vehicleLabel(vehicle ?? null),
       locale: owner?.locale ?? 'fr',
       body: message.body ?? '',
-      ownerName: owner?.name?.trim() || null,
+      ownerName: owner?.firstName?.trim() || null,
       ownerPhone: owner?.phone ?? null,
     };
   },

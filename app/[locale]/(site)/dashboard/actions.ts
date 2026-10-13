@@ -7,10 +7,6 @@ import { getOwnerSession } from '@/lib/auth/session';
 import { getSettings } from '@/lib/config/settings';
 import { messagesRepository } from '@/lib/db/repositories/messages';
 import { rateLimitsRepository } from '@/lib/db/repositories/rateLimits';
-import { usersRepository } from '@/lib/db/repositories/users';
-import { hashSecret, verifySecret } from '@/lib/security/password';
-import { changePasswordSchema, fieldErrors, ownerPhoneSchema, type ChangePasswordField } from '@/lib/validation/auth';
-import type { ChangePasswordState } from './passwordState';
 import { notificationSubscriptionsRepository } from '@/lib/db/repositories/notificationSubscriptions';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
 import { sendPush } from '@/lib/notifications/push';
@@ -35,48 +31,6 @@ export async function toggleStickerAction(formData: FormData): Promise<void> {
 
   const result = await ownerTagsRepository.setOwnerStatus(session.actor, publicTagId, next);
   back(locale, result.ok ? 'ok' : 'invalid');
-}
-
-/**
- * The owner changing their own password. The current one is checked first,
- * and the check is rate-limited like sign-in, so this form cannot be used to
- * guess a password on an unattended, signed-in phone.
- */
-export async function changePasswordAction(
-  _prev: ChangePasswordState,
-  formData: FormData,
-): Promise<ChangePasswordState> {
-  const locale = toLocale(formData.get('locale'));
-  const session = await getOwnerSession();
-  if (!session) redirect(`/${locale}/login`);
-
-  const parsed = changePasswordSchema.safeParse({
-    current: formData.get('current') ?? '',
-    next: formData.get('next') ?? '',
-  });
-  if (!parsed.success) {
-    return { status: 'error', fieldErrors: fieldErrors<ChangePasswordField>(parsed.error) };
-  }
-
-  try {
-    const settings = await getSettings();
-    const hit = await rateLimitsRepository.hit(
-      `pwchange:user:${session.actor.userId}`,
-      settings.rateLimitOwnerLoginPerHour,
-      60 * 60 * 1000,
-    );
-    if (!hit.allowed) return { status: 'error', formError: 'rate_limited' };
-
-    const stored = await usersRepository.passwordHashFor(session.actor);
-    if (!stored || !(await verifySecret(stored, parsed.data.current))) {
-      return { status: 'error', fieldErrors: { current: 'wrong_current' } };
-    }
-    const result = await usersRepository.setOwnPasswordHash(session.actor, await hashSecret(parsed.data.next));
-    return result.ok ? { status: 'done' } : { status: 'error', formError: 'server_error' };
-  } catch (error) {
-    console.error('[dashboard] password change failed:', error instanceof Error ? error.message : error);
-    return { status: 'error', formError: 'server_error' };
-  }
 }
 
 /**
@@ -140,7 +94,7 @@ export async function updateVehicleAction(formData: FormData): Promise<void> {
   const session = await getOwnerSession();
   if (!session) redirect(`/${locale}/login`);
 
-  const vehicleId = String(formData.get('vehicleId') ?? '');
+  const publicTagId = String(formData.get('publicTagId') ?? '');
   const parsed = vehicleSchema.safeParse({
     brand: formData.get('brand') ?? '',
     model: formData.get('model') ?? '',
@@ -150,19 +104,7 @@ export async function updateVehicleAction(formData: FormData): Promise<void> {
   });
   if (!parsed.success) back(locale, 'invalid');
 
-  // The repository filters by ownerId: someone else's vehicle simply does not update.
-  const result = await vehiclesRepository.update(session.actor, vehicleId, parsed.data);
+  // Addressed by the sticker, checked against the owner: someone else's car simply does not update.
+  const result = await vehiclesRepository.updateForSticker(session.actor, publicTagId, parsed.data);
   back(locale, result.ok ? 'ok' : 'invalid');
-}
-
-/** The owner's own WhatsApp number: added after an old sign-up, or changed later. */
-export async function savePhoneAction(formData: FormData): Promise<void> {
-  const locale = toLocale(formData.get('locale'));
-  const session = await getOwnerSession();
-  if (!session) redirect(`/${locale}/login`);
-
-  const parsed = ownerPhoneSchema.safeParse({ phone: formData.get('phone') ?? '' });
-  if (!parsed.success) back(locale, 'phone_invalid');
-  const result = await usersRepository.updateProfile(session.actor, { phone: parsed.data.phone });
-  back(locale, result.ok ? 'phone_saved' : 'phone_invalid');
 }

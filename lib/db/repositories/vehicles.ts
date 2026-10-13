@@ -14,6 +14,7 @@ import { connectToDatabase } from '@/lib/db/connect';
 import { VehicleModel } from '@/lib/db/models/vehicle';
 import type { OwnerActor } from './actor';
 import { toObjectId } from './objectId';
+import { findOwnedVehicle } from './ownedVehicle';
 
 /** Owner's own view of their vehicle. */
 export interface VehicleDTO {
@@ -50,31 +51,18 @@ export const vehiclesRepository = {
     return doc._id.toString();
   },
 
-  async get(owner: OwnerActor, vehicleId: string): Promise<VehicleDTO | null> {
-    const ownerId = toObjectId(owner.userId);
-    const id = toObjectId(vehicleId);
-    if (!ownerId || !id) return null;
-    await connectToDatabase();
-    const doc = await VehicleModel.findOne({ _id: id, ownerId }).lean();
-    return doc
-      ? {
-          brand: doc.brand,
-          model: doc.model,
-          color: doc.color,
-          plateNumber: doc.plateNumber ?? null,
-          showDetailsPublicly: doc.showDetailsPublicly,
-          isActive: doc.isActive,
-        }
-      : null;
-  },
-
-  /** Owner edits: unknown or someone else's vehicle simply does not update. */
-  async update(owner: OwnerActor, vehicleId: string, patch: Partial<NewVehicle>): Promise<{ ok: boolean }> {
-    const ownerId = toObjectId(owner.userId);
-    const id = toObjectId(vehicleId);
-    if (!ownerId || !id) return { ok: false };
-    await connectToDatabase();
-    const result = await VehicleModel.updateOne({ _id: id, ownerId }, { $set: patch }, { runValidators: true });
+  /**
+   * Owner edits, addressed by the sticker the car carries (rule 4: no vehicle
+   * `_id` ever reaches the browser). Unknown or someone else's: no update.
+   */
+  async updateForSticker(owner: OwnerActor, publicTagId: string, patch: Partial<NewVehicle>): Promise<{ ok: boolean }> {
+    const owned = await findOwnedVehicle(owner, publicTagId);
+    if (!owned) return { ok: false };
+    const result = await VehicleModel.updateOne(
+      { _id: owned.vehicleId, ownerId: owned.ownerId },
+      { $set: patch },
+      { runValidators: true },
+    );
     return { ok: result.matchedCount === 1 };
   },
 };

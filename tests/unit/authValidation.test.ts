@@ -1,69 +1,76 @@
 import { describe, expect, it } from 'vitest';
-import {
-  changePasswordSchema,
-  fieldErrors,
-  loginSchema,
-  ownerPhoneSchema,
-  registerSchema,
-  PASSWORD_MIN_LENGTH,
-} from '@/lib/validation/auth';
+import { activationDetailsSchema, carSchema, chosenBrand, OTHER_BRAND } from '@/lib/validation/activation';
+import { customerContactSchema, fieldErrors, pinLoginSchema, requiredPhoneSchema } from '@/lib/validation/auth';
 import { vehicleSchema } from '@/lib/validation/vehicle';
 
-const account = {
-  name: 'Amine  Belkacem ',
-  email: '  Amine@Example.DZ ',
+const details = {
+  firstName: ' Amine ',
+  lastName: 'Belkacem  Ould ',
   phone: '0551 23 45 67',
-  password: 'a-long-enough-password',
-  locale: 'fr',
+  brand: 'Renault',
+  model: ' Symbol ',
 };
 
-describe('registerSchema', () => {
-  it('normalizes the name, email and phone', () => {
-    const parsed = registerSchema.parse(account);
-    expect(parsed.name).toBe('Amine Belkacem');
-    expect(parsed.email).toBe('amine@example.dz');
-    expect(parsed.phone).toBe('0551234567');
-  });
-
-  it('requires the WhatsApp number: empty is « required », not « invalid »', () => {
-    const empty = registerSchema.safeParse({ ...account, phone: '' });
-    expect(empty.success).toBe(false);
-    if (!empty.success) expect(fieldErrors(empty.error).phone).toBe('required');
-    const spaces = registerSchema.safeParse({ ...account, phone: '   ' });
-    if (!spaces.success) expect(fieldErrors(spaces.error).phone).toBe('required');
-    expect(spaces.success).toBe(false);
-  });
-
-  it('rejects a short password, and accepts one exactly at the minimum', () => {
-    const short = registerSchema.safeParse({ ...account, password: 'x'.repeat(PASSWORD_MIN_LENGTH - 1) });
-    expect(short.success).toBe(false);
-    if (!short.success) expect(fieldErrors(short.error).password).toBe('password_too_short');
-    expect(registerSchema.safeParse({ ...account, password: 'x'.repeat(PASSWORD_MIN_LENGTH) }).success).toBe(true);
+describe('activationDetailsSchema', () => {
+  it('tidies names and the car, and normalizes the phone', () => {
+    expect(activationDetailsSchema.parse(details)).toEqual({
+      firstName: 'Amine',
+      lastName: 'Belkacem Ould',
+      phone: '0551234567',
+      brand: 'Renault',
+      model: 'Symbol',
+    });
   });
 
   it.each([
-    ['email', 'not-an-email', 'invalid_email'],
+    ['phone', '', 'required'],
     ['phone', '0100000000', 'invalid_phone'],
-    ['name', 'A', 'too_short'],
-  ])('rejects a bad %s', (field, value, code) => {
-    const result = registerSchema.safeParse({ ...account, [field]: value });
+    ['firstName', 'A', 'too_short'],
+    ['lastName', 'x'.repeat(41), 'too_long'],
+    ['brand', '', 'required'],
+    ['model', '   ', 'required'],
+  ])('reports a bad %s as « %s » → %s', (field, value, code) => {
+    const result = activationDetailsSchema.safeParse({ ...details, [field]: value });
     expect(result.success).toBe(false);
-    if (!result.success) expect(fieldErrors(result.error)[field]).toBe(code);
+    if (!result.success) expect(fieldErrors<string>(result.error)[field]).toBe(code);
   });
 
-  it('falls back to French rather than failing on an unknown locale', () => {
-    expect(registerSchema.parse({ ...account, locale: 'de' }).locale).toBe('fr');
+  it('takes the brand typed under « Autre » when it is not on the list', () => {
+    expect(chosenBrand('Renault', 'ignored')).toBe('Renault');
+    expect(chosenBrand(OTHER_BRAND, 'Lada')).toBe('Lada');
+    expect(chosenBrand(null, null)).toBe('');
+    expect(carSchema.safeParse({ brand: chosenBrand(OTHER_BRAND, ''), model: 'Niva' }).success).toBe(false);
   });
 });
 
-describe('loginSchema', () => {
-  it('matches the address however it was typed at registration', () => {
-    expect(loginSchema.parse({ email: ' AMINE@example.dz ', password: 'x' }).email).toBe('amine@example.dz');
+describe('pinLoginSchema', () => {
+  it('normalizes the number and the PIN, Arabic digits included', () => {
+    expect(pinLoginSchema.parse({ phone: '+213 551 23 45 67', pin: '٤٠٧١' })).toEqual({ phone: '0551234567', pin: '4071' });
   });
 
-  it('requires a password but never judges its length', () => {
-    expect(loginSchema.safeParse({ email: 'a@b.dz', password: '' }).success).toBe(false);
-    expect(loginSchema.safeParse({ email: 'a@b.dz', password: 'old' }).success).toBe(true);
+  it('says what is wrong with each part', () => {
+    const result = pinLoginSchema.safeParse({ phone: '12', pin: '12' });
+    expect(result.success).toBe(false);
+    if (!result.success) expect(fieldErrors(result.error)).toEqual({ phone: 'invalid_phone', pin: 'pin_format' });
+  });
+});
+
+describe('requiredPhoneSchema', () => {
+  it('requires a number: empty is « required », not « invalid »', () => {
+    expect(requiredPhoneSchema.safeParse('   ').error?.issues[0]?.message).toBe('required');
+    expect(requiredPhoneSchema.safeParse('0450123456').error?.issues[0]?.message).toBe('invalid_phone');
+    expect(requiredPhoneSchema.parse('07 70 12 34 56')).toBe('0770123456');
+  });
+});
+
+describe('customerContactSchema', () => {
+  it('is what support may correct: names and the number', () => {
+    expect(customerContactSchema.parse({ firstName: 'Sara', lastName: 'Haddad', phone: '0661 00 11 22' })).toEqual({
+      firstName: 'Sara',
+      lastName: 'Haddad',
+      phone: '0661001122',
+    });
+    expect(customerContactSchema.safeParse({ firstName: 'Sara', lastName: 'Haddad', phone: '' }).success).toBe(false);
   });
 });
 
@@ -90,36 +97,9 @@ describe('vehicleSchema', () => {
     expect(parsed.showDetailsPublicly).toBe(false);
     expect(parsed.plateNumber).toBeNull();
   });
-});
 
-describe('changePasswordSchema', () => {
-  it('accepts a new password of the usual length', () => {
-    expect(changePasswordSchema.safeParse({ current: 'anything', next: 'a-brand-new-one' }).success).toBe(true);
-  });
-
-  it('holds the new password to the same 10-character rule as registration', () => {
-    const result = changePasswordSchema.safeParse({ current: 'anything', next: 'short' });
-    expect(result.success).toBe(false);
-    if (!result.success) expect(fieldErrors(result.error).next).toBe('password_too_short');
-  });
-
-  it('refuses keeping the same password under a new name', () => {
-    const result = changePasswordSchema.safeParse({ current: 'the-same-password', next: 'the-same-password' });
-    expect(result.success).toBe(false);
-    if (!result.success) expect(fieldErrors(result.error).next).toBe('same_password');
-  });
-
-  it('needs the current password to be given at all', () => {
-    const result = changePasswordSchema.safeParse({ current: '', next: 'a-brand-new-one' });
-    expect(result.success).toBe(false);
-    if (!result.success) expect(fieldErrors(result.error).current).toBe('required');
-  });
-});
-
-describe('ownerPhoneSchema', () => {
-  it('takes the number as people type it, and refuses an empty or foreign one', () => {
-    expect(ownerPhoneSchema.parse({ phone: '06 61 22 33 44' }).phone).toBe('0661223344');
-    expect(ownerPhoneSchema.safeParse({ phone: '' }).success).toBe(false);
-    expect(ownerPhoneSchema.safeParse({ phone: '+33 6 12 34 56 78' }).success).toBe(false);
+  it('accepts no colour — activation does not ask for one — but not a one-letter one', () => {
+    expect(vehicleSchema.parse({ brand: 'Renault', model: 'Clio', color: '  ', plateNumber: '' }).color).toBe('');
+    expect(vehicleSchema.safeParse({ brand: 'Renault', model: 'Clio', color: 'B', plateNumber: '' }).success).toBe(false);
   });
 });

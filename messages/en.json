@@ -62,15 +62,7 @@
       "messages": "My messages",
       "preview": "See what others see"
     },
-    "signIn": "Is this your car? Sign in",
-    "link": {
-      "title": "This sticker isn't activated yet.",
-      "body": "Is it yours? Link it to your account: messages about your car will reach your phone, without ever showing your number.",
-      "create": "Create my account",
-      "signIn": "I already have an account",
-      "confirm": "Link this sticker to my account",
-      "notYours": "Not your car? Its owner hasn't activated the sticker yet: it can't receive messages yet."
-    }
+    "signIn": "Is this your car? Sign in"
   },
   "notFound": {
     "title": "Page not found",
@@ -397,7 +389,7 @@
         "not_allowed": "Your role does not allow that.",
         "invalid": "Check the fields.",
         "deleted": "Account deleted.",
-        "email_taken": "This email is already used by another account."
+        "unlocked": "PIN unlocked: the customer can try again now."
       },
       "status": {
         "ACTIVE": "Active",
@@ -416,7 +408,7 @@
         "filterLabel": "Filter by status",
         "filterAll": "All",
         "searchLabel": "Search",
-        "searchPlaceholder": "email or 05…",
+        "searchPlaceholder": "name or 05…",
         "searchSubmit": "Search",
         "empty": "No accounts for this filter.",
         "pagination": "Customers pagination",
@@ -424,7 +416,6 @@
         "next": "Next",
         "pageOf": "Page {page} of {pages}",
         "columns": {
-          "email": "Email",
           "name": "Name",
           "phone": "Phone",
           "stickers": "Stickers",
@@ -435,7 +426,6 @@
       },
       "detail": {
         "noName": "No name",
-        "email": "Email",
         "phone": "Phone",
         "registered": "Registered",
         "lastLogin": "Last sign-in",
@@ -443,44 +433,34 @@
         "stickers": "Stickers ({count})",
         "noStickers": "No sticker activated yet.",
         "noVehicle": "No car details",
-        "name": "Name",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "phoneHint": "The customer signs in with this number: only change it once you have checked it is really them.",
         "save": "Save",
-        "resetPassword": "Reset password",
-        "resetting": "Resetting…",
-        "resetHint": "The new password is shown once.",
-        "resetDone": "New password:",
-        "resetFailed": "The reset failed. Try again.",
+        "saving": "Saving…",
+        "tempPin": "New temporary PIN",
+        "tempPinWorking": "Creating…",
+        "tempPinHint": "Replaces their current PIN. The new one is shown only once.",
+        "tempPinDone": "Temporary PIN, shown only once — give it to the customer:",
+        "tempPinNext": "They sign in with it, then change it under “My account”. They have been signed out on all their devices.",
+        "tempPinFailed": "The PIN could not be changed. Try again.",
+        "unlockPin": "Unlock PIN",
+        "unlockPinHint": "For a customer who tried their PIN too many times: they can try again right away.",
         "block": "Block account",
         "unblock": "Unblock",
         "unblockHint": "The customer can sign in again.",
-        "blockConfirm": "{email} will not be able to sign in, and any session they have ends at once. You can unblock them afterwards.",
+        "blockConfirm": "{name} will not be able to sign in, and any session they have ends at once. You can unblock them afterwards.",
         "blockYes": "Yes, block this account",
         "delete": "Delete the account",
-        "deleteConfirm": "The account {email} will be deleted for good, with its cars, their car books, its messages and notifications. {count, plural, =0 {It has no stickers.} one {Its sticker goes back to “Unassigned”} other {Its # stickers go back to “Unassigned”}}: whoever scans them next can activate them. Orders are kept.",
+        "deleteConfirm": "The account {name} will be deleted for good, with its cars, their car books, its messages and notifications. {count, plural, =0 {It has no stickers.} one {Its sticker goes back to “Unassigned”: whoever scans it next can activate it.} other {Its # stickers go back to “Unassigned”: whoever scans them next can activate them.}} Orders are kept.",
         "deleteYes": "Yes, delete this account"
       },
-      "new": {
-        "button": "New customer",
-        "title": "New customer",
-        "hint": "For a customer who asked by phone. A temporary password is created and shown only once.",
-        "email": "Email",
-        "name": "Name",
-        "phone": "Phone (optional)",
-        "submit": "Create the account",
-        "working": "Creating…",
-        "cancel": "Cancel",
-        "done": "Account created. Temporary password, shown only once — give it to the customer:",
-        "open": "Open the customer's page",
-        "errors": {
-          "required": "This field is required.",
-          "invalid_email": "This email address is not valid.",
-          "too_short": "That is a bit too short.",
-          "too_long": "That is too long.",
-          "invalid_phone": "Enter a valid Algerian mobile (05, 06 or 07).",
-          "email_taken": "This email is already used by another account.",
-          "not_allowed": "Only an administrator account can create accounts.",
-          "server_error": "Creating the account failed. Try again."
-        }
+      "errors": {
+        "required": "This field is required.",
+        "too_short": "That is a bit too short.",
+        "too_long": "That is too long.",
+        "invalid_phone": "Enter a valid Algerian mobile (05, 06 or 07).",
+        "phone_taken": "This number is already used by another account."
       }
     },
     "blocked": {
@@ -701,7 +681,7 @@
         },
         "receive": {
           "q": "How do I receive messages?",
-          "a": "By a notification on your phone. They also stay in your own dashboard."
+          "a": "On WhatsApp, and as a notification on your phone. They also stay in your personal space."
         },
         "pay": {
           "q": "How do I pay?",
@@ -709,7 +689,7 @@
         },
         "activate": {
           "q": "How do I activate my sticker?",
-          "a": "Scan it with your phone's camera, then create your account or sign in: it's linked to your account straight away. Do it as soon as it arrives, before sticking it on, then add your car."
+          "a": "Scan it with your phone's camera: a page opens where you enter your name, your WhatsApp number, your car and a PIN, then the code you receive on WhatsApp. That's it. Do it as soon as it arrives, before sticking it."
         },
         "abuse": {
           "q": "What if someone misuses it?",
@@ -780,7 +760,7 @@
           },
           "activate": {
             "title": "You activate",
-            "body": "You scan the sticker and sign in: it's linked to your account."
+            "body": "You scan the sticker, then enter your details and the code you receive on WhatsApp: it's activated."
           },
           "stick": {
             "title": "You stick it on",
@@ -838,7 +818,7 @@
         {
           "title": "What we collect",
           "body": [
-            "For the owner: an email address, a mobile number (to reach you and send your alerts on WhatsApp), a hashed password, the vehicle details you enter and, if you order, your delivery details.",
+            "For the owner: your name, your WhatsApp number (to sign in and receive your alerts), an encrypted PIN, the vehicle details you enter and, if you order, your delivery details.",
             "For the person scanning: the reason chosen, the message written, an optional way to reach them back, and a random session id. No account is created."
           ]
         },
@@ -1079,88 +1059,143 @@
         "call": "We call you to confirm the order and the address.",
         "deliver": "The courier hands you the sticker.",
         "pay": "You pay in cash when it is delivered.",
-        "activate": "Scan the sticker and sign in: it's linked to your account. Then stick it on."
+        "activate": "Scan the sticker: a page opens to activate it in a minute. Then stick it."
       },
       "backHome": "Back to home",
       "nextTitle": "What happens next",
-      "activateLink": "Create my account now"
+      "activateLink": "Activate my sticker"
     }
   },
   "auth": {
     "fields": {
-      "name": "Full name",
-      "email": "Email",
+      "firstName": "First name",
+      "lastName": "Last name",
       "phone": "WhatsApp number",
-      "phoneHint": "Algerian mobile, e.g. 05 12 34 56 78. To send your AutoLink alerts on WhatsApp. Never shown to anyone.",
-      "password": "Password",
-      "passwordHint": "At least 10 characters.",
-      "show": "Show",
-      "hide": "Hide"
+      "phoneHint": "Algerian mobile, e.g. 05 12 34 56 78. It's how you sign in, and where your alerts arrive. Never shown to anyone.",
+      "pin": "PIN",
+      "pinHint": "4 digits that are easy for you to remember — not 1234, 0000 or the end of your number.",
+      "pinConfirm": "Confirm your PIN",
+      "newPin": "New PIN",
+      "code": "Code received on WhatsApp",
+      "codeHint": "6 digits. Valid for 10 minutes."
     },
     "errors": {
       "invalid": "That value is not valid.",
       "too_short": "That is a little too short.",
       "too_long": "That is too long.",
-      "invalid_email": "That email address is not valid.",
+      "required": "This field is required.",
       "invalid_phone": "Enter a valid Algerian mobile (05, 06 or 07).",
-      "password_too_short": "The password must be at least 10 characters.",
-      "email_taken": "An account already uses this address. Sign in instead.",
-      "invalid_credentials": "Wrong email or password.",
+      "pin_format": "Your PIN is 4 digits.",
+      "pin_weak": "That PIN is too easy to guess. Choose another one.",
+      "pin_mismatch": "The two PINs don't match.",
+      "invalid_credentials": "Wrong number or PIN.",
+      "throttled": "Too many tries for this number. Try again later, or choose a new PIN via WhatsApp.",
+      "code_invalid": "That's not the right code. Check the WhatsApp message.",
+      "code_expired": "This code is no longer valid. Ask for a new one.",
+      "code_too_soon": "Wait a minute before asking for a new code.",
+      "code_unavailable": "WhatsApp codes can't be sent right now. Write to us and we'll help.",
+      "send_failed": "The code couldn't be sent. Check that this number has WhatsApp, then send it again.",
       "rate_limited": "Too many attempts. Try again in an hour.",
-      "server_error": "Something went wrong. Please try again in a moment.",
-      "required": "This field is required."
+      "server_error": "Something went wrong. Please try again in a moment."
     },
     "login": {
       "metaTitle": "Sign in — AutoLink",
-      "metaDescription": "Sign in to activate a sticker and read your messages.",
+      "metaDescription": "Sign in with your WhatsApp number and your PIN.",
       "eyebrow": "Your account",
       "title": "Sign in.",
-      "subtitle": "To activate a sticker and manage your cars.",
+      "subtitle": "With your WhatsApp number and your PIN.",
       "submit": "Sign in",
       "submitting": "Signing in…",
-      "switchText": "No account yet?",
-      "switchLink": "Create one",
-      "forgot": "Forgot your password?",
-      "forgotLink": "Write to us and we will reset it.",
+      "forgot": "Forgot your PIN?",
+      "forgotLink": "Get a code on WhatsApp",
+      "newHere": "New here?",
+      "newHereLink": "Activate your sticker",
       "installedHint": "In the app, sign in once: you will stay signed in."
     },
-    "register": {
-      "metaTitle": "Create an account — AutoLink",
-      "metaDescription": "Create your account to activate your AutoLink sticker.",
+    "forgot": {
+      "metaTitle": "Forgot PIN — AutoLink",
       "eyebrow": "Your account",
-      "title": "Create your account.",
-      "subtitle": "Once you are signed in, scan the QR we sent you to link the sticker to your account.",
-      "submit": "Create my account",
-      "submitting": "Creating…",
-      "switchText": "Already have an account?",
-      "switchLink": "Sign in"
+      "title": "Choose a new PIN.",
+      "subtitle": "We send a code to your WhatsApp to check it's really you.",
+      "phoneHint": "The number you sign in with.",
+      "sendCode": "Get the code on WhatsApp",
+      "sending": "Sending…",
+      "sentTo": "If this number has an account, the code is sent on WhatsApp to",
+      "submit": "Save and sign in",
+      "submitting": "Saving…",
+      "backToLogin": "Back to sign in"
     },
-    "claim": {
-      "loginTitle": "One step left to activate your sticker",
-      "loginBody": "Create your account (30 seconds): the sticker is linked to it as soon as you're done.",
-      "loginCta": "Create my account",
-      "loginSecondary": "Already have an account? Sign in below: the sticker is linked to it straight away.",
-      "registerTitle": "This sticker will be linked to your account",
-      "registerBody": "As soon as your account is created, the sticker is activated. You then add your car."
+    "code": {
+      "sentTo": "Code sent on WhatsApp to",
+      "resend": "Send the code again",
+      "resent": "New code sent.",
+      "changeNumber": "Change number",
+      "notReceived": "Nothing arrived?",
+      "writeUs": "Write to us",
+      "helpMessage": "Hello, I didn't receive my AutoLink code on WhatsApp."
     }
   },
   "activate": {
-    "metaTitle": "Activate a sticker — AutoLink",
+    "metaTitle": "Activate my sticker — AutoLink",
     "eyebrow": "Activation",
-    "title": "Link the sticker to your account.",
-    "subtitle": "One tap, and messages about your car reach your phone.",
-    "ready": "Sticker ready to link",
-    "submit": "Link this sticker to my account",
-    "help": "Easiest: scan the sticker's QR with your phone's camera.",
+    "title": "Activate your sticker.",
+    "subtitle": "One minute, and messages about your car reach your phone — without ever showing your number.",
+    "sticker": "Sticker",
+    "steps": {
+      "details": "Your details",
+      "code": "WhatsApp code",
+      "done": "Ready"
+    },
+    "details": {
+      "you": "You",
+      "car": "Your car",
+      "pin": "Your PIN",
+      "privacy": "Your number is never shown to the person who scans."
+    },
     "fields": {
+      "brand": "Make",
+      "chooseBrand": "Choose…",
+      "otherBrand": "Other make",
+      "brandOther": "Which make?",
+      "model": "Model",
+      "modelPlaceholder": "e.g.",
       "tagId": "Sticker id",
       "tagIdHint": "Printed under the sticker's QR, for example AUT-7K3M9QXZ."
     },
+    "submit": "Get my code on WhatsApp",
+    "submitting": "Sending the code…",
+    "code": {
+      "submit": "Activate my sticker",
+      "submitting": "Activating…"
+    },
+    "done": {
+      "title": "It's activated!",
+      "titleCar": "It's activated: your {car} can now be reached.",
+      "body": "When someone scans the sticker, their message arrives in your account and on WhatsApp.",
+      "pinUpdated": "This number already had an account: the car was added to it, and your new PIN replaces the old one.",
+      "next": "Now",
+      "stick": "Stick it inside the windscreen, at the bottom on the passenger side: readable from outside, without blocking your view.",
+      "test": "Test it: scan it with another phone and send yourself a message.",
+      "dates": "Add your dates — insurance, roadworthiness test, vignette, oil change — to be reminded in time.",
+      "messages": "See my messages",
+      "addDates": "Add my dates"
+    },
+    "signedIn": {
+      "title": "Add this car to your account.",
+      "submit": "Activate this sticker",
+      "submitting": "Activating…"
+    },
+    "manual": {
+      "submit": "Continue",
+      "retry": "Try another ID"
+    },
     "errors": {
-      "invalid": "This sticker can't be linked: it's already activated on an account, or the id is wrong.",
+      "invalid": "This sticker can't be activated: it already is, or the ID is wrong.",
+      "signed_out": "Your session expired. Reload the page.",
       "rate_limited": "Too many attempts from this connection. Try again in an hour.",
       "server_error": "Something went wrong. Please try again in a moment."
-    }
+    },
+    "help": "Easiest: scan the sticker's QR with your phone's camera."
   },
   "dashboard": {
     "metaTitle": "My stickers — AutoLink",
@@ -1168,13 +1203,11 @@
     "title": "My stickers",
     "subtitle": "{count, plural, =0 {No stickers on your account yet.} one {# sticker on your account.} other {# stickers on your account.}}",
     "signOut": "Sign out",
-    "activated": "Sticker {tagId} activated! Now add your car below.",
     "addAnother": "Activate another sticker",
     "results": {
       "ok": "Change saved.",
       "invalid": "Could not save. Check the fields.",
-      "phone_saved": "WhatsApp number saved.",
-      "phone_invalid": "Enter a valid Algerian mobile (05, 06 or 07)."
+      "pin_changed": "PIN changed. Your other devices are signed out."
     },
     "status": {
       "UNASSIGNED": "Not activated",
@@ -1207,7 +1240,7 @@
       "book": "My car book",
       "nextDue": "{item}: {when}",
       "addCar": "Add your car",
-      "addCarHint": "Make, model and colour: for your car book, and so whoever scans knows they're at the right car.",
+      "addCarHint": "Make and model: for your car book, and so the person who scans knows they're at the right car.",
       "colors": [
         "White",
         "Black",
@@ -1251,33 +1284,19 @@
     },
     "account": {
       "title": "My account",
-      "changePassword": "Change my password",
-      "current": "Current password",
-      "next": "New password",
-      "nextHint": "At least 10 characters.",
-      "submit": "Save the new password",
+      "phone": "WhatsApp number (sign-in and alerts)",
+      "phoneHint": "To change your number, write to us: we first check it's really you.",
+      "changePin": "Change my PIN",
+      "current": "Current PIN",
+      "newPin": "New PIN",
+      "pinHint": "4 digits — not 1234, 0000 or the end of your number.",
+      "pinConfirm": "Confirm the new PIN",
+      "submit": "Save the new PIN",
       "working": "Saving…",
-      "done": "Password changed. Use it the next time you sign in.",
-      "show": "Show",
-      "hide": "Hide",
-      "errors": {
-        "invalid": "Check this field.",
-        "required": "This field is required.",
-        "too_long": "That is too long.",
-        "password_too_short": "At least 10 characters.",
-        "same_password": "Choose a password different from the current one.",
-        "wrong_current": "That is not your current password.",
-        "rate_limited": "Too many attempts. Try again in an hour.",
-        "server_error": "Something went wrong. Try again in a moment."
-      }
+      "wrongCurrent": "That's not your current PIN.",
+      "samePin": "Choose a different PIN from the current one."
     },
-    "phone": {
-      "promptTitle": "Add your WhatsApp number",
-      "hint": "To send your AutoLink alerts on WhatsApp. It is never shown to whoever scans.",
-      "label": "WhatsApp number",
-      "save": "Save",
-      "change": "Change"
-    }
+    "hello": "Hello {name}"
   },
   "notifications": {
     "newMessage": {

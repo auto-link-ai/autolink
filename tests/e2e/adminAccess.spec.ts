@@ -1,7 +1,8 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { createOwner, freshClient } from './owner';
 
 /**
- * The admin area is for admins. A customer who registered on the site has a
+ * The admin area is for admins. A customer who activated a sticker has a
  * perfectly valid session — and it must open nothing here. The two systems use
  * different cookies, different cryptography and different collections; these
  * tests are what proves it stays that way.
@@ -10,21 +11,8 @@ import { expect, test, type Page } from '@playwright/test';
 const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL;
 const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD;
 
-const PASSWORD = 'e2e-access-password';
-const run = Date.now().toString(36);
-
 /** Every admin page a signed-in customer might try. */
 const ADMIN_PAGES = ['/fr/admin', '/fr/admin/tags', '/fr/admin/orders', '/fr/admin/settings', '/fr/admin/customers'];
-
-async function registerCustomer(page: Page, email: string) {
-  await page.goto('/en/register');
-  await page.getByLabel('Full name').fill('Amine Belkacem');
-  await page.getByLabel('Email').fill(email);
-  await page.getByLabel('WhatsApp number').fill('0551 23 45 67');
-  await page.getByLabel('Password').fill(PASSWORD);
-  await page.getByRole('button', { name: 'Create my account' }).click();
-  await expect(page).toHaveURL(/\/en\/dashboard/, { timeout: 60_000 });
-}
 
 test.describe('the admin area is closed to customers', () => {
   test.describe.configure({ mode: 'serial' });
@@ -38,9 +26,9 @@ test.describe('the admin area is closed to customers', () => {
 
   test('a signed-in customer gets the admin login, never admin data', async ({ browser }) => {
     test.setTimeout(180_000);
-    const context = await browser.newContext();
+    const context = await freshClient(browser);
     const page = await context.newPage();
-    await registerCustomer(page, `e2e-access-${run}@example.dz`);
+    await createOwner(page);
 
     for (const path of ADMIN_PAGES) {
       await page.goto(path);
@@ -81,7 +69,7 @@ test.describe('the admin area is closed to customers', () => {
     // Being an admin is not being a customer: no owner session comes with it.
     await page.goto('/en/dashboard');
     await expect(page).toHaveURL(/\/en\/login\?next=/);
-    await page.goto('/en/activate');
+    await page.goto('/en/dashboard/car');
     await expect(page).toHaveURL(/\/en\/login\?next=/);
 
     await context.close();

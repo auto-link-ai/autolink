@@ -19,6 +19,10 @@ describe('naming a car that may not be described yet', () => {
   it('uses what there is, without a dangling separator', () => {
     expect(carLabel({ brand: 'Dacia', model: 'Logan', color: ' ' })).toBe('Dacia Logan');
     expect(carName({ brand: 'Renault', model: '' })).toBe('Renault');
-    expect(carDescribed({ brand: 'Renault', model: '', color: 'Blanc' })).toBe(false);
+    expect(carDescribed({ brand: 'Renault', model: '' })).toBe(false);
+  });
+
+  it('counts a car as described with make and model: the colour is optional', () => {
+    expect(carDescribed({ brand: 'Renault', model: 'Symbol' })).toBe(true);
   });
 });

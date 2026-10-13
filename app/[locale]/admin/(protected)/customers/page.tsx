@@ -12,15 +12,13 @@ import {
   parseCustomerResult,
   type CustomerListQuery,
 } from '@/lib/admin/customerListQuery';
+import { adminCustomersQueries } from '@/lib/db/repositories/customersAdminQueries';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
-import { usersRepository } from '@/lib/db/repositories/users';
 import { USER_STATUSES } from '@/lib/domain/constants';
 import { cx } from '@/lib/cx';
 import { formatDateTime } from '@/lib/format/date';
+import { formatPhone } from '@/lib/format/phone';
 import { CustomerDetail } from './_components/CustomerDetail';
-import { NewCustomerForm } from './_components/NewCustomerForm';
-import { newCustomerLabels } from './_components/newCustomerLabels';
-import { buttonClasses } from '@/components/ui/Button';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -41,40 +39,28 @@ export default async function AdminCustomersPage({ params, searchParams }: Props
   const hrefFor = (patch: Partial<CustomerListQuery>) =>
     `${listPath}${customerListSearch({ ...query, page: 1, ...patch })}`;
   const returnSearch = customerListSearch(query);
+  const nameOf = (c: { firstName: string; lastName: string }) => `${c.firstName} ${c.lastName}`.trim() || t('detail.noName');
 
   const [summary, page] = await Promise.all([
-    usersRepository.countSummary(session.actor),
-    usersRepository.listForAdmin(
+    adminCustomersQueries.countSummary(session.actor),
+    adminCustomersQueries.listForAdmin(
       session.actor,
-      { status: query.status, email: query.email, phone: query.phone },
+      { status: query.status, phone: query.phone, name: query.name },
       query.page,
     ),
   ]);
 
-  const selected = query.id ? await usersRepository.getForAdmin(session.actor, query.id) : null;
+  const selected = query.id ? await adminCustomersQueries.getForAdmin(session.actor, query.id) : null;
   const stickers = selected ? await ownerTagsRepository.listForOwnerAdmin(session.actor, selected.publicUserId) : [];
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-h2 text-text">{t('title')}</h1>
-          <p className="mt-1 text-text-secondary">
-            {t('subtitle', { total: summary.total, blocked: summary.blocked, recent: summary.newLast7Days })}
-          </p>
-        </div>
-        {session.actor.role === 'ADMIN' && (
-          <NextLink href={`${listPath}?new=1`} className={buttonClasses('primary', 'sm')}>
-            + {t('new.button')}
-          </NextLink>
-        )}
+      <div>
+        <h1 className="text-h2 text-text">{t('title')}</h1>
+        <p className="mt-1 text-text-secondary">
+          {t('subtitle', { total: summary.total, blocked: summary.blocked, recent: summary.newLast7Days })}
+        </p>
       </div>
-
-      {raw.new === '1' && session.actor.role === 'ADMIN' && (
-        <Card title={t('new.title')} description={t('new.hint')}>
-          <NewCustomerForm locale={locale} listHref={listPath} labels={await newCustomerLabels()} />
-        </Card>
-      )}
 
       {result && (
         <p
@@ -128,11 +114,12 @@ export default async function AdminCustomersPage({ params, searchParams }: Props
             {query.status && <input type="hidden" name="status" value={query.status} />}
             <label className="flex flex-col gap-1.5 text-sm font-semibold text-text">
               {t('list.searchLabel')}
+              {/* auto: a number reads left to right, an Arabic name right to left */}
               <input
                 name="q"
                 defaultValue={query.q}
                 placeholder={t('list.searchPlaceholder')}
-                dir="ltr"
+                dir="auto"
                 className="h-11 w-56 rounded-sm border border-border-strong bg-surface px-3 text-sm font-normal"
               />
             </label>
@@ -152,7 +139,7 @@ export default async function AdminCustomersPage({ params, searchParams }: Props
             <table className="w-full min-w-190 text-start text-sm">
               <thead className="text-xs uppercase tracking-wide text-text-muted">
                 <tr>
-                  {(['email', 'name', 'phone', 'stickers', 'registered', 'lastLogin', 'status'] as const).map((key) => (
+                  {(['name', 'phone', 'stickers', 'registered', 'lastLogin', 'status'] as const).map((key) => (
                     <th key={key} scope="col" className="py-2 pe-4 text-start font-semibold">
                       {t(`list.columns.${key}`)}
                     </th>
@@ -161,29 +148,25 @@ export default async function AdminCustomersPage({ params, searchParams }: Props
               </thead>
               <tbody className="divide-y divide-border">
                 {page.items.map((customer) => (
-                  // Keyed by email: unique in the database, and present even on
-                  // an account that predates public ids.
-                  <tr key={customer.email} className="align-middle">
+                  // The phone, unique too, stands in for an account the
+                  // public-id backfill has not reached yet.
+                  <tr key={customer.publicUserId || customer.phone} className="align-middle">
                     <td className="py-3 pe-4">
                       {customer.publicUserId ? (
                         <NextLink
                           href={`${listPath}${customerListSearch({ ...query, id: customer.publicUserId })}`}
-                          dir="ltr"
                           className="font-semibold text-accent hover:underline"
                         >
-                          {customer.email}
+                          {nameOf(customer)}
                         </NextLink>
                       ) : (
-                        <span dir="ltr" className="font-semibold text-text">
-                          {customer.email}
-                        </span>
+                        <span className="font-semibold text-text">{nameOf(customer)}</span>
                       )}
                     </td>
-                    <td className="py-3 pe-4 text-text">{customer.name ?? '—'}</td>
                     {/* dir on the value, not the cell: on the cell it flips which
                         side the padding lands on, and the columns collide in Arabic. */}
                     <td className="py-3 pe-4 text-text-secondary">
-                      <span dir="ltr">{customer.phone ?? '—'}</span>
+                      <span dir="ltr">{formatPhone(customer.phone)}</span>
                     </td>
                     <td className="py-3 pe-4 text-text">{customer.stickerCount}</td>
                     <td className="py-3 pe-4 text-text-secondary">{formatDateTime(customer.createdAt, locale)}</td>
