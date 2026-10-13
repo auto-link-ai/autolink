@@ -6,8 +6,10 @@
  * `ref` it hands back is only ever passed back to `markReminded`, never out of
  * the server, and the cron route answers with counts alone.
  *
- * A reminder is "due" when its date is inside the horizon (overdue included)
- * and it has not been sent for that exact date yet. Blocked accounts get none.
+ * A reminder is "due" when its date is inside the horizon — late ones included,
+ * back to `oldest`, so a date typed in long after it passed never triggers a
+ * (paid) message — and it has not been sent for that exact date yet. Blocked
+ * accounts get none.
  */
 import 'server-only';
 import type { Types } from 'mongoose';
@@ -27,13 +29,17 @@ export interface DueReminder {
   ref: Types.ObjectId;
   userId: string;
   locale: Locale;
+  /** For the WhatsApp reminder: only sent when the owner switched it on. */
+  phone: string | null;
+  firstName: string;
+  whatsappReminders: boolean;
   publicTagId: string;
   /** « Peugeot 3008 », or null while the car is not described yet. */
   carLabel: string | null;
   dueDate: Date;
 }
 
-type Candidate = Omit<DueReminder, 'userId' | 'locale' | 'publicTagId' | 'carLabel'> & {
+type Candidate = Pick<DueReminder, 'kind' | 'ref' | 'dueDate'> & {
   vehicleId: Types.ObjectId;
   ownerId: Types.ObjectId;
 };
@@ -52,9 +58,9 @@ const REMINDED_PATH: Record<Exclude<CareDueKind, 'OIL_CHANGE'>, string> = {
 
 const same = (a: Date | null | undefined, b: Date) => a?.getTime() === b.getTime();
 
-async function vehicleCandidates(horizon: Date): Promise<Candidate[]> {
+async function vehicleCandidates(horizon: Date, oldest: Date): Promise<Candidate[]> {
   const vehicles = await VehicleModel.find(
-    { $or: VEHICLE_DUES.map(({ path }) => ({ [path]: { $ne: null, $lte: horizon } })) },
+    { $or: VEHICLE_DUES.map(({ path }) => ({ [path]: { $ne: null, $gte: oldest, $lte: horizon } })) },
     { ownerId: 1, care: 1 },
   ).lean();
 
@@ -63,7 +69,7 @@ async function vehicleCandidates(horizon: Date): Promise<Candidate[]> {
     for (const { kind, pick } of VEHICLE_DUES) {
       const part = pick(vehicle);
       const dueDate = part && ('expiryDate' in part ? part.expiryDate : part.nextDueDate);
-      if (!dueDate || dueDate > horizon || same(part.remindedFor, dueDate)) continue;
+      if (!dueDate || dueDate > horizon || dueDate < oldest || same(part.remindedFor, dueDate)) continue;
       out.push({ kind, ref: vehicle._id, vehicleId: vehicle._id, ownerId: vehicle.ownerId, dueDate });
     }
   }
@@ -71,7 +77,7 @@ async function vehicleCandidates(horizon: Date): Promise<Candidate[]> {
 }
 
 /** Only the latest oil change of each car counts: its "next change" is the current one. */
-async function oilCandidates(horizon: Date): Promise<Candidate[]> {
+async function oilCandidates(horizon: Date, oldest: Date): Promise<Candidate[]> {
   const latest = await ServiceRecordModel.aggregate<{
     _id: Types.ObjectId;
     recordId: Types.ObjectId;
@@ -90,7 +96,7 @@ async function oilCandidates(horizon: Date): Promise<Candidate[]> {
         remindedFor: { $first: '$remindedFor' },
       },
     },
-    { $match: { nextDueDate: { $ne: null, $lte: horizon } } },
+    { $match: { nextDueDate: { $ne: null, $gte: oldest, $lte: horizon } } },
   ]);
   return latest
     .filter((oil) => oil.nextDueDate && !same(oil.remindedFor, oil.nextDueDate))
@@ -104,13 +110,16 @@ async function oilCandidates(horizon: Date): Promise<Candidate[]> {
 }
 
 export const careRemindersRepository = {
-  async findDue(_system: SystemActor, horizon: Date): Promise<DueReminder[]> {
+  async findDue(_system: SystemActor, horizon: Date, oldest: Date): Promise<DueReminder[]> {
     await connectToDatabase();
-    const candidates = [...(await vehicleCandidates(horizon)), ...(await oilCandidates(horizon))];
+    const candidates = [...(await vehicleCandidates(horizon, oldest)), ...(await oilCandidates(horizon, oldest))];
     if (candidates.length === 0) return [];
 
     const [users, tags, vehicles] = await Promise.all([
-      UserModel.find({ _id: { $in: candidates.map((c) => c.ownerId) }, status: 'ACTIVE' }, { locale: 1 }).lean(),
+      UserModel.find(
+        { _id: { $in: candidates.map((c) => c.ownerId) }, status: 'ACTIVE' },
+        { locale: 1, phone: 1, firstName: 1, whatsappReminders: 1 },
+      ).lean(),
       TagModel.find({ vehicleId: { $in: candidates.map((c) => c.vehicleId) } }, { publicTagId: 1, vehicleId: 1 }).lean(),
       VehicleModel.find({ _id: { $in: candidates.map((c) => c.vehicleId) } }, { brand: 1, model: 1 }).lean(),
     ]);
@@ -130,6 +139,9 @@ export const careRemindersRepository = {
           ref: candidate.ref,
           userId: user._id.toString(),
           locale: user.locale,
+          phone: user.phone ?? null,
+          firstName: user.firstName ?? '',
+          whatsappReminders: user.whatsappReminders ?? false,
           publicTagId,
           carLabel,
           dueDate: candidate.dueDate,

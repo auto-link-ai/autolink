@@ -153,9 +153,11 @@ async function deleteOwner(
     );
     stickers = released.modifiedCount;
     const messageIds = (await MessageModel.find({ ownerId }, { _id: 1 }).session(session).lean()).map((m) => m._id);
-    if (messageIds.length > 0) {
-      await NotificationAttemptModel.deleteMany({ messageId: { $in: messageIds } }, { session });
-    }
+    // Attempts kept against its messages, and those kept against the account (reminders).
+    await NotificationAttemptModel.deleteMany(
+      { $or: [{ messageId: { $in: messageIds } }, { userId: ownerId }] },
+      { session },
+    );
     await MessageModel.deleteMany({ ownerId }, { session });
     await ServiceRecordModel.deleteMany({ ownerId }, { session });
     const cars = (await VehicleModel.deleteMany({ ownerId }, { session })).deletedCount;

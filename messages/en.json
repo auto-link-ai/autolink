@@ -1349,7 +1349,7 @@
     "adding": "Adding…",
     "due": {
       "title": "Coming up",
-      "hint": "With notifications on, you are reminded {days, plural, one {# day} other {# days}} before.",
+      "hint": "With notifications or WhatsApp reminders on (on your Messages page), you are reminded {days, plural, one {# day} other {# days}} before.",
       "kinds": {
         "OIL_CHANGE": "Oil change",
         "INSURANCE": "Insurance",

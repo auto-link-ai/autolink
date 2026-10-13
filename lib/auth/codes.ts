@@ -1,6 +1,7 @@
 import 'server-only';
 import { randomInt } from 'node:crypto';
 import { getSettings } from '@/lib/config/settings';
+import { notificationAttemptsRepository } from '@/lib/db/repositories/notificationAttempts';
 import { phoneCodesRepository, type ActivationDetails, type Challenge } from '@/lib/db/repositories/phoneCodes';
 import { rateLimitsRepository } from '@/lib/db/repositories/rateLimits';
 import { VERIFICATION_CODE, type PhoneCodePurpose } from '@/lib/domain/constants';
@@ -77,6 +78,18 @@ async function deliverCode(phone: string, code: string): Promise<boolean> {
     body: [code],
     buttonSuffix: code,
   });
+  if (result.status !== 'SKIPPED') {
+    // Counted for the admin (each one is a paid message): the outcome only, never the number or the code.
+    await notificationAttemptsRepository
+      .recordOther({ kind: 'system' }, {
+        purpose: 'CODE',
+        userId: null,
+        channel: 'WHATSAPP',
+        status: result.status,
+        error: result.status === 'FAILED' ? result.error : null,
+      })
+      .catch((error: unknown) => console.error('[codes] recording a send failed:', error instanceof Error ? error.message : error));
+  }
   return result.status === 'SENT';
 }
 

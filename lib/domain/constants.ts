@@ -35,6 +35,10 @@ export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];
 export const NOTIFICATION_ATTEMPT_STATUSES = ['SENT', 'FAILED', 'SKIPPED'] as const;
 export type NotificationAttemptStatus = (typeof NOTIFICATION_ATTEMPT_STATUSES)[number];
 
+/** Why a notification went out: a scanner's message, a car book date, a sign-in code. */
+export const NOTIFICATION_PURPOSES = ['MESSAGE', 'REMINDER', 'CODE'] as const;
+export type NotificationPurpose = (typeof NOTIFICATION_PURPOSES)[number];
+
 /** What a WhatsApp verification code proves the phone for. */
 export const PHONE_CODE_PURPOSES = ['ACTIVATE', 'RESET_PIN'] as const;
 export type PhoneCodePurpose = (typeof PHONE_CODE_PURPOSES)[number];

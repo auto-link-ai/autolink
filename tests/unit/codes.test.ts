@@ -48,6 +48,9 @@ const hit = vi.fn(async (key: string, limit: number) => {
 const sendWhatsAppTemplate = vi.fn<(send: WhatsAppTemplateSend) => Promise<{ status: 'SENT' }>>(async () => ({ status: 'SENT' }));
 
 vi.mock('@/lib/db/repositories/phoneCodes', () => ({ phoneCodesRepository }));
+vi.mock('@/lib/db/repositories/notificationAttempts', () => ({
+  notificationAttemptsRepository: { recordOther: vi.fn(async () => undefined) },
+}));
 vi.mock('@/lib/db/repositories/rateLimits', () => ({ rateLimitsRepository: { hit } }));
 vi.mock('@/lib/config/settings', () => ({
   getSettings: async () => ({ codesPerPhonePerDay: 5, codesPerTagPerDay: 5, codesPerIpPerHour: 20, codesPerDay: 500 }),
