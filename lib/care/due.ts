@@ -41,6 +41,11 @@ export function algiersToday(now: Date = new Date()): Date {
   return new Date(`${day}T00:00:00.000Z`);
 }
 
+/** The instant Algeria's current day began (Algeria is UTC+1 all year, no summer time). */
+export function algiersDayStart(now: Date = new Date()): Date {
+  return new Date(algiersToday(now).getTime() - 60 * 60 * 1000);
+}
+
 export function addDays(day: Date, days: number): Date {
   return new Date(day.getTime() + days * DAY_MS);
 }

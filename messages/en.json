@@ -74,7 +74,7 @@
     "badge": "Admin",
     "nav": {
       "label": "Admin navigation",
-      "tags": "Tags",
+      "tags": "Stickers",
       "logout": "Sign out",
       "orders": "Orders",
       "settings": "Settings",
@@ -94,14 +94,14 @@
       }
     },
     "tags": {
-      "title": "Tags",
+      "title": "Stickers",
       "generate": {
         "title": "Generate a batch",
-        "intro": "Creates the tags and downloads a print-ready ZIP: the stickers, nothing else. Customers activate theirs by scanning it.",
+        "intro": "Creates the stickers and downloads a print-ready ZIP, nothing else. Customers activate theirs by scanning it.",
         "label": "Batch name",
         "labelHint": "Something you'll recognise, e.g. \"September print run\"",
         "quantity": "Quantity",
-        "quantityHint": "1 to {max} tags per batch",
+        "quantityHint": "1 to {max} stickers per batch",
         "qrTarget": "QR codes will point to",
         "submit": "Generate and download",
         "working": "Generating…",
@@ -118,15 +118,15 @@
         "statuses": "Statuses"
       },
       "list": {
-        "title": "All tags",
-        "count": "{count, plural, =0 {No tags} one {# tag} other {# tags}}",
+        "title": "All stickers",
+        "count": "{count, plural, =0 {No stickers} one {# sticker} other {# stickers}}",
         "filterLabel": "Filter by status",
         "filterAll": "All",
         "search": "Search",
-        "searchLabel": "Tag ID",
+        "searchLabel": "Sticker ID",
         "searchPlaceholder": "AUT-7K3M…",
-        "empty": "No tags match.",
-        "tagId": "Tag",
+        "empty": "No stickers match.",
+        "tagId": "Sticker",
         "status": "Status",
         "batch": "Batch",
         "activated": "Activated",
@@ -138,8 +138,8 @@
       "results": {
         "ok": "Status updated.",
         "not_allowed": "That change isn't possible from the current status.",
-        "conflict": "The tag changed in the meantime. Try again.",
-        "not_found": "Tag not found.",
+        "conflict": "The sticker changed in the meantime. Try again.",
+        "not_found": "Sticker not found.",
         "deleted": "Sticker deleted.",
         "cleaned": "Unused stickers deleted.",
         "taken_back": "Sticker taken back: it is “Unassigned”. Whoever scans it next can activate it.",
@@ -194,9 +194,9 @@
         "not_found": "Order not found.",
         "not_allowed": "That action is not possible in this state.",
         "conflict": "The order changed in the meantime. Try again.",
-        "tags_missing": "Assign all of the order’s tags first.",
-        "wrong_count": "The number of tags must match the quantity ordered.",
-        "unavailable": "Some tags are not available (already assigned or activated).",
+        "tags_missing": "Assign all of the order’s stickers first.",
+        "wrong_count": "The number of stickers must match the quantity ordered.",
+        "unavailable": "Some stickers are not available (already assigned or activated).",
         "invalid": "Invalid input.",
         "created": "Order created.",
         "deleted": "Order deleted.",
@@ -256,9 +256,9 @@
         "deliveryFee": "Delivery fee",
         "total": "Total",
         "noActions": "No action is possible in this state.",
-        "assignLabel": "Tags to assign ({count} expected)",
+        "assignLabel": "Stickers to assign ({count} expected)",
         "assignHint": "IDs separated by a space, a comma or a new line.",
-        "assignSubmit": "Assign tags",
+        "assignSubmit": "Assign stickers",
         "courier": "Courier",
         "tracking": "Tracking number",
         "saveShipping": "Save delivery details",
@@ -318,55 +318,19 @@
     "overview": {
       "title": "Overview",
       "subtitle": "What is waiting for you, and where AutoLink stands.",
-      "cards": {
-        "pending": "Pending orders",
-        "unassigned": "Unassigned tags",
-        "activated": "Activated tags",
-        "customers": "Customer accounts"
-      },
-      "hints": {
-        "pending": "Waiting for you.",
-        "unassigned": "Printed, not claimed yet.",
-        "activated": "Linked to a car.",
-        "customers": "Created on the site."
-      },
-      "orders": {
-        "title": "Orders by status",
-        "description": "Since day one."
-      },
-      "tags": {
-        "title": "Tags by status",
-        "description": "Every tag generated."
-      },
-      "customers": {
-        "title": "Customers",
-        "description": "Accounts created on the site.",
-        "total": "Total",
-        "active": "Active",
-        "blocked": "Blocked",
-        "newLast7Days": "New (7 days)"
-      },
       "queue": {
-        "title": "To do",
-        "description": "Orders waiting to be confirmed, oldest first.",
+        "title": "Orders to call",
+        "description": "Oldest first: call the one that has waited longest.",
         "empty": "Nothing waiting. You are up to date.",
         "seeAll": "See all {count} orders"
       },
-      "shortcuts": {
-        "title": "Shortcuts",
-        "generate": "Generate a batch of tags",
-        "orders": "All orders",
-        "settings": "Price and delivery fees"
-      },
       "activations": {
         "title": "Recent activations",
-        "description": "Tags their owners linked to a car.",
-        "empty": "No tag activated yet."
-      },
-      "newCustomers": {
-        "title": "New customers",
-        "description": "The newest accounts created on the site.",
-        "empty": "No account yet."
+        "description": "Which sticker, on which car, by whom.",
+        "empty": "No sticker activated yet.",
+        "noCar": "Unnamed car",
+        "noOwner": "Account deleted",
+        "noName": "No name"
       },
       "placeholders": {
         "title": "Contact details are still missing",
@@ -377,6 +341,34 @@
           "contactEmail": "contact email",
           "phone": "phone"
         }
+      },
+      "todo": {
+        "title": "To do",
+        "pending": "To confirm",
+        "pendingHint": "Orders: call the customer.",
+        "toShip": "To prepare and ship",
+        "toShipHint": "Confirmed, not sent yet.",
+        "blocked": "Blocked messages",
+        "blockedHint": "Stopped by the check: to review.",
+        "whatsappFailed": "WhatsApp failures",
+        "whatsappFailedHint": "Today: refused by WhatsApp (number, template or payment)."
+      },
+      "week": {
+        "title": "Last 7 days",
+        "orders": "Orders",
+        "ordersHint": "{revenue} in total (cancelled aside)",
+        "activated": "Stickers activated",
+        "activatedHint": "New owners and new cars.",
+        "whatsapp": "WhatsApp accepted",
+        "whatsappHint": "Alerts {alerts} · Reminders {reminders} · Codes {codes}",
+        "stock": "Stickers in stock",
+        "stockHint": "Printed, ready to ship.",
+        "stockLow": "Low stock: generate a new batch."
+      },
+      "whatsappNote": "“Accepted”: WhatsApp took the message (each one is paid for). Delivery to the phone is not confirmed.",
+      "codesOff": {
+        "title": "WhatsApp codes not set up",
+        "body": "Without WHATSAPP_CODE_TEMPLATE_NAME, customers can neither activate a sticker nor recover their PIN (in development the code shows in the server log)."
       }
     },
     "customers": {

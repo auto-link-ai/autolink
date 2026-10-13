@@ -74,7 +74,7 @@
     "badge": "Admin",
     "nav": {
       "label": "Navigation administration",
-      "tags": "Étiquettes",
+      "tags": "Autocollants",
       "logout": "Se déconnecter",
       "orders": "Commandes",
       "settings": "Réglages",
@@ -94,14 +94,14 @@
       }
     },
     "tags": {
-      "title": "Étiquettes",
+      "title": "Autocollants",
       "generate": {
         "title": "Générer un lot",
-        "intro": "Crée les étiquettes et télécharge un ZIP prêt à imprimer : les autocollants, rien d'autre. Le client active le sien en le scannant.",
+        "intro": "Crée les autocollants et télécharge un ZIP prêt à imprimer, rien d'autre. Le client active le sien en le scannant.",
         "label": "Nom du lot",
         "labelHint": "Pour vous repérer, ex. « Impression septembre »",
         "quantity": "Quantité",
-        "quantityHint": "De 1 à {max} étiquettes par lot",
+        "quantityHint": "De 1 à {max} autocollants par lot",
         "qrTarget": "Les QR codes pointeront vers",
         "submit": "Générer et télécharger",
         "working": "Génération en cours…",
@@ -118,18 +118,18 @@
         "statuses": "Statuts"
       },
       "list": {
-        "title": "Toutes les étiquettes",
-        "count": "{count, plural, =0 {Aucune étiquette} one {# étiquette} other {# étiquettes}}",
+        "title": "Tous les autocollants",
+        "count": "{count, plural, =0 {Aucun autocollant} one {# autocollant} other {# autocollants}}",
         "filterLabel": "Filtrer par statut",
         "filterAll": "Toutes",
         "search": "Rechercher",
-        "searchLabel": "Identifiant d'étiquette",
+        "searchLabel": "Identifiant de l'autocollant",
         "searchPlaceholder": "AUT-7K3M…",
-        "empty": "Aucune étiquette ne correspond.",
-        "tagId": "Étiquette",
+        "empty": "Aucun autocollant ne correspond.",
+        "tagId": "Autocollant",
         "status": "Statut",
         "batch": "Lot",
-        "activated": "Activée le",
+        "activated": "Activé le",
         "actions": "Actions",
         "previous": "Précédent",
         "next": "Suivant",
@@ -138,25 +138,25 @@
       "results": {
         "ok": "Statut mis à jour.",
         "not_allowed": "Ce changement n'est pas possible depuis le statut actuel.",
-        "conflict": "L'étiquette a changé entre-temps. Réessayez.",
-        "not_found": "Étiquette introuvable.",
-        "deleted": "Étiquette supprimée.",
-        "cleaned": "Étiquettes inutilisées supprimées.",
-        "taken_back": "Étiquette reprise : elle est « Non attribuée ». La prochaine personne qui la scanne pourra l'activer.",
-        "forbidden": "Seul un compte administrateur peut supprimer ou reprendre une étiquette."
+        "conflict": "L'autocollant a changé entre-temps. Réessayez.",
+        "not_found": "Autocollant introuvable.",
+        "deleted": "Autocollant supprimé.",
+        "cleaned": "Autocollants inutilisés supprimés.",
+        "taken_back": "Autocollant repris : il est « Non attribué ». La prochaine personne qui le scanne pourra l'activer.",
+        "forbidden": "Seul un compte administrateur peut supprimer ou reprendre un autocollant."
       },
       "status": {
-        "UNASSIGNED": "Non attribuée",
-        "ACTIVE": "Active",
-        "DEACTIVATED": "Désactivée",
-        "SUSPENDED": "Suspendue",
-        "LOST": "Perdue"
+        "UNASSIGNED": "Non attribué",
+        "ACTIVE": "Actif",
+        "DEACTIVATED": "Désactivé",
+        "SUSPENDED": "Suspendu",
+        "LOST": "Perdu"
       },
       "actions": {
         "suspend": "Suspendre",
         "deactivate": "Désactiver",
         "reactivate": "Réactiver",
-        "markLost": "Marquer perdue"
+        "markLost": "Marquer perdu"
       },
       "errors": {
         "base_url_missing": "NEXT_PUBLIC_APP_URL n'est pas défini : impossible de savoir vers quelle adresse pointeront les QR codes.",
@@ -175,13 +175,13 @@
       },
       "edit": {
         "delete": "Supprimer",
-        "deleteConfirm": "L'étiquette {tagId} n'a jamais servi : elle sera supprimée définitivement.",
+        "deleteConfirm": "L'autocollant {tagId} n'a jamais servi : il sera supprimé définitivement.",
         "deleteYes": "Oui, supprimer",
         "takeBack": "Reprendre",
-        "takeBackConfirm": "L'étiquette {tagId} sera retirée à son client et redeviendra « Non attribuée ». Le carnet de cette voiture sera supprimé ; le client garde ses messages. Ensuite, la prochaine personne qui la scanne pourra l'activer.",
+        "takeBackConfirm": "L'autocollant {tagId} sera retiré à son client et redeviendra « Non attribué ». Le carnet de cette voiture sera supprimé ; le client garde ses messages. Ensuite, la prochaine personne qui le scanne pourra l'activer.",
         "takeBackYes": "Oui, reprendre",
-        "clean": "{count, plural, one {Supprimer l’étiquette inutilisée} other {Supprimer les # inutilisées}}",
-        "cleanConfirm": "{count, plural, one {L’étiquette jamais utilisée de ce lot sera supprimée} other {Les # étiquettes jamais utilisées de ce lot seront supprimées}}. Les étiquettes utilisées ne sont jamais touchées ; le lot disparaît s'il ne lui reste rien.",
+        "clean": "{count, plural, one {Supprimer l'autocollant inutilisé} other {Supprimer les # inutilisés}}",
+        "cleanConfirm": "{count, plural, one {L'autocollant jamais utilisé de ce lot sera supprimé} other {Les # autocollants jamais utilisés de ce lot seront supprimés}}. Les autocollants utilisés ne sont jamais touchés ; le lot disparaît s'il ne lui reste rien.",
         "cleanYes": "Oui, supprimer"
       }
     },
@@ -194,9 +194,9 @@
         "not_found": "Commande introuvable.",
         "not_allowed": "Cette action n’est pas possible dans cet état.",
         "conflict": "La commande a changé entre-temps. Réessayez.",
-        "tags_missing": "Assignez d’abord toutes les étiquettes de la commande.",
-        "wrong_count": "Le nombre d’étiquettes doit correspondre à la quantité commandée.",
-        "unavailable": "Certaines étiquettes ne sont pas disponibles (déjà assignées ou activées).",
+        "tags_missing": "Assignez d'abord tous les autocollants de la commande.",
+        "wrong_count": "Le nombre d'autocollants doit correspondre à la quantité commandée.",
+        "unavailable": "Certains autocollants ne sont pas disponibles (déjà assignés ou activés).",
         "invalid": "Saisie invalide.",
         "created": "Commande créée.",
         "deleted": "Commande supprimée.",
@@ -256,9 +256,9 @@
         "deliveryFee": "Frais de livraison",
         "total": "Total",
         "noActions": "Aucune action possible dans cet état.",
-        "assignLabel": "Étiquettes à assigner ({count} attendue(s))",
+        "assignLabel": "Autocollants à assigner ({count} attendu(s))",
         "assignHint": "Identifiants séparés par un espace, une virgule ou un retour à la ligne.",
-        "assignSubmit": "Assigner les étiquettes",
+        "assignSubmit": "Assigner les autocollants",
         "courier": "Transporteur",
         "tracking": "Numéro de suivi",
         "saveShipping": "Enregistrer la livraison",
@@ -318,55 +318,19 @@
     "overview": {
       "title": "Vue d'ensemble",
       "subtitle": "Ce qui vous attend, et où en est AutoLink.",
-      "cards": {
-        "pending": "Commandes en attente",
-        "unassigned": "Étiquettes non attribuées",
-        "activated": "Étiquettes activées",
-        "customers": "Comptes clients"
-      },
-      "hints": {
-        "pending": "À traiter.",
-        "unassigned": "Imprimées, pas encore liées.",
-        "activated": "Liées à une voiture.",
-        "customers": "Créés sur le site."
-      },
-      "orders": {
-        "title": "Commandes par statut",
-        "description": "Depuis le premier jour."
-      },
-      "tags": {
-        "title": "Étiquettes par statut",
-        "description": "Toutes les étiquettes générées."
-      },
-      "customers": {
-        "title": "Clients",
-        "description": "Comptes créés sur le site.",
-        "total": "Total",
-        "active": "Actifs",
-        "blocked": "Bloqués",
-        "newLast7Days": "Nouveaux (7 jours)"
-      },
       "queue": {
-        "title": "À faire",
-        "description": "Les commandes en attente, la plus ancienne en premier.",
+        "title": "Commandes à appeler",
+        "description": "La plus ancienne en premier : appelez d'abord celle qui attend depuis le plus longtemps.",
         "empty": "Rien à traiter. Tout est à jour.",
         "seeAll": "Voir les {count} commandes"
       },
-      "shortcuts": {
-        "title": "Raccourcis",
-        "generate": "Générer un lot d’étiquettes",
-        "orders": "Toutes les commandes",
-        "settings": "Prix et frais de livraison"
-      },
       "activations": {
         "title": "Dernières activations",
-        "description": "Étiquettes liées à une voiture par leur propriétaire.",
-        "empty": "Aucune étiquette activée pour le moment."
-      },
-      "newCustomers": {
-        "title": "Nouveaux clients",
-        "description": "Derniers comptes créés sur le site.",
-        "empty": "Aucun compte pour le moment."
+        "description": "Quel autocollant, sur quelle voiture, par qui.",
+        "empty": "Aucun autocollant activé pour le moment.",
+        "noCar": "Voiture sans nom",
+        "noOwner": "Compte supprimé",
+        "noName": "Sans nom"
       },
       "placeholders": {
         "title": "Des coordonnées manquent encore",
@@ -377,6 +341,34 @@
           "contactEmail": "e-mail de contact",
           "phone": "téléphone"
         }
+      },
+      "todo": {
+        "title": "À faire",
+        "pending": "À confirmer",
+        "pendingHint": "Commandes : appelez le client.",
+        "toShip": "À préparer et expédier",
+        "toShipHint": "Confirmées, pas encore parties.",
+        "blocked": "Messages bloqués",
+        "blockedHint": "Arrêtés par la vérification : à revoir.",
+        "whatsappFailed": "WhatsApp en échec",
+        "whatsappFailedHint": "Aujourd'hui : refusés par WhatsApp (numéro, modèle ou paiement)."
+      },
+      "week": {
+        "title": "Ces 7 derniers jours",
+        "orders": "Commandes",
+        "ordersHint": "{revenue} au total (hors annulées)",
+        "activated": "Autocollants activés",
+        "activatedHint": "Nouveaux propriétaires et nouvelles voitures.",
+        "whatsapp": "WhatsApp acceptés",
+        "whatsappHint": "Alertes {alerts} · Rappels {reminders} · Codes {codes}",
+        "stock": "Autocollants en stock",
+        "stockHint": "Imprimés, prêts à être expédiés.",
+        "stockLow": "Stock bas : générez un nouveau lot."
+      },
+      "whatsappNote": "« Acceptés » : WhatsApp a pris le message (chacun est payant). La réception sur le téléphone n'est pas confirmée.",
+      "codesOff": {
+        "title": "Codes WhatsApp non configurés",
+        "body": "Sans WHATSAPP_CODE_TEMPLATE_NAME, les clients ne peuvent ni activer un autocollant ni retrouver leur code PIN (en développement, le code s'affiche dans la console du serveur)."
       }
     },
     "customers": {
@@ -396,11 +388,11 @@
         "BLOCKED": "Bloqué"
       },
       "tagStatus": {
-        "UNASSIGNED": "Non attribuée",
-        "ACTIVE": "Active",
-        "DEACTIVATED": "Désactivée",
-        "SUSPENDED": "Suspendue",
-        "LOST": "Perdue"
+        "UNASSIGNED": "Non attribué",
+        "ACTIVE": "Actif",
+        "DEACTIVATED": "Désactivé",
+        "SUSPENDED": "Suspendu",
+        "LOST": "Perdu"
       },
       "list": {
         "title": "Comptes",
@@ -418,7 +410,7 @@
         "columns": {
           "name": "Nom",
           "phone": "Téléphone",
-          "stickers": "Étiquettes",
+          "stickers": "Autocollants",
           "registered": "Inscrit le",
           "lastLogin": "Dernière connexion",
           "status": "Statut"
@@ -430,8 +422,8 @@
         "registered": "Inscrit le",
         "lastLogin": "Dernière connexion",
         "never": "Jamais",
-        "stickers": "Étiquettes ({count})",
-        "noStickers": "Aucune étiquette activée.",
+        "stickers": "Autocollants ({count})",
+        "noStickers": "Aucun autocollant activé.",
         "noVehicle": "Sans détails de voiture",
         "firstName": "Prénom",
         "lastName": "Nom",
@@ -452,7 +444,7 @@
         "blockConfirm": "{name} ne pourra plus se connecter, et sa session actuelle s’arrête immédiatement. Vous pourrez le débloquer ensuite.",
         "blockYes": "Oui, bloquer ce compte",
         "delete": "Supprimer le compte",
-        "deleteConfirm": "Le compte {name} sera supprimé définitivement, avec ses voitures, leurs carnets, ses messages et ses notifications. {count, plural, =0 {Il n'a aucune étiquette.} one {Son étiquette redevient « Non attribuée » : qui la scanne ensuite peut l'activer.} other {Ses # étiquettes redeviennent « Non attribuées » : qui les scanne ensuite peut les activer.}} Les commandes sont conservées.",
+        "deleteConfirm": "Le compte {name} sera supprimé définitivement, avec ses voitures, leurs carnets, ses messages et ses notifications. {count, plural, =0 {Il n'a aucun autocollant.} one {Son autocollant redevient « Non attribué » : qui le scanne ensuite peut l'activer.} other {Ses # autocollants redeviennent « Non attribués » : qui les scanne ensuite peut les activer.}} Les commandes sont conservées.",
         "deleteYes": "Oui, supprimer ce compte"
       },
       "errors": {

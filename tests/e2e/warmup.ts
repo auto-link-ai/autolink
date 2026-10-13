@@ -79,7 +79,7 @@ export default async function warmUp(config: FullConfig): Promise<() => Promise<
     await page.getByLabel('Email').fill(ADMIN_EMAIL!);
     await page.getByLabel('Password').fill(ADMIN_PASSWORD!);
     await page.getByRole('button', { name: 'Sign in' }).click();
-    await page.waitForURL(/\/en\/admin\/(tags|orders)$/, { timeout: 60_000 });
+    await page.waitForURL(/\/en\/admin$/, { timeout: 60_000 });
     await page.context().storageState({ path: ADMIN_STATE });
     for (const route of ADMIN_ROUTES) await page.goto(route);
   } finally {

@@ -62,6 +62,12 @@ export const blockedMessagesRepository = {
   },
 
   /** Newest first. */
+  /** How many stopped messages wait for a look — the overview's « to review ». */
+  async count(_admin: AdminActor): Promise<number> {
+    await connectToDatabase();
+    return BlockedMessageModel.countDocuments({});
+  },
+
   async listForAdmin(_admin: AdminActor, limit = 100): Promise<BlockedMessageDTO[]> {
     await connectToDatabase();
     const rows = await BlockedMessageModel.find(

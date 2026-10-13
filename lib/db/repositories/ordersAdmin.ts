@@ -74,6 +74,23 @@ export const adminOrdersRepository = {
     return counts;
   },
 
+  /** The overview's queue: orders waiting for their call, the one waiting longest first. */
+  async queue(_admin: AdminActor, limit: number): Promise<OrderDTO[]> {
+    await connectToDatabase();
+    const docs = await OrderModel.find({ status: 'PENDING' }, ORDER_DTO_FIELDS).sort({ createdAt: 1 }).limit(limit).lean();
+    return docs.map(toOrderDTO);
+  },
+
+  /** Orders taken since `since`, cancelled ones aside, and what they come to. */
+  async takenSince(_admin: AdminActor, since: Date): Promise<{ count: number; revenue: number }> {
+    await connectToDatabase();
+    const [row] = await OrderModel.aggregate<{ count: number; revenue: number }>([
+      { $match: { createdAt: { $gte: since }, status: { $ne: 'CANCELLED' } } },
+      { $group: { _id: null, count: { $sum: 1 }, revenue: { $sum: '$totalPrice' } } },
+    ]);
+    return { count: row?.count ?? 0, revenue: row?.revenue ?? 0 };
+  },
+
   async list(_admin: AdminActor, filter: AdminOrderFilter, page: number): Promise<AdminOrderPage> {
     await connectToDatabase();
     const query = toQuery(filter);

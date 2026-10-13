@@ -53,5 +53,5 @@ export async function adminLoginAction(formData: FormData): Promise<void> {
   const token = await sealAdminSession({ sub: record.id, role: record.role }, process.env.AUTH_SECRET);
   (await cookies()).set(ADMIN_COOKIE_NAME, token, adminCookieOptions);
   await adminUsersRepository.touchLastLogin(record.id);
-  redirect(`/${locale}/admin/tags`);
+  redirect(`/${locale}/admin`);
 }

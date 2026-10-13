@@ -62,7 +62,7 @@ test.describe('activating a sticker: scan it, say who you are, it is yours', () 
     await page.getByLabel('Email').fill(ADMIN_EMAIL!);
     await page.getByLabel('Password').fill(ADMIN_PASSWORD!);
     await page.getByRole('button', { name: 'Sign in' }).click();
-    await expect(page).toHaveURL(/\/en\/admin\/(tags|orders)$/, { timeout: 60_000 });
+    await expect(page).toHaveURL(/\/en\/admin$/, { timeout: 60_000 });
 
     await page.goto('/en/admin/tags');
     await page.getByLabel('Batch name').fill('E2E activation');

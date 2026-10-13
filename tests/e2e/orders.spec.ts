@@ -188,7 +188,7 @@ test.describe('ordering end to end', () => {
 
     // The order is for two stickers, so one id is the wrong count.
     await page.getByLabel(/Tags to assign/).fill(tagId);
-    await page.getByRole('button', { name: 'Assign tags' }).click();
+    await page.getByRole('button', { name: 'Assign stickers' }).click();
     await expect(page.getByText('The number of tags must match the quantity ordered.')).toBeVisible();
   });
 

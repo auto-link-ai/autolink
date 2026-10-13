@@ -44,10 +44,9 @@ test.describe('an admin looking after a customer', () => {
     const page = await office.newPage();
     await page.goto('/en/admin');
     await expect(page.getByRole('heading', { name: 'Overview', level: 1 })).toBeVisible();
-    // The batch just generated is counted as unassigned.
-    const unassigned = page.getByRole('link', { name: /Unassigned tags/ });
-    await expect(unassigned).toContainText('Printed, not claimed yet.');
-    await expect(page.getByRole('link', { name: /Customer accounts/ })).toBeVisible();
+    // The batch just generated is counted in the stock, and what needs doing comes first.
+    await expect(page.getByRole('link', { name: /Stickers in stock/ })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'To do' })).toBeVisible();
     await office.close();
   });
 

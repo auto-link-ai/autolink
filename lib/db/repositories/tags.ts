@@ -14,11 +14,14 @@
 import 'server-only';
 import { connectToDatabase } from '@/lib/db/connect';
 import { TagModel } from '@/lib/db/models/tag';
+import { UserModel } from '@/lib/db/models/user';
+import { VehicleModel } from '@/lib/db/models/vehicle';
 import { TAG_STATUSES, type TagAction, type TagStatus } from '@/lib/domain/constants';
 import { canApply, targetStatus } from '@/lib/tags/transitions';
 import type { AdminActor } from './actor';
 import { auditLogsRepository } from './auditLogs';
 import type { PublicVehicleView } from './vehicles';
+import { carName } from '@/lib/vehicles/carName';
 
 /** Owner/admin view of a tag. */
 export interface TagDTO {
@@ -61,6 +64,10 @@ export interface ActivatedTagRow {
   publicTagId: string;
   status: TagStatus;
   activatedAt: Date;
+  /** « Hyundai Accent », or null while the car has no name. */
+  car: string | null;
+  /** Who activated it — null once the account is gone. */
+  owner: { publicUserId: string; name: string } | null;
 }
 
 export const ADMIN_TAG_PAGE_SIZE = 50;
@@ -77,16 +84,40 @@ export const tagsRepository = {
     return counts;
   },
 
-  /** The stickers customers claimed most recently — the dashboard's activity list. */
+  /** The stickers customers activated most recently, with the car and who — the overview's activity list. */
   async recentlyActivated(_admin: AdminActor, limit = 5): Promise<ActivatedTagRow[]> {
     await connectToDatabase();
-    return TagModel.find(
+    const tags = await TagModel.find(
       { activatedAt: { $ne: null } },
-      { _id: 0, publicTagId: 1, activatedAt: 1, status: 1 },
+      { _id: 0, publicTagId: 1, activatedAt: 1, status: 1, ownerId: 1, vehicleId: 1 },
     )
       .sort({ activatedAt: -1 })
       .limit(limit)
-      .lean<ActivatedTagRow[]>();
+      .lean();
+    // One lookup each, rather than one per row.
+    const [vehicles, users] = await Promise.all([
+      VehicleModel.find({ _id: { $in: tags.map((tag) => tag.vehicleId) } }, { brand: 1, model: 1 }).lean(),
+      UserModel.find({ _id: { $in: tags.map((tag) => tag.ownerId) } }, { publicUserId: 1, firstName: 1, lastName: 1 }).lean(),
+    ]);
+    const vehicleById = new Map(vehicles.map((vehicle) => [vehicle._id.toString(), vehicle]));
+    const userById = new Map(users.map((user) => [user._id.toString(), user]));
+    return tags.map((tag) => {
+      const vehicle = tag.vehicleId ? vehicleById.get(tag.vehicleId.toString()) : undefined;
+      const user = tag.ownerId ? userById.get(tag.ownerId.toString()) : undefined;
+      return {
+        publicTagId: tag.publicTagId,
+        status: tag.status,
+        activatedAt: tag.activatedAt!,
+        car: vehicle ? carName(vehicle) : null,
+        owner: user ? { publicUserId: user.publicUserId ?? '', name: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() } : null,
+      };
+    });
+  },
+
+  /** How many stickers were activated since `since`. */
+  async activatedSince(_admin: AdminActor, since: Date): Promise<number> {
+    await connectToDatabase();
+    return TagModel.countDocuments({ activatedAt: { $gte: since } });
   },
 
   /** Which of these ids already exist (collision check before a batch is created). */

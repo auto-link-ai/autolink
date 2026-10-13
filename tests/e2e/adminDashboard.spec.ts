@@ -2,8 +2,9 @@ import { expect, test, type Page } from '@playwright/test';
 import { adminContext, hasAdminCredentials } from './adminSession';
 
 /**
- * The dashboard and the shell around it. The queue is the point: an order that
- * arrived must be visible and one click away without filtering anything.
+ * The dashboard and the shell around it. An order that arrived must be counted
+ * as work and one click from where it is handled; the queue lists the orders
+ * that have waited longest.
  */
 
 /** Orders the way a customer does, on the one-page form. */
@@ -26,7 +27,7 @@ test.describe('the admin dashboard', () => {
     test.skip(testInfo.project.name !== 'desktop-chromium', 'Writes to the database: run once.');
   });
 
-  test('a new order lands in the queue and opens from it', async ({ browser }) => {
+  test('a new order is counted as work, and opens from the dashboard', async ({ browser }) => {
     test.setTimeout(180_000);
     const shop = await browser.newContext();
     const customer = await shop.newPage();
@@ -38,16 +39,19 @@ test.describe('the admin dashboard', () => {
     await page.goto('/en/admin');
 
     await expect(page.getByRole('heading', { name: 'Overview', level: 1 })).toBeVisible();
-    // The stat card says there is work, and the sidebar badge agrees.
-    const pendingCard = page.getByRole('link', { name: /Pending orders/ });
+    // The card says there is work, and the sidebar badge agrees.
+    const pendingCard = page.getByRole('link', { name: /To confirm/ });
     await expect(pendingCard).toBeVisible();
     await expect(page.getByRole('navigation').first().getByRole('link', { name: /Orders/ })).toContainText(/\d/);
+    // The queue lists the orders waiting longest; this new one may come after them.
+    await expect(page.getByRole('region', { name: 'Orders to call' })).toBeVisible();
 
-    const queue = page.getByRole('region', { name: 'To do' });
+    // One click from the card: the pending orders, newest first.
+    await pendingCard.click();
+    await expect(page).toHaveURL(/\/en\/admin\/orders\?status=PENDING/);
     // Scoped to this order's own row: other orders may share a customer name.
-    const row = queue.getByRole('link', { name: new RegExp(orderRef) });
+    const row = page.getByRole('link', { name: new RegExp(orderRef) }).first();
     await expect(row).toBeVisible();
-    await expect(row).toContainText('Yasmine Haddad');
     await row.click();
     await expect(page).toHaveURL(new RegExp(`/en/admin/orders\\?.*ref=${orderRef}`));
     // Opening it from the dashboard lands on the order itself, ready to confirm.
@@ -65,7 +69,7 @@ test.describe('the admin dashboard', () => {
 
     for (const [name, url] of [
       ['Customers', /\/en\/admin\/customers$/],
-      ['Tags', /\/en\/admin\/tags$/],
+      ['Stickers', /\/en\/admin\/tags$/],
       ['Settings', /\/en\/admin\/settings$/],
       ['Overview', /\/en\/admin$/],
     ] as const) {
@@ -86,7 +90,7 @@ test.describe('the admin dashboard', () => {
 
     await page.goto('/en/admin');
     // Every section stays reachable without a drawer.
-    for (const name of ['Overview', 'Orders', 'Tags', 'Customers', 'Settings']) {
+    for (const name of ['Overview', 'Orders', 'Customers', 'Stickers', 'Settings']) {
       await expect(page.getByRole('link', { name: new RegExp(`^${name}`) }).first()).toBeVisible();
     }
 

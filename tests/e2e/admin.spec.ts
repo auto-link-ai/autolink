@@ -44,7 +44,7 @@ async function signIn(page: Page) {
   await page.getByRole('button', { name: 'Sign in' }).click();
   // `next dev` compiles the target route on this first hit; under parallel
   // workers that can take longer than the default 5s expectation.
-  await expect(page).toHaveURL(/\/en\/admin\/tags$/, { timeout: 60_000 });
+  await expect(page).toHaveURL(/\/en\/admin$/, { timeout: 60_000 });
 }
 
 async function readZip(download: import('@playwright/test').Download) {
@@ -105,7 +105,7 @@ test.describe('with an admin account', () => {
 
     // The new tags appear as unassigned; mark one lost, then reactivate it.
     const firstId = rows[0]![0]!;
-    await page.getByLabel('Tag ID').fill(firstId);
+    await page.getByLabel('Sticker ID').fill(firstId);
     await page.getByRole('button', { name: 'Search' }).click();
     const row = page.getByRole('row', { name: new RegExp(firstId) });
     await expect(row.getByText('Unassigned')).toBeVisible();

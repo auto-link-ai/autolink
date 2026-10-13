@@ -9,8 +9,8 @@ import 'server-only';
 import { connectToDatabase } from '@/lib/db/connect';
 import { MessageModel } from '@/lib/db/models/message';
 import { NotificationAttemptModel } from '@/lib/db/models/notificationAttempt';
-import type { NotificationAttemptStatus, NotificationChannel } from '@/lib/domain/constants';
-import type { SystemActor } from './actor';
+import type { NotificationAttemptStatus, NotificationChannel, NotificationPurpose } from '@/lib/domain/constants';
+import type { AdminActor, SystemActor } from './actor';
 import { toObjectId } from './objectId';
 
 // Trimmed: a provider error can be long, and it is only a breadcrumb.
@@ -35,6 +35,26 @@ export const notificationAttemptsRepository = {
       status,
       error: trimmed(error),
     });
+  },
+
+  /**
+   * What went out since `since`, counted by purpose, channel and outcome — the
+   * admin overview's numbers. Counts only: nothing about who or what.
+   */
+  async counts(
+    _admin: AdminActor,
+    since: Date,
+  ): Promise<Array<{ purpose: NotificationPurpose; channel: NotificationChannel; status: NotificationAttemptStatus; count: number }>> {
+    await connectToDatabase();
+    const rows = await NotificationAttemptModel.aggregate<{
+      _id: { purpose: NotificationPurpose | null; channel: NotificationChannel; status: NotificationAttemptStatus };
+      count: number;
+    }>([
+      { $match: { createdAt: { $gte: since } } },
+      { $group: { _id: { purpose: '$purpose', channel: '$channel', status: '$status' }, count: { $sum: 1 } } },
+    ]);
+    // Attempts kept before purposes existed were all message alerts.
+    return rows.map((row) => ({ ...row._id, purpose: row._id.purpose ?? 'MESSAGE', count: row.count }));
   },
 
   /** SYSTEM ONLY: a car book reminder (for an account) or a verification code (maybe before one exists). */

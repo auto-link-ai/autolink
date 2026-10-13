@@ -26,7 +26,7 @@ export default async function AdminLoginPage({ params, searchParams }: Props) {
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
-  if (await getAdminSession()) redirect(`/${locale}/admin/tags`);
+  if (await getAdminSession()) redirect(`/${locale}/admin`);
 
   const { error } = await searchParams;
   const errorKey = error === 'invalid' || error === 'throttled' ? error : null;
