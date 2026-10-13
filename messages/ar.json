@@ -1298,6 +1298,9 @@
       "dueOn": "الموعد: {date}.",
       "overdue": "كان الموعد في {date}.",
       "yourCar": "سيارتك"
+    },
+    "whatsapp": {
+      "nameFallback": "صاحب السيارة"
     }
   },
   "care": {

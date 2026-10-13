@@ -29,7 +29,7 @@ export type MessageCategory = (typeof MESSAGE_CATEGORIES)[number];
 export const MESSAGE_STATUSES = ['UNREAD', 'READ', 'ARCHIVED'] as const;
 export type MessageStatus = (typeof MESSAGE_STATUSES)[number];
 
-export const NOTIFICATION_CHANNELS = ['PUSH', 'EMAIL'] as const;
+export const NOTIFICATION_CHANNELS = ['PUSH', 'EMAIL', 'WHATSAPP'] as const;
 export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];
 
 export const NOTIFICATION_ATTEMPT_STATUSES = ['SENT', 'FAILED', 'SKIPPED'] as const;

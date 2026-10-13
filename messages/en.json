@@ -1298,6 +1298,9 @@
       "dueOn": "Due on {date}.",
       "overdue": "It was due on {date}.",
       "yourCar": "your car"
+    },
+    "whatsapp": {
+      "nameFallback": "car owner"
     }
   },
   "care": {

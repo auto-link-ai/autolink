@@ -104,24 +104,37 @@ export const messagesRepository = {
   },
 
   /**
-   * What a notification may say: which car, what kind of problem, in the
-   * owner's language. Never the body — a lock screen is a public place.
+   * SYSTEM ONLY (notify.ts): what the owner's alerts are built from. Push uses
+   * the car and the kind of problem, never the body — a lock screen is a public
+   * place. The body, name and number are for the WhatsApp template, sent to
+   * the owner's own number.
    */
-  async findForNotification(
-    publicId: string,
-  ): Promise<{ category: MessageCategory; vehicleLabel: string | null; locale: Locale } | null> {
+  async findForNotification(publicId: string): Promise<{
+    category: MessageCategory;
+    vehicleLabel: string | null;
+    locale: Locale;
+    body: string;
+    ownerName: string | null;
+    ownerPhone: string | null;
+  } | null> {
     await connectToDatabase();
-    const message = await MessageModel.findOne({ publicId }, { category: 1, vehicleId: 1, ownerId: 1 }).lean();
+    const message = await MessageModel.findOne(
+      { publicId },
+      { category: 1, vehicleId: 1, ownerId: 1, body: 1 },
+    ).lean();
     if (!message) return null;
 
     const [vehicle, owner] = await Promise.all([
       VehicleModel.findById(message.vehicleId, { brand: 1, model: 1, color: 1 }).lean(),
-      UserModel.findById(message.ownerId, { locale: 1 }).lean(),
+      UserModel.findById(message.ownerId, { locale: 1, name: 1, phone: 1 }).lean(),
     ]);
     return {
       category: message.category,
       vehicleLabel: vehicleLabel(vehicle ?? null),
       locale: owner?.locale ?? 'fr',
+      body: message.body ?? '',
+      ownerName: owner?.name?.trim() || null,
+      ownerPhone: owner?.phone ?? null,
     };
   },
 
