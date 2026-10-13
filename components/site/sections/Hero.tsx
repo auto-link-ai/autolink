@@ -5,7 +5,7 @@ import type { Locale } from '@/i18n/locales';
 import type { PublicPricing } from '@/lib/site/pricing';
 import { NotificationCard } from '../illustrations/NotificationCard';
 import { ArrowDownIcon, ArrowIcon, BellIcon, BoltIcon, CashIcon, LockIcon, QrIcon, ScanIcon } from '../icons';
-import { href } from '../links';
+import { orderHref } from '../links';
 
 /** The hero photo's pre-generated widths (public/images/hero-scan-*.webp). */
 const PHOTO_WIDTHS = [640, 960, 1280, 1536] as const;
@@ -43,7 +43,7 @@ export async function Hero({ locale, pricing }: { locale: Locale; pricing: Publi
           <p className="mt-5 max-w-[52ch] text-[16px] leading-relaxed text-text-secondary md:text-lg">{t('body')}</p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-7">
-            <Link href={href(locale, '/order')} className={buttonClasses('primary', 'md', 'w-full sm:w-auto')}>
+            <Link href={orderHref(locale)} className={buttonClasses('primary', 'md', 'w-full sm:w-auto')}>
               {t('cta')}
               <ArrowIcon />
             </Link>

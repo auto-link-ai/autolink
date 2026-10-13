@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { buttonClasses } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
 import { ArrowIcon } from '../icons';
-import { href } from '../links';
+import { orderHref } from '../links';
 
 export async function CtaBand({ locale }: { locale: Locale }) {
   const t = await getTranslations('site.ctaBand');
@@ -17,7 +17,7 @@ export async function CtaBand({ locale }: { locale: Locale }) {
             <p className="mt-3 text-[16px] leading-relaxed opacity-90 md:text-lg">{t('body')}</p>
           </div>
           <Link
-            href={href(locale, '/order')}
+            href={orderHref(locale)}
             className={buttonClasses('primary', 'md', 'shrink-0 bg-white! text-accent! hover:bg-surface-2!')}
           >
             {t('button')}

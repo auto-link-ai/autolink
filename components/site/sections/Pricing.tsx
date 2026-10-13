@@ -4,7 +4,7 @@ import { buttonClasses } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
 import type { PublicPricing } from '@/lib/site/pricing';
 import { ArrowIcon, CashIcon, CheckIcon, PhoneIcon, TruckIcon } from '../icons';
-import { href } from '../links';
+import { orderHref } from '../links';
 
 const INCLUDES = ['sticker', 'code', 'unlimited', 'notify', 'noSubscription'] as const;
 const HOW = [
@@ -62,7 +62,7 @@ export async function Pricing({
             </ul>
 
             <p className="mt-7 border-t border-border pt-5 text-sm leading-relaxed text-text-secondary">{t('delivery')}</p>
-            <Link href={href(locale, '/order')} className={buttonClasses('primary', 'md', 'mt-6 w-full sm:w-auto')}>
+            <Link href={orderHref(locale)} className={buttonClasses('primary', 'md', 'mt-6 w-full sm:w-auto')}>
               {t('cta')}
               <ArrowIcon />
             </Link>

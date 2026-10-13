@@ -12,7 +12,7 @@ import { messagesRepository } from '@/lib/db/repositories/messages';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { InstallApp } from './InstallApp';
 import { KeepSignedIn } from './KeepSignedIn';
-import { href } from './links';
+import { href, orderHref } from './links';
 import { BackButton } from './BackButton';
 import { MobileMenu, type MenuAccount, type NavItem } from './MobileMenu';
 import { OwnerBar, OwnerTabs, type OwnerNavItem } from './OwnerNav';
@@ -151,7 +151,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
               )}
               {/* In the iPhone app the back arrow needs the room; ordering stays in the menu. */}
               <Link
-                href={href(locale, '/order')}
+                href={orderHref(locale)}
                 className={buttonClasses('primary', 'sm', 'hidden sm:inline-flex ios-app:hidden!')}
               >
                 {t('order')}
@@ -161,7 +161,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
                 items={session ? items : [...items, { href: href(locale, '/login'), label: t('signIn') }]}
                 openLabel={t('menu')}
                 closeLabel={t('closeMenu')}
-                orderHref={href(locale, '/order')}
+                orderHref={orderHref(locale)}
                 orderLabel={t('order')}
                 footer={<LanguageSwitcher current={locale} label={common('languageSwitcherLabel')} />}
                 always={Boolean(session)}

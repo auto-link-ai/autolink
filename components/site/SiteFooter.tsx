@@ -4,7 +4,7 @@ import { Wordmark } from '@/components/Wordmark';
 import type { Locale } from '@/i18n/locales';
 import { publicSite } from '@/lib/config/site';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { href } from './links';
+import { href, orderHref } from './links';
 
 /**
  * The site's footer. On a phone it stays short — the links wrap on two or
@@ -21,7 +21,7 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
       links: [
         { href: href(locale, '/how-it-works'), label: t('nav.howItWorks') },
         { href: href(locale, '/pricing'), label: t('nav.pricing') },
-        { href: href(locale, '/order'), label: t('nav.order') },
+        { href: orderHref(locale), label: t('nav.order') },
         { href: href(locale, '/faq'), label: t('nav.faq') },
         { href: href(locale, '/contact'), label: t('nav.contact') },
       ],
