@@ -12,7 +12,14 @@ const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL;
 const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD;
 
 /** Every admin page a signed-in customer might try. */
-const ADMIN_PAGES = ['/fr/admin', '/fr/admin/tags', '/fr/admin/orders', '/fr/admin/settings', '/fr/admin/customers'];
+const ADMIN_PAGES = [
+  '/fr/admin',
+  '/fr/admin/tags',
+  '/fr/admin/orders',
+  '/fr/admin/renewals',
+  '/fr/admin/settings',
+  '/fr/admin/customers',
+];
 
 test.describe('the admin area is closed to customers', () => {
   test.describe.configure({ mode: 'serial' });

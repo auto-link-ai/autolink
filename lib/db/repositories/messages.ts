@@ -23,6 +23,7 @@ import type { MessageCategory, MessageStatus } from '@/lib/domain/constants';
 import { generateMessagePublicId } from '@/lib/tags/generate';
 import { isValidTagIdShape } from '@/lib/validation/tagId';
 import type { OwnerActor, ScannerActor } from './actor';
+import { inService } from './inService';
 import { toObjectId } from './objectId';
 import { carLabel } from '@/lib/vehicles/carName';
 
@@ -72,7 +73,7 @@ function vehicleLabel(vehicle: { brand: string; model: string; color: string } |
 export const messagesRepository = {
   /**
    * A message from someone who scanned a sticker. The tag is resolved here and
-   * must still be ACTIVE; owner, vehicle and tag ids are copied from it, never
+   * must still be ACTIVE and in service; owner, vehicle and tag ids are copied from it, never
    * from the form. A tag that is not available answers `unavailable`, which the
    * page shows as the same generic state as an unknown sticker (rule 9).
    */
@@ -81,7 +82,7 @@ export const messagesRepository = {
     await connectToDatabase();
 
     const tag = await TagModel.findOne(
-      { publicTagId: input.publicTagId, status: 'ACTIVE' },
+      { publicTagId: input.publicTagId, status: 'ACTIVE', ...inService() },
       { _id: 1, ownerId: 1, vehicleId: 1 },
     ).lean();
     if (!tag?.ownerId || !tag.vehicleId) return { ok: false, reason: 'unavailable' };

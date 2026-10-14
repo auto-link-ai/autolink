@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ComponentType, SVGProps } from 'react';
-import { GearIcon, GridIcon, ShieldIcon, StickerIcon, TruckIcon, UsersIcon } from '@/components/site/icons';
+import { CashIcon, GearIcon, GridIcon, ShieldIcon, StickerIcon, TruckIcon, UsersIcon } from '@/components/site/icons';
 import type { Locale } from '@/i18n/locales';
 import {
   ADMIN_SECTIONS,
@@ -16,6 +16,7 @@ import { cx } from '@/lib/cx';
 const ICONS: Record<AdminSection, ComponentType<SVGProps<SVGSVGElement>>> = {
   overview: GridIcon,
   orders: TruckIcon,
+  renewals: CashIcon,
   tags: StickerIcon,
   customers: UsersIcon,
   blocked: ShieldIcon,
@@ -28,13 +29,13 @@ const ICONS: Record<AdminSection, ComponentType<SVGProps<SVGSVGElement>>> = {
  */
 export function AdminNav({
   locale,
-  pending,
+  badges,
   labels,
   layout,
 }: {
   locale: Locale;
-  /** Orders waiting to be confirmed; shown as a badge so a new one is never missed. */
-  pending: number;
+  /** Orders and renewals waiting to be confirmed; shown as badges so a new one is never missed. */
+  badges: Partial<Record<AdminSection, number>>;
   labels: Record<AdminSection, string>;
   layout: 'sidebar' | 'bar';
 }) {
@@ -47,6 +48,7 @@ export function AdminNav({
       {ADMIN_SECTIONS.map((section) => {
         const Icon = ICONS[section];
         const active = section === current;
+        const waiting = badges[section] ?? 0;
         return (
           <li key={section}>
             <Link
@@ -60,14 +62,14 @@ export function AdminNav({
             >
               <Icon className={cx('h-4.5 w-4.5', active ? 'opacity-90' : 'text-text-muted')} />
               {labels[section]}
-              {section === 'orders' && pending > 0 && (
+              {waiting > 0 && (
                 <span
                   className={cx(
                     'ms-auto rounded-full px-2 py-0.5 text-xs font-bold',
                     active ? 'bg-accent-ink/15 text-accent-ink' : 'bg-accent text-accent-ink',
                   )}
                 >
-                  {pending}
+                  {waiting}
                 </span>
               )}
             </Link>

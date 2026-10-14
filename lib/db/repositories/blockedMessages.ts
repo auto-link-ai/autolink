@@ -15,6 +15,7 @@ import { MESSAGE_CATEGORIES, type MessageCategory } from '@/lib/domain/constants
 import { generateBlockedMessageId, generateMessagePublicId } from '@/lib/tags/generate';
 import type { AdminActor, ScannerActor } from './actor';
 import { auditLogsRepository } from './auditLogs';
+import { inService } from './inService';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -107,15 +108,15 @@ export const blockedMessagesRepository = {
 
   /**
    * Gemini was wrong: the entry becomes an ordinary message to the sticker's
-   * current owner, as if it had gone through. Only while that sticker is active;
-   * the caller then notifies the owner as usual.
+   * current owner, as if it had gone through. Only while that sticker is active
+   * and in service; the caller then notifies the owner as usual.
    */
   async deliver(admin: AdminActor, publicId: string, retentionDays: number): Promise<DeliverResult> {
     const mongoose = await connectToDatabase();
     const entry = await BlockedMessageModel.findOne({ publicId }).lean();
     if (!entry) return { ok: false, reason: 'not_found' };
     const tag = await TagModel.findOne(
-      { publicTagId: entry.publicTagId, status: 'ACTIVE' },
+      { publicTagId: entry.publicTagId, status: 'ACTIVE', ...inService() },
       { _id: 1, ownerId: 1, vehicleId: 1 },
     ).lean();
     if (!tag?.ownerId || !tag.vehicleId) return { ok: false, reason: 'unavailable' };

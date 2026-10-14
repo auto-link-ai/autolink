@@ -4,10 +4,10 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { LegalDocument } from '@/components/site/LegalDocument';
 import { routing } from '@/i18n/routing';
-import { getPublicPricing } from '@/lib/site/pricing';
+import { getPublicPricing, servicePhrases } from '@/lib/site/pricing';
 import { pageMetadata } from '@/lib/site/seo';
 
-// The retention period is read from settings.
+// The retention period, the service period and the renewal are read from settings.
 export const dynamic = 'force-dynamic';
 
 type Props = { params: Promise<{ locale: string }> };
@@ -27,5 +27,5 @@ export default async function TermsPage({ params }: Props) {
   const pricing = await getPublicPricing();
   const period = pricing ? price('retentionDays', { days: pricing.retentionDays }) : price('retentionUnknown');
 
-  return <LegalDocument doc="terms" period={period} />;
+  return <LegalDocument doc="terms" values={{ period, ...(await servicePhrases(pricing)) }} />;
 }

@@ -16,14 +16,21 @@ function fill(text: string, values: Record<string, string>): string {
  * catalogues. Company details come from lib/config/site.ts (placeholders until
  * launch); a visible notice says the text must be reviewed by a lawyer.
  */
-export async function LegalDocument({ doc, period }: { doc: 'privacy' | 'terms'; period: string }) {
+export async function LegalDocument({
+  doc,
+  values: extra,
+}: {
+  doc: 'privacy' | 'terms';
+  /** Placeholders filled from settings: the retention `period`; for the terms, the `service` and `renewal`. */
+  values: Record<string, string>;
+}) {
   const t = await getTranslations(`legal.${doc}`);
   const legal = await getTranslations('legal');
   const values = {
     company: publicSite().companyName,
     address: SITE.address,
     email: publicSite().contactEmail ?? SITE.contactEmail ?? publicSite().companyName,
-    period,
+    ...extra,
   };
   const sections = t.raw('sections') as LegalSection[];
 

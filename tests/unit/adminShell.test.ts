@@ -7,6 +7,7 @@ describe('currentAdminSection', () => {
     ['/fr/admin', 'overview'],
     ['/fr/admin/', 'overview'],
     ['/en/admin/orders', 'orders'],
+    ['/fr/admin/renewals', 'renewals'],
     ['/ar/admin/tags', 'tags'],
     // A detail panel or a filter is still the same section.
     ['/fr/admin/customers?id=USR-7K3M9QXZ', 'customers'],

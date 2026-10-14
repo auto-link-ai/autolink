@@ -80,6 +80,16 @@ export const ORDER_FIELD_LIMITS = {
 /** 'AL-' + 6 Crockford base32 characters, shown to the customer. */
 export const ORDER_REF_PATTERN = /^AL-[0-9A-HJKMNP-TV-Z]{6}$/;
 
+/**
+ * A renewal the owner asked for: PENDING until an admin has the payment and
+ * confirms it (the sticker's end moves forward), or cancels it.
+ */
+export const RENEWAL_STATUSES = ['PENDING', 'CONFIRMED', 'CANCELLED'] as const;
+export type RenewalStatus = (typeof RENEWAL_STATUSES)[number];
+
+/** 'RN-' + 6 Crockford base32 characters, shown to the owner. */
+export const RENEWAL_REF_PATTERN = /^RN-[0-9A-HJKMNP-TV-Z]{6}$/;
+
 export const ADMIN_ROLES = ['ADMIN', 'SUPPORT'] as const;
 export type AdminRole = (typeof ADMIN_ROLES)[number];
 

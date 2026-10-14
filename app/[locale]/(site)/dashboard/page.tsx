@@ -12,9 +12,11 @@ import { algiersToday, dueItems, mostUrgent } from '@/lib/care/due';
 import { getSettings } from '@/lib/config/settings';
 import { carBookRepository } from '@/lib/db/repositories/carBook';
 import { messagesRepository } from '@/lib/db/repositories/messages';
+import { renewalsRepository } from '@/lib/db/repositories/renewals';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
 import { usersRepository } from '@/lib/db/repositories/users';
 import { cx } from '@/lib/cx';
+import { formatDzd } from '@/lib/format/currency';
 import { formatPhone } from '@/lib/format/phone';
 import { carName } from '@/lib/vehicles/carName';
 import { signOutAction } from '../_auth/actions';
@@ -43,7 +45,14 @@ function first(value: string | string[] | undefined): string {
 }
 
 /** The banners an action may come back with: `…invalid` ones are errors. */
-const RESULTS: ReadonlySet<string> = new Set(['ok', 'invalid', 'pin_changed', 'reminders_on', 'reminders_off']);
+const RESULTS: ReadonlySet<string> = new Set([
+  'ok',
+  'invalid',
+  'pin_changed',
+  'reminders_on',
+  'reminders_off',
+  'renewal_requested',
+]);
 
 /**
  * The owner's home. Messages first — the reason the product exists — then
@@ -58,14 +67,20 @@ export default async function DashboardPage({ params, searchParams }: Props) {
   const t = await getTranslations('dashboard');
 
   const result = first((await searchParams).result);
-  const [tags, messages, unreadByTag, dueByTag, settings, profile] = await Promise.all([
+  const [tags, messages, unreadByTag, dueByTag, settings, profile, pendingRenewals] = await Promise.all([
     ownerTagsRepository.listForOwner(session.actor),
     messagesRepository.listForOwner(session.actor),
     messagesRepository.unreadByTag(session.actor),
     carBookRepository.dueForOwner(session.actor),
     getSettings(),
     usersRepository.getProfile(session.actor),
+    renewalsRepository.pendingForOwner(session.actor),
   ]);
+  const renewal = {
+    priceLabel: formatDzd(settings.renewalPriceDzd, settings.currencyLabel),
+    months: settings.renewalPeriodMonths,
+    warningDays: settings.renewalWarningDays,
+  };
   const today = algiersToday();
   const dueFor = (publicTagId: string) => {
     const due = dueByTag.get(publicTagId);
@@ -139,6 +154,9 @@ export default async function DashboardPage({ params, searchParams }: Props) {
                       scanUrl={`/t/${tag.publicTagId}?view=public`}
                       unread={unreadByTag.get(tag.publicTagId) ?? 0}
                       nextDue={mostUrgent(dueFor(tag.publicTagId))}
+                      pendingRenewal={pendingRenewals.get(tag.publicTagId) ?? null}
+                      renewal={renewal}
+                      phone={formatPhone(session.phone)}
                     />
                   ))}
                 </ul>

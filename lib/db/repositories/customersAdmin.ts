@@ -20,6 +20,7 @@ import type { UserStatus } from '@/lib/domain/constants';
 import { isValidPublicUserId } from '@/lib/validation/publicUserId';
 import type { AdminActor, SystemActor } from './actor';
 import { auditLogsRepository } from './auditLogs';
+import { cancelOpenRenewalsWithin } from './renewals';
 
 function isDuplicatePhone(error: unknown): boolean {
   const e = error as { code?: unknown; keyPattern?: Record<string, unknown> } | null;
@@ -148,10 +149,20 @@ async function deleteOwner(
     applied = false;
     const released = await TagModel.updateMany(
       { ownerId },
-      { $set: { status: 'UNASSIGNED', ownerId: null, vehicleId: null, activatedAt: null } },
+      {
+        $set: {
+          status: 'UNASSIGNED',
+          ownerId: null,
+          vehicleId: null,
+          activatedAt: null,
+          serviceUntil: null,
+          renewalWarnedFor: null,
+        },
+      },
       { session },
     );
     stickers = released.modifiedCount;
+    await cancelOpenRenewalsWithin(session, { ownerId });
     const messageIds = (await MessageModel.find({ ownerId }, { _id: 1 }).session(session).lean()).map((m) => m._id);
     // Attempts kept against its messages, and those kept against the account (reminders).
     await NotificationAttemptModel.deleteMany(

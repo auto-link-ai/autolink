@@ -17,8 +17,9 @@ import { TagModel } from '@/lib/db/models/tag';
 import { UserModel } from '@/lib/db/models/user';
 import { VehicleModel } from '@/lib/db/models/vehicle';
 import { TAG_STATUSES, type TagAction, type TagStatus } from '@/lib/domain/constants';
+import { addMonths } from '@/lib/renewals/period';
 import { canApply, targetStatus } from '@/lib/tags/transitions';
-import type { AdminActor } from './actor';
+import type { AdminActor, SystemActor } from './actor';
 import { auditLogsRepository } from './auditLogs';
 import type { PublicVehicleView } from './vehicles';
 import { carName } from '@/lib/vehicles/carName';
@@ -112,6 +113,29 @@ export const tagsRepository = {
         owner: user ? { publicUserId: user.publicUserId ?? '', name: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() } : null,
       };
     });
+  },
+
+  /**
+   * Backfill only (`pnpm backfill:service-until`): stickers linked before
+   * service periods existed get the end they would have had — `months` after
+   * they were linked. Safe to run repeatedly: a dated sticker is left alone.
+   */
+  async backfillServiceUntil(_system: SystemActor, months: number): Promise<number> {
+    await connectToDatabase();
+    const undated = await TagModel.find(
+      { activatedAt: { $ne: null }, ownerId: { $ne: null }, serviceUntil: null },
+      { activatedAt: 1 },
+    ).lean();
+    let updated = 0;
+    for (const tag of undated) {
+      if (!tag.activatedAt) continue;
+      const result = await TagModel.updateOne(
+        { _id: tag._id, serviceUntil: null },
+        { $set: { serviceUntil: addMonths(tag.activatedAt, months) } },
+      );
+      updated += result.modifiedCount;
+    }
+    return updated;
   },
 
   /** How many stickers were activated since `since`. */

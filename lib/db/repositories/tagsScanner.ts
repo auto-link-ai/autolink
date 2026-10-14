@@ -6,16 +6,18 @@
  * - It returns the car's make, model and colour ONLY when the owner asked for
  *   them to be shown, and never the owner's name, phone, email, address or
  *   plate (rule 1).
- * - An ACTIVE sticker is `linked`; one nobody owns yet is `waiting`, so whoever
- *   scans it first can link it (rule 9: the packaging hides the QR until
- *   delivery). It returns null for everything else — unknown, deactivated,
- *   suspended, lost — so the page cannot tell those apart.
+ * - An ACTIVE sticker whose service has not ended is `linked`; one nobody owns
+ *   yet is `waiting`, so whoever scans it first can link it (rule 9: the
+ *   packaging hides the QR until delivery). It returns null for everything
+ *   else — unknown, deactivated, suspended, lost, expired — so the page cannot
+ *   tell those apart.
  * - No `_id` leaves this module (rule 4).
  */
 import 'server-only';
 import { connectToDatabase } from '@/lib/db/connect';
 import { TagModel } from '@/lib/db/models/tag';
 import { VehicleModel } from '@/lib/db/models/vehicle';
+import { inService } from '@/lib/db/repositories/inService';
 import { carName } from '@/lib/vehicles/carName';
 import { isValidTagIdShape } from '@/lib/validation/tagId';
 
@@ -38,7 +40,7 @@ export const scannerTagsRepository = {
     const tag = await TagModel.findOne(
       {
         publicTagId,
-        $or: [{ status: 'ACTIVE' }, { status: 'UNASSIGNED', ownerId: null }],
+        $or: [{ status: 'ACTIVE', ...inService() }, { status: 'UNASSIGNED', ownerId: null }],
       },
       { _id: 0, publicTagId: 1, status: 1, vehicleId: 1 },
     ).lean();

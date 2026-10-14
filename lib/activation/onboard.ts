@@ -3,6 +3,7 @@ import type { Locale } from '@/i18n/locales';
 import { checkCode, issueCode, resendCode } from '@/lib/auth/codes';
 import { replacePin } from '@/lib/auth/pinChange';
 import { clearPinAttempts } from '@/lib/auth/pinLimits';
+import { getSettings } from '@/lib/config/settings';
 import { onboardingRepository } from '@/lib/db/repositories/onboarding';
 import { phoneCodesRepository } from '@/lib/db/repositories/phoneCodes';
 import { scannerTagsRepository } from '@/lib/db/repositories/tagsScanner';
@@ -124,10 +125,12 @@ export async function finishActivation(input: {
     pinUpdated = await replacePin(existing.id, phone, input.pin);
   }
 
+  const settings = await getSettings();
   const result = await onboardingRepository.activate(
     { firstName: details.firstName, lastName: details.lastName, phone, pinHash: await hashPin(input.pin), locale: details.locale },
     tagId,
     { brand: details.brand, model: details.model, color: '', plateNumber: null, showDetailsPublicly: true },
+    settings.servicePeriodMonths,
   );
   if (!result.ok) return codeStep({ formError: 'invalid' }, phone);
 

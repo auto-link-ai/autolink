@@ -2,11 +2,11 @@ import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { buttonClasses } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
-import type { PublicPricing } from '@/lib/site/pricing';
+import { servicePhrases, type PublicPricing } from '@/lib/site/pricing';
 import { ArrowIcon, CashIcon, CheckIcon, PhoneIcon, TruckIcon } from '../icons';
 import { orderHref } from '../links';
 
-const INCLUDES = ['sticker', 'code', 'unlimited', 'notify', 'noSubscription'] as const;
+const INCLUDES = ['sticker', 'code', 'unlimited', 'notify', 'renewal'] as const;
 const HOW = [
   { key: 'order', Icon: CheckIcon },
   { key: 'call', Icon: PhoneIcon },
@@ -14,7 +14,7 @@ const HOW = [
   { key: 'pay', Icon: CashIcon },
 ] as const;
 
-/** One product, one price (from settings), cash on delivery. */
+/** One product, one price with its service included (from settings), cash on delivery. */
 export async function Pricing({
   locale,
   pricing,
@@ -26,6 +26,7 @@ export async function Pricing({
 }) {
   const t = await getTranslations('site.pricing');
   const price = await getTranslations('site.price');
+  const phrases = await servicePhrases(pricing);
 
   return (
     <section aria-labelledby={headingLevel === 'h2' ? 'pricing-title' : undefined} className="py-14 md:py-20">
@@ -50,13 +51,15 @@ export async function Pricing({
             ) : (
               <p className="mt-3 text-h2 text-text">{price('unknown')}</p>
             )}
-            <p className="mt-1 text-sm text-text-muted">{t('oneTime')}</p>
+            <p className="mt-1 text-sm text-text-muted">
+              {pricing ? t('oneTime', { service: phrases.service }) : t('oneTimeUnknown')}
+            </p>
 
             <ul className="mt-7 flex flex-col gap-3">
               {INCLUDES.map((key) => (
                 <li key={key} className="flex gap-3 text-[15px] text-text">
                   <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
-                  {t(`includes.${key}`)}
+                  {key === 'renewal' ? t('includes.renewal', { renewal: phrases.renewal }) : t(`includes.${key}`)}
                 </li>
               ))}
             </ul>

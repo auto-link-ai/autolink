@@ -27,5 +27,5 @@ export default async function PrivacyPage({ params }: Props) {
   const pricing = await getPublicPricing();
   const period = pricing ? price('retentionDays', { days: pricing.retentionDays }) : price('retentionUnknown');
 
-  return <LegalDocument doc="privacy" period={period} />;
+  return <LegalDocument doc="privacy" values={{ period }} />;
 }

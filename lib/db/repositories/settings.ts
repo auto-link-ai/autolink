@@ -16,12 +16,16 @@ import { auditLogsRepository } from './auditLogs';
 export type AppSettings = Omit<Setting, 'key' | 'createdAt' | 'updatedAt'>;
 export type { DeliveryFee };
 
-/** The settings an admin edits on /admin/settings (price, quantity, order limit, fees). */
+/** The settings an admin edits on /admin/settings (price, service period, renewal, quantity, order limit, fees). */
 export interface CommerceSettingsInput {
   unitPriceDzd: number;
   currencyLabel: string;
   maxOrderQuantity: number;
   rateLimitOrdersPerHour: number;
+  servicePeriodMonths: number;
+  renewalPriceDzd: number;
+  renewalPeriodMonths: number;
+  renewalWarningDays: number;
   deliveryFees: DeliveryFee[];
 }
 
@@ -44,6 +48,10 @@ function toAppSettings(doc: Setting): AppSettings {
       stopdesk,
     })),
     maxOrderQuantity: doc.maxOrderQuantity,
+    servicePeriodMonths: doc.servicePeriodMonths,
+    renewalPriceDzd: doc.renewalPriceDzd,
+    renewalPeriodMonths: doc.renewalPeriodMonths,
+    renewalWarningDays: doc.renewalWarningDays,
     careReminderDays: doc.careReminderDays,
     careOverdueDays: doc.careOverdueDays,
     pinAttemptsPer15Min: doc.pinAttemptsPer15Min,
@@ -72,13 +80,22 @@ export const settingsRepository = {
     return toAppSettings(doc.toObject());
   },
 
-  /** Admin: price, quantity limit, order rate limit and per-wilaya delivery fees. */
+  /** Admin: price, service period, renewal, quantity limit, order rate limit and per-wilaya delivery fees. */
   async updateCommerce(admin: AdminActor, input: CommerceSettingsInput): Promise<void> {
     const mongoose = await connectToDatabase();
     await mongoose.connection.transaction(async (session) => {
       const before = await SettingModel.findOne(
         { key: 'global' },
-        { _id: 0, unitPriceDzd: 1, maxOrderQuantity: 1, rateLimitOrdersPerHour: 1 },
+        {
+          _id: 0,
+          unitPriceDzd: 1,
+          maxOrderQuantity: 1,
+          rateLimitOrdersPerHour: 1,
+          servicePeriodMonths: 1,
+          renewalPriceDzd: 1,
+          renewalPeriodMonths: 1,
+          renewalWarningDays: 1,
+        },
         { session },
       ).lean();
       await SettingModel.updateOne(
@@ -89,6 +106,10 @@ export const settingsRepository = {
             currencyLabel: input.currencyLabel,
             maxOrderQuantity: input.maxOrderQuantity,
             rateLimitOrdersPerHour: input.rateLimitOrdersPerHour,
+            servicePeriodMonths: input.servicePeriodMonths,
+            renewalPriceDzd: input.renewalPriceDzd,
+            renewalPeriodMonths: input.renewalPeriodMonths,
+            renewalWarningDays: input.renewalWarningDays,
             deliveryFees: input.deliveryFees,
           },
         },
@@ -106,6 +127,10 @@ export const settingsRepository = {
               unitPriceDzd: input.unitPriceDzd,
               maxOrderQuantity: input.maxOrderQuantity,
               rateLimitOrdersPerHour: input.rateLimitOrdersPerHour,
+              servicePeriodMonths: input.servicePeriodMonths,
+              renewalPriceDzd: input.renewalPriceDzd,
+              renewalPeriodMonths: input.renewalPeriodMonths,
+              renewalWarningDays: input.renewalWarningDays,
             },
             deliveryFeesUpdated: input.deliveryFees.length,
           },

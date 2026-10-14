@@ -38,11 +38,12 @@ export async function claimTag(
   const publicTagId = normalizeTagIdInput(tagId);
   if (!publicTagId) return { ok: false, reason: 'invalid' };
 
-  const claimed = await ownerTagsRepository.claim(owner, publicTagId, {
-    ...car,
-    color: '',
-    plateNumber: null,
-    showDetailsPublicly: true,
-  });
+  const settings = await getSettings();
+  const claimed = await ownerTagsRepository.claim(
+    owner,
+    publicTagId,
+    { ...car, color: '', plateNumber: null, showDetailsPublicly: true },
+    settings.servicePeriodMonths,
+  );
   return claimed.ok ? { ok: true, publicTagId } : { ok: false, reason: 'invalid' };
 }

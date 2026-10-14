@@ -8,6 +8,7 @@ import { getSettings } from '@/lib/config/settings';
 import { messagesRepository } from '@/lib/db/repositories/messages';
 import { rateLimitsRepository } from '@/lib/db/repositories/rateLimits';
 import { notificationSubscriptionsRepository } from '@/lib/db/repositories/notificationSubscriptions';
+import { renewalsRepository } from '@/lib/db/repositories/renewals';
 import { ownerTagsRepository } from '@/lib/db/repositories/tagsOwner';
 import { sendPush } from '@/lib/notifications/push';
 import type { SavePushResult } from './pushState';
@@ -31,6 +32,26 @@ export async function toggleStickerAction(formData: FormData): Promise<void> {
 
   const result = await ownerTagsRepository.setOwnerStatus(session.actor, publicTagId, next);
   back(locale, result.ok ? 'ok' : 'invalid');
+}
+
+/**
+ * The owner asking to extend a sticker's service. Price and length come from
+ * settings here, never from the form; the shop then calls to arrange payment.
+ */
+export async function requestRenewalAction(formData: FormData): Promise<void> {
+  const locale = toLocale(formData.get('locale'));
+  const session = await getOwnerSession();
+  if (!session) redirect(`/${locale}/login`);
+
+  const publicTagId = formData.get('publicTagId');
+  if (!isValidTagIdShape(publicTagId)) back(locale, 'invalid');
+
+  const settings = await getSettings();
+  const result = await renewalsRepository.request(session.actor, publicTagId, {
+    price: settings.renewalPriceDzd,
+    months: settings.renewalPeriodMonths,
+  });
+  back(locale, result.ok ? 'renewal_requested' : 'invalid');
 }
 
 /**

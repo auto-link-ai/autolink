@@ -32,7 +32,12 @@ function isDuplicatePhone(error: unknown): boolean {
   return Boolean(e && e.code === 11000 && e.keyPattern && 'phone' in e.keyPattern);
 }
 
-async function activateOnce(owner: NewOwner, publicTagId: string, vehicle: NewVehicle): Promise<OnboardResult> {
+async function activateOnce(
+  owner: NewOwner,
+  publicTagId: string,
+  vehicle: NewVehicle,
+  servicePeriodMonths: number,
+): Promise<OnboardResult> {
   const mongoose = await connectToDatabase();
   let result: OnboardResult = { ok: false, reason: 'taken' };
   await mongoose.connection.transaction(async (session) => {
@@ -49,7 +54,7 @@ async function activateOnce(owner: NewOwner, publicTagId: string, vehicle: NewVe
       if (!doc) throw new Error('onboarding: the account was not created');
       userId = doc._id.toString();
     }
-    await claimWithin(session, { kind: 'owner', userId }, publicTagId, vehicle);
+    await claimWithin(session, { kind: 'owner', userId }, publicTagId, vehicle, servicePeriodMonths);
     result = { ok: true, userId, created: !existing };
   });
   return result;
@@ -60,11 +65,17 @@ export const onboardingRepository = {
    * The new account — or the one this number already has — and the sticker
    * with its car, in one transaction. A sticker someone else won throws inside
    * it, so a new account is rolled back with it: no account without a sticker.
+   * The sticker's service runs `servicePeriodMonths` from now (settings).
    */
-  async activate(owner: NewOwner, publicTagId: string, vehicle: NewVehicle): Promise<OnboardResult> {
+  async activate(
+    owner: NewOwner,
+    publicTagId: string,
+    vehicle: NewVehicle,
+    servicePeriodMonths: number,
+  ): Promise<OnboardResult> {
     for (let attempt = 0; ; attempt++) {
       try {
-        return await activateOnce(owner, publicTagId, vehicle);
+        return await activateOnce(owner, publicTagId, vehicle, servicePeriodMonths);
       } catch (error) {
         if (error instanceof StickerTakenError) return { ok: false, reason: 'taken' };
         // Two activations for one new number at once: the loser goes round

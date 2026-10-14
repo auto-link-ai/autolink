@@ -11,7 +11,8 @@
       "fr": "Français",
       "ar": "العربية",
       "en": "English"
-    }
+    },
+    "period": "{unit, select, year {{count, plural, one {# an} other {# ans}}} other {{count, plural, one {# mois} other {# mois}}}}"
   },
   "scanner": {
     "categories": {
@@ -80,7 +81,8 @@
       "settings": "Réglages",
       "overview": "Vue d'ensemble",
       "customers": "Clients",
-      "blocked": "Messages bloqués"
+      "blocked": "Messages bloqués",
+      "renewals": "Renouvellements"
     },
     "login": {
       "title": "Connexion administrateur",
@@ -304,6 +306,14 @@
         "maxQuantity": "Quantité maximale par commande",
         "orderRateLimit": "Commandes/heure par IP"
       },
+      "service": {
+        "title": "Durée du service et renouvellement",
+        "description": "Un nouvel autocollant inclut cette durée, à compter du moment où il est lié. Les changements valent pour les autocollants liés et les renouvellements demandés à partir de maintenant.",
+        "periodMonths": "Service inclus (mois)",
+        "renewalPrice": "Prix du renouvellement (DZD)",
+        "renewalMonths": "Un renouvellement ajoute (mois)",
+        "warningDays": "Prévenir le propriétaire (jours avant)"
+      },
       "fees": {
         "title": "Frais de livraison par wilaya",
         "description": "Les valeurs initiales sont des PLACEHOLDERS. Saisissez vos tarifs réels avant la première commande.",
@@ -348,6 +358,8 @@
         "pendingHint": "Commandes : appelez le client.",
         "toShip": "À préparer et expédier",
         "toShipHint": "Confirmées, pas encore parties.",
+        "renewals": "Renouvellements",
+        "renewalsHint": "Appelez, encaissez, confirmez.",
         "blocked": "Messages bloqués",
         "blockedHint": "Arrêtés par la vérification : à revoir.",
         "whatsappFailed": "WhatsApp en échec",
@@ -494,6 +506,36 @@
         "costNote": "Le coût exact est dans Google AI Studio, rubrique Facturation. « Sans réponse » : le message a été transmis sans vérification.",
         "empty": "Aucune vérification sur les 30 derniers jours."
       }
+    },
+    "renewals": {
+      "title": "Renouvellements",
+      "subtitle": "Les propriétaires le demandent depuis leur espace. Appelez-les, encaissez, puis confirmez : le service de l'autocollant est prolongé aussitôt. Rien n'est payé en ligne.",
+      "empty": "Aucun renouvellement en attente.",
+      "decided": "Traités récemment",
+      "amount": "{price} · {period}",
+      "noOwner": "Compte supprimé",
+      "until": "Service jusqu'au {date}",
+      "endedOn": "Service terminé le {date}",
+      "noDate": "L'autocollant n'est plus sur ce compte",
+      "confirm": "Paiement reçu",
+      "confirmMessage": "L'autocollant {tagId} reçoit {period} de service en plus. Confirmez seulement une fois le paiement reçu.",
+      "confirmYes": "Oui, prolonger",
+      "cancel": "Annuler la demande",
+      "cancelMessage": "La demande est close ; l'autocollant ne change pas. Le propriétaire peut redemander depuis son espace.",
+      "cancelYes": "Oui, annuler",
+      "status": {
+        "PENDING": "En attente",
+        "CONFIRMED": "Confirmé",
+        "CANCELLED": "Annulé"
+      },
+      "results": {
+        "confirmed": "Confirmé : le service de l'autocollant est prolongé.",
+        "cancelled": "Demande annulée.",
+        "conflict": "Cette demande a déjà été traitée.",
+        "unavailable": "L'autocollant n'est plus sur ce compte : rien n'a changé.",
+        "not_found": "Demande introuvable.",
+        "forbidden": "Seul un compte ADMIN peut confirmer ou annuler un renouvellement."
+      }
     }
   },
   "site": {
@@ -539,7 +581,7 @@
       "body": "Phares restés allumés, sortie bloquée, vitre ouverte : la personne qui le remarque scanne l’autocollant et vous prévient.",
       "cta": "Commander mon autocollant",
       "secondary": "Comment ça marche",
-      "price": "<b>{price}</b> · paiement unique, à la livraison",
+      "price": "<b>{price}</b> · {service} de service inclus, paiement à la livraison",
       "chips": {
         "notify": {
           "title": "Un souci sur la voiture ?",
@@ -550,7 +592,7 @@
     },
     "steps": {
       "eyebrow": "En trois étapes",
-      "title": "Collez-le une fois, restez joignable toujours.",
+      "title": "Collez-le une fois, restez joignable.",
       "subtitle": "Rien à installer, rien à renouveler. L'autocollant fait le travail à votre place.",
       "items": {
         "stick": {
@@ -621,16 +663,17 @@
     },
     "pricing": {
       "eyebrow": "Tarif",
-      "title": "Un seul paiement. Aucun abonnement.",
-      "subtitle": "Vous payez l'autocollant à la livraison. Ensuite, il fonctionne sans rien d'autre à payer.",
+      "title": "Un prix, le service inclus.",
+      "subtitle": "Vous payez l'autocollant à la livraison, et son service est inclus. À la fin, vous renouvelez seulement si vous le voulez : rien n'est jamais prélevé automatiquement.",
       "product": "L'autocollant AutoLink",
-      "oneTime": "Paiement unique, par autocollant",
+      "oneTime": "Par autocollant, avec {service} de service",
+      "oneTimeUnknown": "Par autocollant, service inclus",
       "includes": {
         "sticker": "L'autocollant QR résistant, prêt à coller",
         "code": "Activation en un scan : aucun code à recopier",
         "unlimited": "Messages illimités depuis votre autocollant",
         "notify": "Notifications sur votre téléphone",
-        "noSubscription": "Aucun abonnement, aucun frais caché"
+        "renewal": "Ensuite, {renewal} pour renouveler, seulement si vous le voulez"
       },
       "delivery": "Livraison dans les 58 wilayas. Les frais dépendent de votre wilaya et s'affichent avant de confirmer.",
       "cta": "Commander maintenant",
@@ -669,7 +712,11 @@
         },
         "price": {
           "q": "Combien ça coûte ?",
-          "a": "Un seul paiement de {price} par autocollant, plus les frais de livraison. Aucun abonnement."
+          "a": "{price} par autocollant, plus les frais de livraison. Il inclut {service} de service ; ensuite, le renouvellement coûte {renewal}, seulement si vous voulez continuer. Rien n'est prélevé automatiquement."
+        },
+        "renewal": {
+          "q": "Que se passe-t-il à la fin de la période de service ?",
+          "a": "Avant la fin, vous êtes prévenu sur WhatsApp et dans votre espace. Pour continuer, touchez « Renouveler » dans votre espace : nous vous appelons pour le paiement de {renewal}. Sans renouvellement, qui scanne l'autocollant voit « non disponible » et ne peut plus vous écrire. Votre carnet reste à vous dans tous les cas."
         },
         "receive": {
           "q": "Comment je reçois les messages ?",
@@ -710,7 +757,10 @@
       "unknown": "Prix affiché à la commande",
       "unknownInline": "le prix affiché à la commande",
       "retentionDays": "après {days} jours",
-      "retentionUnknown": "après une durée limitée"
+      "retentionUnknown": "après une durée limitée",
+      "renewal": "{price} pour {period}",
+      "serviceUnknown": "une durée définie",
+      "renewalUnknown": "le prix affiché dans votre espace"
     },
     "footer": {
       "tagline": "Un autocollant QR sur votre voiture : on vous prévient d'un problème sans jamais voir votre numéro.",
@@ -769,10 +819,10 @@
       },
       "pricing": {
         "metaTitle": "Tarif — AutoLink",
-        "metaDescription": "Un seul paiement, aucun abonnement, paiement à la livraison dans les 58 wilayas.",
+        "metaDescription": "Service inclus, renouvellement seulement si vous le voulez, paiement à la livraison dans les 58 wilayas.",
         "eyebrow": "Tarif",
-        "title": "Un prix, une fois.",
-        "subtitle": "L'autocollant se paie à la livraison. Ensuite, il fonctionne sans abonnement ni frais caché."
+        "title": "Un prix. Renouvelez seulement si vous le voulez.",
+        "subtitle": "L'autocollant se paie à la livraison, service inclus. Quand celui-ci se termine, renouveler est votre choix : rien n'est jamais prélevé automatiquement."
       },
       "faq": {
         "metaTitle": "Questions fréquentes — AutoLink",
@@ -877,6 +927,14 @@
           ]
         },
         {
+          "title": "Durée du service et renouvellement",
+          "body": [
+            "Le prix d'un autocollant inclut {service} de service, à compter du moment où il est lié à un compte.",
+            "À la fin de cette période, qui scanne l'autocollant voit qu'il n'est pas disponible, jusqu'à son renouvellement. Le compte du propriétaire et le carnet de sa voiture ne sont pas touchés.",
+            "Le renouvellement n'est jamais automatique. Le propriétaire le demande depuis son espace ; nous le contactons pour le paiement ({renewal}), et le service est prolongé dès réception du paiement — à partir de la date de fin, ou du jour du paiement si cette date est passée."
+          ]
+        },
+        {
           "title": "Usage acceptable",
           "body": [
             "Les messages envoyés doivent rester liés au véhicule. Les insultes, le harcèlement, la publicité et les messages répétés sans motif sont interdits et peuvent entraîner un blocage."
@@ -905,7 +963,7 @@
       "eyebrow": "Autocollant QR pour votre voiture",
       "title": "Qu’on puisse vous prévenir, sans jamais voir votre numéro.",
       "body": "Phares allumés, sortie bloquée, vitre ouverte : la personne qui scanne l’autocollant vous envoie un message, et l’alerte arrive sur votre téléphone.",
-      "priceSuffix": "l’autocollant · paiement unique, sans abonnement",
+      "priceSuffix": "l’autocollant · {service} de service inclus",
       "stickerAlt": "L’autocollant AutoLink : le logo, le QR code et « Scannez pour contacter le propriétaire ».",
       "size": "8 × 11,3 cm"
     },
@@ -914,7 +972,7 @@
       "delivery": "Livraison dans les 58 wilayas",
       "deliveryFree": "Livraison gratuite, 58 wilayas",
       "private": "Votre numéro jamais affiché",
-      "noSubscription": "Sans abonnement ni application"
+      "noAutoPay": "Aucun prélèvement, aucune application"
     },
     "includes": {
       "title": "Ce que vous recevez",
@@ -1201,7 +1259,8 @@
       "invalid": "Modification impossible. Vérifiez les champs.",
       "pin_changed": "Code PIN changé. Vos autres appareils sont déconnectés.",
       "reminders_on": "Rappels WhatsApp activés : vous serez prévenu avant chaque date.",
-      "reminders_off": "Rappels WhatsApp désactivés."
+      "reminders_off": "Rappels WhatsApp désactivés.",
+      "renewal_requested": "Renouvellement demandé : nous vous appelons pour le paiement."
     },
     "status": {
       "UNASSIGNED": "Non activé",
@@ -1303,6 +1362,19 @@
       "turnOn": "Activer les rappels sur WhatsApp",
       "turnOff": "Désactiver les rappels sur WhatsApp",
       "alertsNote": "Les messages laissés sur vos autocollants arrivent toujours sur WhatsApp, que les rappels soient activés ou non."
+    },
+    "service": {
+      "until": "Service actif jusqu'au {date}.",
+      "endedOn": "Service terminé le {date}.",
+      "endedPill": "Service terminé",
+      "offer": "{price} pour {period}",
+      "soonTitle": "Son service se termine le {date}",
+      "soonBody": "Renouvelez-le pour rester joignable : {offer}. Nous vous appelons pour le paiement ; rien n'est prélevé automatiquement.",
+      "expiredTitle": "Son service s'est terminé le {date}",
+      "expiredBody": "Qui le scanne voit « non disponible » et ne peut plus vous écrire. Renouvelez-le : {offer}. Nous vous appelons pour le paiement.",
+      "renew": "Renouveler",
+      "pendingTitle": "Renouvellement demandé",
+      "pendingBody": "Nous vous appelons au {phone} pour le paiement ({offer}). La nouvelle date s'affiche ici une fois confirmée."
     }
   },
   "notifications": {
@@ -1327,6 +1399,9 @@
     },
     "whatsapp": {
       "nameFallback": "propriétaire"
+    },
+    "renewal": {
+      "whatsapp": "Autocollant AutoLink — son service se termine le {date}. Renouvelez-le depuis votre espace : {price} pour {period}."
     }
   },
   "care": {

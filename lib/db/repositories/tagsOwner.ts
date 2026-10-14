@@ -15,6 +15,7 @@ import { TagModel } from '@/lib/db/models/tag';
 import { UserModel } from '@/lib/db/models/user';
 import { VehicleModel } from '@/lib/db/models/vehicle';
 import type { TagStatus } from '@/lib/domain/constants';
+import { addMonths } from '@/lib/renewals/period';
 import { isValidPublicUserId } from '@/lib/validation/publicUserId';
 import type { AdminActor, OwnerActor } from './actor';
 import { auditLogsRepository } from './auditLogs';
@@ -26,6 +27,8 @@ export interface OwnerTagRow {
   publicTagId: string;
   status: TagStatus;
   activatedAt: Date | null;
+  /** End of the paid service; null for a sticker linked before periods existed and not dated yet. */
+  serviceUntil: Date | null;
   vehicle: { brand: string; model: string; color: string; plateNumber: string | null; showDetailsPublicly: boolean } | null;
 }
 
@@ -41,7 +44,8 @@ export class StickerTakenError extends Error {
 
 /**
  * Links a free sticker (`UNASSIGNED`, no owner) to `owner` with a new car,
- * inside the caller's transaction. Throws `StickerTakenError` when it is not
+ * inside the caller's transaction. Its service runs `servicePeriodMonths` from
+ * now (settings, read by the caller). Throws `StickerTakenError` when it is not
  * free — including when someone else won the race between the check and the
  * update — so the caller's transaction rolls back whatever it did before (a
  * new account, say) instead of committing half an activation.
@@ -51,15 +55,26 @@ export async function claimWithin(
   owner: OwnerActor,
   publicTagId: string,
   vehicle: NewVehicle,
+  servicePeriodMonths: number,
 ): Promise<void> {
   const ownerId = toObjectId(owner.userId);
   if (!ownerId) throw new StickerTakenError();
   const free = await TagModel.exists({ publicTagId, status: 'UNASSIGNED', ownerId: null }).session(session);
   if (!free) throw new StickerTakenError();
   const vehicleId = await vehiclesRepository.create(owner, vehicle, session);
+  const now = new Date();
   const result = await TagModel.updateOne(
     { publicTagId, status: 'UNASSIGNED', ownerId: null },
-    { $set: { status: 'ACTIVE', ownerId, vehicleId: toObjectId(vehicleId), activatedAt: new Date() } },
+    {
+      $set: {
+        status: 'ACTIVE',
+        ownerId,
+        vehicleId: toObjectId(vehicleId),
+        activatedAt: now,
+        serviceUntil: addMonths(now, servicePeriodMonths),
+        renewalWarnedFor: null,
+      },
+    },
     { session },
   );
   if (result.modifiedCount !== 1) throw new StickerTakenError();
@@ -75,10 +90,12 @@ export const ownerTagsRepository = {
    * A signed-in owner adding a sticker: the car and the link, in one
    * transaction. Two people racing for one sticker cannot both win.
    */
-  async claim(owner: OwnerActor, publicTagId: string, vehicle: NewVehicle): Promise<ClaimResult> {
+  async claim(owner: OwnerActor, publicTagId: string, vehicle: NewVehicle, servicePeriodMonths: number): Promise<ClaimResult> {
     const mongoose = await connectToDatabase();
     try {
-      await mongoose.connection.transaction((session) => claimWithin(session, owner, publicTagId, vehicle));
+      await mongoose.connection.transaction((session) =>
+        claimWithin(session, owner, publicTagId, vehicle, servicePeriodMonths),
+      );
       return { ok: true };
     } catch (error) {
       if (error instanceof StickerTakenError) return { ok: false, reason: 'taken' };
@@ -93,7 +110,7 @@ export const ownerTagsRepository = {
     await connectToDatabase();
     const tags = await TagModel.find(
       { ownerId },
-      { _id: 0, publicTagId: 1, status: 1, activatedAt: 1, vehicleId: 1 },
+      { _id: 0, publicTagId: 1, status: 1, activatedAt: 1, serviceUntil: 1, vehicleId: 1 },
     )
       .sort({ activatedAt: -1 })
       .lean();
@@ -110,6 +127,7 @@ export const ownerTagsRepository = {
         publicTagId: tag.publicTagId,
         status: tag.status,
         activatedAt: tag.activatedAt,
+        serviceUntil: tag.serviceUntil ?? null,
         vehicle: vehicle
           ? {
               brand: vehicle.brand,

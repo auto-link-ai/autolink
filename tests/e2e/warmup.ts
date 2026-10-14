@@ -48,6 +48,7 @@ const ADMIN_ROUTES = [
   '/en/admin',
   '/en/admin/orders',
   '/en/admin/orders?ref=AL-000000',
+  '/en/admin/renewals',
   '/en/admin/tags',
   '/en/admin/customers',
   '/en/admin/settings',

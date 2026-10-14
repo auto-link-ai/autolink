@@ -11,6 +11,7 @@ import { getWilayas } from '@/lib/config/wilayas';
 import { blockedMessagesRepository } from '@/lib/db/repositories/blockedMessages';
 import { notificationAttemptsRepository } from '@/lib/db/repositories/notificationAttempts';
 import { adminOrdersRepository } from '@/lib/db/repositories/ordersAdmin';
+import { adminRenewalsRepository } from '@/lib/db/repositories/renewalsAdmin';
 import { tagsRepository } from '@/lib/db/repositories/tags';
 import type { NotificationPurpose } from '@/lib/domain/constants';
 import { OrderQueue } from './_overview/OrderQueue';
@@ -44,7 +45,7 @@ export default async function AdminOverviewPage({ params }: Props) {
 
   const today = algiersDayStart();
   const weekStart = addDays(today, -6);
-  const [orders, tags, blocked, queue, week, activated, activations, sentToday, sentWeek, settings, wilayas] = await Promise.all([
+  const [orders, tags, blocked, queue, week, activated, activations, sentToday, sentWeek, settings, wilayas, renewals] = await Promise.all([
     adminOrdersRepository.countByStatus(actor),
     tagsRepository.countByStatus(actor),
     blockedMessagesRepository.count(actor),
@@ -56,6 +57,7 @@ export default async function AdminOverviewPage({ params }: Props) {
     notificationAttemptsRepository.counts(actor, weekStart),
     getSettings(),
     getWilayas(),
+    adminRenewalsRepository.countPending(actor),
   ]);
 
   const wilayaName = (code: number) => {
@@ -94,6 +96,7 @@ export default async function AdminOverviewPage({ params }: Props) {
         locale={locale}
         pending={orders.PENDING}
         toShip={orders.CONFIRMED + orders.PREPARING}
+        renewals={renewals}
         blocked={blocked}
         whatsappFailedToday={whatsApp(sentToday, 'FAILED')}
       />

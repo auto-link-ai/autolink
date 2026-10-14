@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { buttonClasses } from '@/components/ui/Button';
 import type { Locale } from '@/i18n/locales';
-import type { PublicPricing } from '@/lib/site/pricing';
+import { servicePhrases, type PublicPricing } from '@/lib/site/pricing';
 import { NotificationCard } from '../illustrations/NotificationCard';
 import { ArrowDownIcon, ArrowIcon, BellIcon, BoltIcon, CashIcon, LockIcon, QrIcon, ScanIcon } from '../icons';
 import { orderHref } from '../links';
@@ -25,6 +25,7 @@ const TRUST = [
  */
 export async function Hero({ locale, pricing }: { locale: Locale; pricing: PublicPricing | null }) {
   const t = await getTranslations('site.hero');
+  const { service } = await servicePhrases(pricing);
 
   return (
     <section className="pb-14 pt-6 md:pb-20 md:pt-10">
@@ -62,6 +63,7 @@ export async function Hero({ locale, pricing }: { locale: Locale; pricing: Publi
               <span>
                 {t.rich('price', {
                   price: pricing.unitPriceLabel,
+                  service,
                   // Isolated, so "1 500 DA" keeps its order inside Arabic text.
                   b: (chunks) => <bdi className="font-bold text-text">{chunks}</bdi>,
                 })}

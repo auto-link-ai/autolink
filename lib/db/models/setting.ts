@@ -16,6 +16,7 @@ export interface DeliveryFee {
  */
 export interface Setting {
   key: 'global';
+  /** What one sticker costs; it includes `servicePeriodMonths` of service. */
   unitPriceDzd: number;
   currencyLabel: string;
   messageRetentionDays: number;
@@ -34,6 +35,13 @@ export interface Setting {
   rateLimitActivationPerIpPerHour: number;
   deliveryFees: DeliveryFee[];
   maxOrderQuantity: number;
+  /** Service included with a new sticker, counted from the moment it is linked. */
+  servicePeriodMonths: number;
+  /** One renewal: what it costs and how long it adds. The owner asks; an admin confirms the payment. */
+  renewalPriceDzd: number;
+  renewalPeriodMonths: number;
+  /** How many days before the end the owner is warned (dashboard, WhatsApp). */
+  renewalWarningDays: number;
   /** Car book: how many days before a due date the owner is reminded. */
   careReminderDays: number;
   /** Car book: a date further in the past than this is not reminded at all. */
@@ -62,7 +70,7 @@ const deliveryFeeSchema = new Schema<DeliveryFee>(
 const settingSchema = new Schema<Setting>(
   {
     key: { type: String, enum: ['global'], required: true, unique: true },
-    unitPriceDzd: { type: Number, default: 1500, min: 0 },
+    unitPriceDzd: { type: Number, default: 1990, min: 0 },
     currencyLabel: { type: String, default: 'DA' },
     messageRetentionDays: { type: Number, default: 90, min: 1 },
     maxMessageLength: { type: Number, default: 400, min: 1 },
@@ -78,6 +86,10 @@ const settingSchema = new Schema<Setting>(
     rateLimitActivationPerIpPerHour: { type: Number, default: 20, min: 1 },
     deliveryFees: { type: [deliveryFeeSchema], default: [] },
     maxOrderQuantity: { type: Number, default: 10, min: 1 },
+    servicePeriodMonths: { type: Number, default: 24, min: 1, max: 120 },
+    renewalPriceDzd: { type: Number, default: 1000, min: 0 },
+    renewalPeriodMonths: { type: Number, default: 12, min: 1, max: 120 },
+    renewalWarningDays: { type: Number, default: 30, min: 1, max: 180 },
     careReminderDays: { type: Number, default: 7, min: 1, max: 60 },
     careOverdueDays: { type: Number, default: 30, min: 0, max: 365 },
     // A 4-digit PIN has 10,000 values: at 10 tries a day per number, guessing

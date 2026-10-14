@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import type { Locale } from '@/i18n/locales';
-import type { PublicPricing } from '@/lib/site/pricing';
+import { servicePhrases, type PublicPricing } from '@/lib/site/pricing';
 import { ArrowIcon, ChevronIcon } from '../icons';
 import { href } from '../links';
 
@@ -9,6 +9,7 @@ export const FAQ_KEYS = [
   'app',
   'number',
   'price',
+  'renewal',
   'receive',
   'pay',
   'activate',
@@ -40,6 +41,7 @@ export async function Faq({
   const values = {
     price: pricing?.unitPriceLabel ?? price('unknownInline'),
     period: pricing ? price('retentionDays', { days: pricing.retentionDays }) : price('retentionUnknown'),
+    ...(await servicePhrases(pricing)),
   };
 
   return (

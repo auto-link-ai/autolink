@@ -100,6 +100,48 @@ export default async function AdminSettingsPage({ params, searchParams }: Props)
           </fieldset>
         </Card>
 
+        <Card title={t('service.title')} description={t('service.description')}>
+          <fieldset disabled={!isAdmin} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <label className="flex flex-col gap-1.5 text-sm font-semibold text-text">
+              {t('service.periodMonths')}
+              <input
+                type="number"
+                name="servicePeriodMonths"
+                min={1}
+                max={120}
+                defaultValue={settings.servicePeriodMonths}
+                className={INPUT}
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-sm font-semibold text-text">
+              {t('service.renewalPrice')}
+              <input type="number" name="renewalPriceDzd" min={0} defaultValue={settings.renewalPriceDzd} className={INPUT} />
+            </label>
+            <label className="flex flex-col gap-1.5 text-sm font-semibold text-text">
+              {t('service.renewalMonths')}
+              <input
+                type="number"
+                name="renewalPeriodMonths"
+                min={1}
+                max={120}
+                defaultValue={settings.renewalPeriodMonths}
+                className={INPUT}
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-sm font-semibold text-text">
+              {t('service.warningDays')}
+              <input
+                type="number"
+                name="renewalWarningDays"
+                min={1}
+                max={180}
+                defaultValue={settings.renewalWarningDays}
+                className={INPUT}
+              />
+            </label>
+          </fieldset>
+        </Card>
+
         <Card title={t('fees.title')} description={t('fees.description')}>
           <fieldset disabled={!isAdmin}>
             <FeeTable

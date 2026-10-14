@@ -1,12 +1,13 @@
 import { getTranslations } from 'next-intl/server';
 import { CashIcon, CheckIcon, LockIcon, QrIcon, TruckIcon } from '@/components/site/icons';
 import { cx } from '@/lib/cx';
+import { servicePhrases, type PublicPricing } from '@/lib/site/pricing';
 
 const BADGES = [
   { key: 'cod', Icon: CashIcon },
   { key: 'delivery', Icon: TruckIcon },
   { key: 'private', Icon: LockIcon },
-  { key: 'noSubscription', Icon: CheckIcon },
+  { key: 'noAutoPay', Icon: CheckIcon },
 ] as const;
 
 /** The two step photos shown under the sticker on wider screens (public/images/step-*). */
@@ -17,8 +18,12 @@ const PHOTOS = ['stick', 'notify'] as const;
  * screen sells before it asks. Every promise here is one the site already
  * makes (FAQ, pricing); no invented reviews or counters.
  */
-export async function ProductIntro({ priceLabel, freeDelivery }: { priceLabel: string; freeDelivery: boolean }) {
-  const [t, badge] = await Promise.all([getTranslations('order.product'), getTranslations('order.badges')]);
+export async function ProductIntro({ pricing, freeDelivery }: { pricing: PublicPricing; freeDelivery: boolean }) {
+  const [t, badge, { service }] = await Promise.all([
+    getTranslations('order.product'),
+    getTranslations('order.badges'),
+    servicePhrases(pricing),
+  ]);
   return (
     <div>
       <p className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-sm font-bold text-accent shadow-card-sm">
@@ -30,9 +35,9 @@ export async function ProductIntro({ priceLabel, freeDelivery }: { priceLabel: s
 
       <p className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span dir="ltr" className="text-[2.5rem] leading-none font-extrabold text-accent">
-          {priceLabel}
+          {pricing.unitPriceLabel}
         </span>
-        <span className="text-[15px] font-semibold text-text-secondary">{t('priceSuffix')}</span>
+        <span className="text-[15px] font-semibold text-text-secondary">{t('priceSuffix', { service })}</span>
       </p>
 
       <ul className="mt-5 grid grid-cols-2 gap-2 sm:gap-3">

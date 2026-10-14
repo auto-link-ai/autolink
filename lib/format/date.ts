@@ -30,6 +30,17 @@ export function formatDay(date: Date, locale: Locale): string {
   return new Intl.DateTimeFormat(INTL_LOCALE[locale], { dateStyle: DATE_STYLE[locale], timeZone: 'UTC' }).format(date);
 }
 
+/**
+ * A moment (not a calendar day) written as the day it falls on in Algeria —
+ * a sticker's end of service, say, which can fall late in the evening.
+ */
+export function formatAlgiersDay(date: Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
+    dateStyle: DATE_STYLE[locale],
+    timeZone: 'Africa/Algiers',
+  }).format(date);
+}
+
 const MINUTE = 60_000;
 const UNITS: readonly [limit: number, size: number, unit: Intl.RelativeTimeFormatUnit][] = [
   [60 * MINUTE, MINUTE, 'minute'],

@@ -316,10 +316,13 @@ test.describe('the car book', () => {
       headers: { authorization: `Bearer ${process.env.CRON_SECRET}` },
     });
     expect(response.status()).toBe(200);
-    const result = (await response.json()) as { due: number; sent: number };
+    const result = (await response.json()) as Record<'care' | 'renewal', { due: number; sent: number }>;
     // At least this owner's oil change (in 3 days) and insurance (late). No
     // notifications are on in this browser, so nothing is marked as sent.
-    expect(result.due).toBeGreaterThanOrEqual(2);
-    expect(Object.keys(result).sort()).toEqual(['due', 'sent']);
+    expect(result.care.due).toBeGreaterThanOrEqual(2);
+    // Counts only, nothing about who.
+    expect(Object.keys(result).sort()).toEqual(['care', 'renewal']);
+    expect(Object.keys(result.care).sort()).toEqual(['due', 'sent']);
+    expect(Object.keys(result.renewal).sort()).toEqual(['due', 'sent']);
   });
 });

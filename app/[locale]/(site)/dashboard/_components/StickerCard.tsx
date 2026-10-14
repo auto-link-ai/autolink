@@ -5,15 +5,19 @@ import { PendingLink } from '@/components/ui/PendingLink';
 import type { Locale } from '@/i18n/locales';
 import type { DueItem } from '@/lib/care/due';
 import { cx } from '@/lib/cx';
+import type { PendingRenewal } from '@/lib/db/repositories/renewals';
 import type { OwnerTagRow } from '@/lib/db/repositories/tagsOwner';
 import { formatDateTime } from '@/lib/format/date';
+import { serviceState } from '@/lib/renewals/period';
 import { carDescribed, carName } from '@/lib/vehicles/carName';
 import { toggleStickerAction } from '../actions';
+import { ServicePeriod, type RenewalTerms } from './ServicePeriod';
 import { VehicleForm } from './VehicleForm';
 
 /**
- * One sticker: which car it is on, its id, its state, and the controls to edit
- * the car or switch the sticker off. The id is what tells two stickers apart.
+ * One sticker: which car it is on, its id, its state, how long its service
+ * runs, and the controls to edit the car or switch the sticker off. The id is
+ * what tells two stickers apart.
  */
 export async function StickerCard({
   tag,
@@ -21,6 +25,9 @@ export async function StickerCard({
   scanUrl,
   unread,
   nextDue,
+  pendingRenewal,
+  renewal,
+  phone,
 }: {
   tag: OwnerTagRow;
   locale: Locale;
@@ -29,10 +36,17 @@ export async function StickerCard({
   unread: number;
   /** From the car book: something late or due soon, if anything. */
   nextDue: DueItem | null;
+  /** A renewal this owner already asked for on this sticker. */
+  pendingRenewal: PendingRenewal | null;
+  renewal: RenewalTerms;
+  /** The owner's number, as the site writes it: the shop calls it about a renewal. */
+  phone: string;
 }) {
   const t = await getTranslations('dashboard');
   const tDue = await getTranslations('care.due');
   const live = tag.status === 'ACTIVE';
+  // On, but its service has ended: strangers get "not available", so the pill says so.
+  const ended = live && serviceState(tag.serviceUntil, new Date(), renewal.warningDays) === 'expired';
 
   return (
     <li className="rounded-xl bg-white p-5 shadow-card-sm sm:p-6">
@@ -59,13 +73,25 @@ export async function StickerCard({
           <span
             className={cx(
               'rounded-full px-3 py-1 text-xs font-bold',
-              live ? 'bg-success/10 text-success' : 'bg-surface-3 text-text-muted',
+              ended ? 'bg-danger/10 text-danger' : live ? 'bg-success/10 text-success' : 'bg-surface-3 text-text-muted',
             )}
           >
-            {t(`status.${tag.status}`)}
+            {ended ? t('service.endedPill') : t(`status.${tag.status}`)}
           </span>
         </div>
       </div>
+
+      {/* A suspended or lost sticker is the shop's decision: nothing to renew from here. */}
+      {(tag.status === 'ACTIVE' || tag.status === 'DEACTIVATED') && (
+        <ServicePeriod
+          publicTagId={tag.publicTagId}
+          serviceUntil={tag.serviceUntil}
+          pending={pendingRenewal}
+          terms={renewal}
+          phone={phone}
+          locale={locale}
+        />
+      )}
 
       {tag.vehicle && (
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">

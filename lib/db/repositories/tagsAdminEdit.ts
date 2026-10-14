@@ -15,6 +15,7 @@ import { TagBatchModel } from '@/lib/db/models/tagBatch';
 import { VehicleModel } from '@/lib/db/models/vehicle';
 import type { AdminActor } from './actor';
 import { auditLogsRepository } from './auditLogs';
+import { cancelOpenRenewalsWithin } from './renewals';
 
 /** Never used and not promised to an order — lib/tags/adminRules.ts `canDeleteTag`, as a query. */
 const UNUSED = { status: 'UNASSIGNED', ownerId: null, vehicleId: null, orderId: null } as const;
@@ -93,12 +94,15 @@ export const adminTagEditsRepository = {
             ownerId: null,
             vehicleId: null,
             activatedAt: null,
+            serviceUntil: null,
+            renewalWarnedFor: null,
           },
         },
         { session },
       );
       applied = result.modifiedCount === 1;
       if (!applied) return;
+      await cancelOpenRenewalsWithin(session, { tagId: tag._id });
       let carDeleted = false;
       if (tag.vehicleId && (await TagModel.countDocuments({ vehicleId: tag.vehicleId }, { session })) === 0) {
         await ServiceRecordModel.deleteMany({ vehicleId: tag.vehicleId }, { session });

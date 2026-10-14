@@ -8,7 +8,7 @@ import { settingsRepository } from '@/lib/db/repositories/settings';
 import { commerceSettingsSchema, readFeeRows } from '@/lib/validation/settings';
 import { getWilayas } from '@/lib/config/wilayas';
 
-/** Saves price, quantity limit, order rate limit and the per-wilaya fees. */
+/** Saves price, service period, renewal, quantity limit, order rate limit and the per-wilaya fees. */
 export async function saveCommerceSettingsAction(formData: FormData): Promise<void> {
   const locale = toLocale(formData.get('locale'));
   const session = await getAdminSession();
@@ -22,6 +22,10 @@ export async function saveCommerceSettingsAction(formData: FormData): Promise<vo
     currencyLabel: formData.get('currencyLabel'),
     maxOrderQuantity: formData.get('maxOrderQuantity'),
     rateLimitOrdersPerHour: formData.get('rateLimitOrdersPerHour'),
+    servicePeriodMonths: formData.get('servicePeriodMonths'),
+    renewalPriceDzd: formData.get('renewalPriceDzd'),
+    renewalPeriodMonths: formData.get('renewalPeriodMonths'),
+    renewalWarningDays: formData.get('renewalWarningDays'),
     deliveryFees: readFeeRows(formData, codes),
   });
   if (!parsed.success) redirect(`/${locale}/admin/settings?result=invalid`);

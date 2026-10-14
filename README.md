@@ -57,6 +57,24 @@ document with its defaults, and creates one admin if that email doesn't exist ye
 The delivery fees it writes are **placeholders** (800 DA home / 500 DA stop-desk for every
 wilaya). Replace them with real courier prices before taking orders.
 
+### Service period and renewal
+
+A sticker's price includes a service period (`servicePeriodMonths`, 24 by default), counted
+from the moment it is linked. After that the sticker answers "not available" until it is
+renewed. The owner presses **Renew** on their dashboard; you call them, collect the payment,
+and confirm it at `/admin/renewals`, which adds `renewalPeriodMonths` (12) for
+`renewalPriceDzd` (1 000 DA). The daily cron sends one WhatsApp warning `renewalWarningDays`
+(30) before the end, on the reminder template. All of these are in `/admin/settings`.
+
+Stickers linked before service periods existed have no end date and keep working until you
+date them. After deploying this, run once:
+
+```bash
+pnpm backfill:service-until   # end = linked on + servicePeriodMonths; idempotent
+```
+
+A sticker linked longer ago than the period ends at once and shows "Renew" to its owner.
+
 ## Tags & printing
 
 `/admin/tags` generates a batch (1–100 tags) and downloads a ZIP: QR codes (SVG + PNG),
@@ -97,6 +115,7 @@ Sticker artwork, the designer brief and alignment checks: see [print/README.md](
 | `pnpm admin:create <email> [ADMIN\|SUPPORT]` | Create another admin account; prints its password once |
 | `pnpm admin:password <email>` | Give an existing admin a new generated password (shown once) |
 | `pnpm backfill:user-ids` | Give a `publicUserId` to customer accounts created before that field |
+| `pnpm backfill:service-until` | Give an end of service to stickers linked before service periods existed |
 | `pnpm print:preview` | Render sample print files into `print/preview/` (no database) |
 | `pnpm check:codes <tags.csv>` | Prove a batch's activation codes are stored nowhere in plaintext |
 
@@ -132,7 +151,8 @@ lib/db/repositories/   the security boundary: all data access, actor-scoped
 lib/admin/             admin session (encrypted cookie), auth guard, list query parsing
 lib/tags/              id/code generation, status transitions, QR URL guard, batch service
 lib/print/             QR, sticker/sheet/slip PDFs, template loading, ZIP
-lib/config/settings.ts price, fees, limits, retention (60s cache)
+lib/renewals/          service period date math, renewal refs, the daily WhatsApp warning
+lib/config/settings.ts price, service period, renewal, fees, limits, retention (60s cache)
 lib/validation/        zod schemas + DZ phone, tag-id, activation-code validators
 lib/security/          argon2id, IP hashing, same-origin check
 print/sticker/         template.json (+ designer artwork PDF)

@@ -51,7 +51,7 @@ export default async function OrderPage({ params }: Props) {
       <section className="pb-6 pt-6 md:pt-10">
         <div className="container-page grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-x-12">
           <div className="lg:col-start-2">
-            <ProductIntro priceLabel={pricing.unitPriceLabel} freeDelivery={deliveryFreeEverywhere(settings.deliveryFees)} />
+            <ProductIntro pricing={pricing} freeDelivery={deliveryFreeEverywhere(settings.deliveryFees)} />
           </div>
           <ProductGallery className="lg:sticky lg:top-28 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:self-start" />
           <div className="lg:col-start-2">

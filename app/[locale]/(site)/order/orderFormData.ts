@@ -4,8 +4,7 @@ import type { Locale } from '@/i18n/locales';
 import { getSettings, type AppSettings } from '@/lib/config/settings';
 import { publicSite } from '@/lib/config/site';
 import { getWilayas } from '@/lib/config/wilayas';
-import { formatDzd } from '@/lib/format/currency';
-import type { PublicPricing } from '@/lib/site/pricing';
+import { toPublicPricing, type PublicPricing } from '@/lib/site/pricing';
 import { whatsappLink } from '@/lib/site/whatsapp';
 import type { OrderFormLabels } from './orderLabels';
 
@@ -108,13 +107,7 @@ export async function loadOrderFormData(locale: Locale): Promise<OrderFormData |
         code: w.code,
         name: locale === 'ar' ? w.nameAr : locale === 'en' ? w.nameEn : w.nameFr,
       })),
-      pricing: {
-        unitPrice: settings.unitPriceDzd,
-        unitPriceLabel: formatDzd(settings.unitPriceDzd, settings.currencyLabel),
-        currencyLabel: settings.currencyLabel,
-        maxOrderQuantity: settings.maxOrderQuantity,
-        retentionDays: settings.messageRetentionDays,
-      },
+      pricing: toPublicPricing(settings),
       whatsapp: href ? { href, label: t('whatsapp.label') } : null,
     };
   } catch (error) {

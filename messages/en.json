@@ -11,7 +11,8 @@
       "fr": "Français",
       "ar": "العربية",
       "en": "English"
-    }
+    },
+    "period": "{unit, select, year {{count, plural, one {# year} other {# years}}} other {{count, plural, one {# month} other {# months}}}}"
   },
   "scanner": {
     "categories": {
@@ -80,7 +81,8 @@
       "settings": "Settings",
       "overview": "Overview",
       "customers": "Customers",
-      "blocked": "Blocked messages"
+      "blocked": "Blocked messages",
+      "renewals": "Renewals"
     },
     "login": {
       "title": "Admin sign-in",
@@ -304,6 +306,14 @@
         "maxQuantity": "Maximum quantity per order",
         "orderRateLimit": "Orders per hour per IP"
       },
+      "service": {
+        "title": "Service period and renewal",
+        "description": "A new sticker includes this period, counted from when it is linked. Changes apply to stickers linked and renewals requested from now on.",
+        "periodMonths": "Service included (months)",
+        "renewalPrice": "Renewal price (DZD)",
+        "renewalMonths": "One renewal adds (months)",
+        "warningDays": "Warn the owner (days before)"
+      },
       "fees": {
         "title": "Delivery fees by wilaya",
         "description": "The initial values are PLACEHOLDERS. Enter your real rates before the first order.",
@@ -348,6 +358,8 @@
         "pendingHint": "Orders: call the customer.",
         "toShip": "To prepare and ship",
         "toShipHint": "Confirmed, not sent yet.",
+        "renewals": "Renewals",
+        "renewalsHint": "Call, collect, confirm.",
         "blocked": "Blocked messages",
         "blockedHint": "Stopped by the check: to review.",
         "whatsappFailed": "WhatsApp failures",
@@ -494,6 +506,36 @@
         "costNote": "The exact cost is in Google AI Studio, under Billing. “No answer”: the message was delivered without a check.",
         "empty": "No checks in the last 30 days."
       }
+    },
+    "renewals": {
+      "title": "Renewals",
+      "subtitle": "Owners ask from their account. Call them, collect the payment, then confirm: the sticker's service is extended at once. Nothing is paid online.",
+      "empty": "No renewal is waiting.",
+      "decided": "Recently decided",
+      "amount": "{price} · {period}",
+      "noOwner": "Account deleted",
+      "until": "Service until {date}",
+      "endedOn": "Service ended on {date}",
+      "noDate": "The sticker is no longer on this account",
+      "confirm": "Payment received",
+      "confirmMessage": "Sticker {tagId} gets {period} more of service. Only confirm once the payment is in.",
+      "confirmYes": "Yes, extend it",
+      "cancel": "Cancel request",
+      "cancelMessage": "The request closes; the sticker is not changed. The owner can ask again from their account.",
+      "cancelYes": "Yes, cancel it",
+      "status": {
+        "PENDING": "Waiting",
+        "CONFIRMED": "Confirmed",
+        "CANCELLED": "Cancelled"
+      },
+      "results": {
+        "confirmed": "Confirmed: the sticker's service is extended.",
+        "cancelled": "Request cancelled.",
+        "conflict": "This request was already decided.",
+        "unavailable": "The sticker is no longer on that account: nothing was changed.",
+        "not_found": "Request not found.",
+        "forbidden": "Only an ADMIN account can confirm or cancel a renewal."
+      }
     }
   },
   "site": {
@@ -539,7 +581,7 @@
       "body": "Lights left on, a blocked exit, an open window: whoever notices scans the sticker and tells you.",
       "cta": "Order my sticker",
       "secondary": "How it works",
-      "price": "<b>{price}</b> · one payment, cash on delivery",
+      "price": "<b>{price}</b> · {service} of service included, cash on delivery",
       "chips": {
         "notify": {
           "title": "Something wrong with the car?",
@@ -550,7 +592,7 @@
     },
     "steps": {
       "eyebrow": "Three steps",
-      "title": "Stick it once, stay reachable for good.",
+      "title": "Stick it once, stay reachable.",
       "subtitle": "Nothing to install, nothing to renew. The sticker does the work for you.",
       "items": {
         "stick": {
@@ -621,16 +663,17 @@
     },
     "pricing": {
       "eyebrow": "Pricing",
-      "title": "One payment. No subscription.",
-      "subtitle": "You pay for the sticker on delivery. After that it works with nothing more to pay.",
+      "title": "One price, service included.",
+      "subtitle": "You pay for the sticker on delivery, and its service is included. When it ends, you renew only if you want to: nothing is ever charged automatically.",
       "product": "The AutoLink sticker",
-      "oneTime": "One payment, per sticker",
+      "oneTime": "Per sticker, with {service} of service",
+      "oneTimeUnknown": "Per sticker, service included",
       "includes": {
         "sticker": "A hard-wearing QR sticker, ready to stick",
         "code": "Activated with one scan: no code to copy",
         "unlimited": "Unlimited messages from your sticker",
         "notify": "Notifications on your phone",
-        "noSubscription": "No subscription, no hidden fees"
+        "renewal": "Then {renewal} to renew, only if you want to"
       },
       "delivery": "Delivery to all 58 wilayas. The fee depends on your wilaya and is shown before you confirm.",
       "cta": "Order now",
@@ -669,7 +712,11 @@
         },
         "price": {
           "q": "How much does it cost?",
-          "a": "A single payment of {price} per sticker, plus delivery. No subscription."
+          "a": "{price} per sticker, plus delivery. It includes {service} of service; after that, renewing costs {renewal}, only if you want to continue. Nothing is charged automatically."
+        },
+        "renewal": {
+          "q": "What happens when the service period ends?",
+          "a": "Before it ends, you are told on WhatsApp and in your account. To continue, tap “Renew” in your account: we call you to arrange the payment of {renewal}. If you don't renew, anyone who scans the sticker sees “not available” and cannot write to you. Your car book stays yours either way."
         },
         "receive": {
           "q": "How do I receive messages?",
@@ -710,7 +757,10 @@
       "unknown": "Price shown at checkout",
       "unknownInline": "the price shown at checkout",
       "retentionDays": "after {days} days",
-      "retentionUnknown": "after a limited period"
+      "retentionUnknown": "after a limited period",
+      "renewal": "{price} for {period}",
+      "serviceUnknown": "a set period",
+      "renewalUnknown": "the price shown in your account"
     },
     "footer": {
       "tagline": "A QR sticker on your car: you hear about a problem without anyone seeing your number.",
@@ -769,10 +819,10 @@
       },
       "pricing": {
         "metaTitle": "Pricing — AutoLink",
-        "metaDescription": "One payment, no subscription, cash on delivery across all 58 wilayas.",
+        "metaDescription": "Service included, renewal only if you want it, cash on delivery across all 58 wilayas.",
         "eyebrow": "Pricing",
-        "title": "One price, once.",
-        "subtitle": "The sticker is paid for on delivery. After that it works with no subscription and no hidden fees."
+        "title": "One price. Renew only if you want to.",
+        "subtitle": "The sticker is paid for on delivery, with its service included. When that ends, renewing is your choice: nothing is ever charged automatically."
       },
       "faq": {
         "metaTitle": "FAQ — AutoLink",
@@ -877,6 +927,14 @@
           ]
         },
         {
+          "title": "Service period and renewal",
+          "body": [
+            "The price of a sticker includes {service} of service, counted from the moment it is linked to an account.",
+            "When that period ends, anyone who scans the sticker sees that it is not available, until it is renewed. The owner's account and car book are not affected.",
+            "Renewal is never automatic. The owner asks for it from their account; we contact them to arrange payment ({renewal}), and the service is extended once payment is received — from the end date, or from the day of payment if that date has passed."
+          ]
+        },
+        {
           "title": "Acceptable use",
           "body": [
             "Messages must stay related to the vehicle. Insults, harassment, advertising and repeated messages without reason are forbidden and may lead to a block."
@@ -905,7 +963,7 @@
       "eyebrow": "QR sticker for your car",
       "title": "Let anyone warn you, without ever seeing your number.",
       "body": "Lights left on, exit blocked, window open: whoever scans the sticker sends you a message, and the alert reaches your phone.",
-      "priceSuffix": "per sticker · one payment, no subscription",
+      "priceSuffix": "per sticker · {service} of service included",
       "stickerAlt": "The AutoLink sticker: the logo and the QR code, inviting people to scan it to contact the owner.",
       "size": "8 × 11.3 cm"
     },
@@ -914,7 +972,7 @@
       "delivery": "Delivery to all 58 wilayas",
       "deliveryFree": "Free delivery, all 58 wilayas",
       "private": "Your number never shown",
-      "noSubscription": "No subscription, no app"
+      "noAutoPay": "No automatic payment, no app"
     },
     "includes": {
       "title": "What you get",
@@ -1201,7 +1259,8 @@
       "invalid": "Could not save. Check the fields.",
       "pin_changed": "PIN changed. Your other devices are signed out.",
       "reminders_on": "WhatsApp reminders on: you'll be told before each date.",
-      "reminders_off": "WhatsApp reminders off."
+      "reminders_off": "WhatsApp reminders off.",
+      "renewal_requested": "Renewal requested: we will call you to arrange the payment."
     },
     "status": {
       "UNASSIGNED": "Not activated",
@@ -1303,6 +1362,19 @@
       "turnOn": "Turn on WhatsApp reminders",
       "turnOff": "Turn off WhatsApp reminders",
       "alertsNote": "Messages left on your stickers always reach your WhatsApp, reminders on or off."
+    },
+    "service": {
+      "until": "Service active until {date}.",
+      "endedOn": "Service ended on {date}.",
+      "endedPill": "Service ended",
+      "offer": "{price} for {period}",
+      "soonTitle": "Its service ends on {date}",
+      "soonBody": "Renew it to stay reachable: {offer}. We call you to arrange the payment; nothing is charged automatically.",
+      "expiredTitle": "Its service ended on {date}",
+      "expiredBody": "Anyone who scans it sees “not available” and cannot write to you. Renew it: {offer}. We call you to arrange the payment.",
+      "renew": "Renew",
+      "pendingTitle": "Renewal requested",
+      "pendingBody": "We will call you on {phone} to arrange the payment ({offer}). The new date shows here once it is confirmed."
     }
   },
   "notifications": {
@@ -1327,6 +1399,9 @@
     },
     "whatsapp": {
       "nameFallback": "car owner"
+    },
+    "renewal": {
+      "whatsapp": "AutoLink sticker — its service ends on {date}. Renew it from your account: {price} for {period}."
     }
   },
   "care": {

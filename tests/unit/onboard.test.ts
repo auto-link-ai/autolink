@@ -25,6 +25,7 @@ vi.mock('@/lib/db/repositories/phoneCodes', () => ({ phoneCodesRepository: { fin
 vi.mock('@/lib/db/repositories/tagsScanner', () => ({ scannerTagsRepository: { findForScanner } }));
 vi.mock('@/lib/db/repositories/users', () => ({ usersRepository: { findForPinLogin } }));
 vi.mock('@/lib/activation/claim', () => ({ withinActivationLimit }));
+vi.mock('@/lib/config/settings', () => ({ getSettings: async () => ({ servicePeriodMonths: 24 }) }));
 vi.mock('@/lib/security/pin', () => ({
   hashPin: async (pin: string) => `hash:${pin}`,
   verifyPin: async (hash: string, pin: string) => hash === `hash:${pin}`,
@@ -119,6 +120,7 @@ describe('finishActivation: the code, then the account and the sticker', () => {
       { firstName: 'Amine', lastName: 'Belkacem', phone: PHONE, pinHash: 'hash:4071', locale: 'fr' },
       TAG,
       { brand: 'Renault', model: 'Symbol', color: '', plateNumber: null, showDetailsPublicly: true },
+      24,
     );
     expect(replacePin).not.toHaveBeenCalled();
     expect(clearPinAttempts).toHaveBeenCalledWith(PHONE);

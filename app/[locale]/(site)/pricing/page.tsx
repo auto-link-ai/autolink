@@ -33,7 +33,7 @@ export default async function PricingPage({ params }: Props) {
     <>
       <PageHero eyebrow={t('eyebrow')} title={t('title')} subtitle={t('subtitle')} />
       <Pricing locale={locale} pricing={pricing} headingLevel="none" />
-      <Faq locale={locale} pricing={pricing} keys={['price', 'pay', 'activate', 'change']} />
+      <Faq locale={locale} pricing={pricing} keys={['price', 'renewal', 'pay', 'activate', 'change']} />
       <CtaBand locale={locale} />
     </>
   );

@@ -9,7 +9,7 @@ const hit = vi.fn(async () => ({ allowed: true, remaining: 4 }));
 const claim = vi.fn(async () => ({ ok: true }) as { ok: true } | { ok: false; reason: 'taken' });
 
 vi.mock('@/lib/config/settings', () => ({
-  getSettings: async () => ({ rateLimitActivationPerIpPerHour: 5 }),
+  getSettings: async () => ({ rateLimitActivationPerIpPerHour: 5, servicePeriodMonths: 24 }),
 }));
 vi.mock('@/lib/db/repositories/rateLimits', () => ({ rateLimitsRepository: { hit } }));
 vi.mock('@/lib/db/repositories/tagsOwner', () => ({ ownerTagsRepository: { claim } }));
@@ -27,7 +27,7 @@ beforeEach(() => {
 describe('claimTag: a signed-in owner adds a sticker', () => {
   it('links a sticker with no code, with the car it goes on', async () => {
     await expect(attempt()).resolves.toEqual({ ok: true, publicTagId: TAG });
-    expect(claim).toHaveBeenCalledWith(OWNER, TAG, STORED);
+    expect(claim).toHaveBeenCalledWith(OWNER, TAG, STORED, 24);
   });
 
   it('accepts the id as a person types it', async () => {

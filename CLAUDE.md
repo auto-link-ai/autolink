@@ -13,7 +13,9 @@ nobody else. It stays that — not fleet management, not shared.
 
 ## What this project is NOT
 Not fleet management. Not a dashboard SaaS. Not NFC. Not a marketplace. Not a delivery
-platform. Not social. Not subscriptions. Not a mobile app. Not analytics.
+platform. Not social. Not auto-billed subscriptions — a sticker includes a service period
+(settings); the owner may request a paid renewal that an admin confirms. Not a mobile app.
+Not analytics.
 
 Before adding anything, answer: "Does this make the physical car tag better?"
 If no — do not build it.
@@ -32,7 +34,7 @@ If no — do not build it.
 7. **Never** commit secrets. `.env.example` only.
 8. **Never** show raw database or stack errors to a user.
 9. **Never** reveal whether an unknown tag exists. Invalid, deleted, deactivated, suspended,
-   lost and never-existed tags all render the identical "This AutoLink is not available"
+   lost, expired and never-existed tags all render the identical "This AutoLink is not available"
    state. The one exception, on purpose: a sticker nobody has linked yet shows "link this
    sticker" — whoever scans it first and signs in becomes its owner. There is no activation
    code; the packaging hides the QR until delivery.

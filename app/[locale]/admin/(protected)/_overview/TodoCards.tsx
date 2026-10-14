@@ -1,22 +1,24 @@
 import { getTranslations } from 'next-intl/server';
 import { StatCard } from '@/components/admin/StatCard';
-import { ClockIcon, ShieldIcon, TruckIcon, WhatsAppIcon } from '@/components/site/icons';
+import { CashIcon, ClockIcon, ShieldIcon, TruckIcon, WhatsAppIcon } from '@/components/site/icons';
 
 /**
- * « À faire »: the four things that mean someone is waiting on the shop —
- * an order to confirm, an order to send, a stopped message to review, a
- * WhatsApp message that did not go. Orange when there is work.
+ * « À faire »: the things that mean someone is waiting on the shop — an order
+ * to confirm, an order to send, a renewal to collect, a stopped message to
+ * review, a WhatsApp message that did not go. Orange when there is work.
  */
 export async function TodoCards({
   locale,
   pending,
   toShip,
+  renewals,
   blocked,
   whatsappFailedToday,
 }: {
   locale: string;
   pending: number;
   toShip: number;
+  renewals: number;
   blocked: number;
   whatsappFailedToday: number;
 }) {
@@ -26,7 +28,7 @@ export async function TodoCards({
       <h2 id="todo" className="mb-3 text-h3 text-text">
         {t('title')}
       </h2>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <StatCard
           label={t('pending')}
           value={pending}
@@ -43,6 +45,14 @@ export async function TodoCards({
           href={`/${locale}/admin/orders`}
           icon={TruckIcon}
           urgent={toShip > 0}
+        />
+        <StatCard
+          label={t('renewals')}
+          value={renewals}
+          hint={t('renewalsHint')}
+          href={`/${locale}/admin/renewals`}
+          icon={CashIcon}
+          urgent={renewals > 0}
         />
         <StatCard
           label={t('blocked')}

@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { routing } from '@/i18n/routing';
 import { requireAdmin } from '@/lib/admin/auth';
 import { adminOrdersRepository } from '@/lib/db/repositories/ordersAdmin';
+import { adminRenewalsRepository } from '@/lib/db/repositories/renewalsAdmin';
 import { adminLogoutAction } from './actions';
 
 type Props = { children: ReactNode; params: Promise<{ locale: string }> };
@@ -27,10 +28,15 @@ export default async function AdminLayout({ children, params }: Props) {
   setRequestLocale(locale);
   const session = await requireAdmin(locale);
   const t = await getTranslations('admin');
-  // A badge on the nav so a new order is never missed.
-  let pending = 0;
+  // Badges on the nav so a new order or renewal is never missed.
+  const badges = { orders: 0, renewals: 0 };
   try {
-    pending = (await adminOrdersRepository.countByStatus(session.actor)).PENDING;
+    const [orders, renewals] = await Promise.all([
+      adminOrdersRepository.countByStatus(session.actor),
+      adminRenewalsRepository.countPending(session.actor),
+    ]);
+    badges.orders = orders.PENDING;
+    badges.renewals = renewals;
   } catch (error) {
     console.error('[admin] pending count failed:', error instanceof Error ? error.message : error);
   }
@@ -38,6 +44,7 @@ export default async function AdminLayout({ children, params }: Props) {
   const labels = {
     overview: t('nav.overview'),
     orders: t('nav.orders'),
+    renewals: t('nav.renewals'),
     tags: t('nav.tags'),
     customers: t('nav.customers'),
     blocked: t('nav.blocked'),
@@ -70,7 +77,7 @@ export default async function AdminLayout({ children, params }: Props) {
           {badge}
         </div>
         <nav aria-label={t('nav.label')} className="px-3">
-          <AdminNav locale={locale} pending={pending} labels={labels} layout="sidebar" />
+          <AdminNav locale={locale} badges={badges} labels={labels} layout="sidebar" />
         </nav>
         <div className="mt-auto border-t border-border px-5 py-4">
           <p className="mb-2 truncate text-sm text-text-muted" dir="ltr" title={session.email}>
@@ -91,7 +98,7 @@ export default async function AdminLayout({ children, params }: Props) {
             {signOut}
           </div>
           <nav aria-label={t('nav.label')} className="container-page pb-2">
-            <AdminNav locale={locale} pending={pending} labels={labels} layout="bar" />
+            <AdminNav locale={locale} badges={badges} labels={labels} layout="bar" />
           </nav>
         </header>
 

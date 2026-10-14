@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { WILAYA_CODE_MAX, WILAYA_CODE_MIN } from '@/lib/domain/constants';
 
 const money = z.coerce.number().int().min(0).max(1_000_000);
+const months = z.coerce.number().int().min(1).max(120);
 
 /** What /admin/settings may change. Everything else stays untouched. */
 export const commerceSettingsSchema = z.object({
@@ -9,6 +10,10 @@ export const commerceSettingsSchema = z.object({
   currencyLabel: z.string().trim().min(1).max(8),
   maxOrderQuantity: z.coerce.number().int().min(1).max(100),
   rateLimitOrdersPerHour: z.coerce.number().int().min(1).max(1000),
+  servicePeriodMonths: months,
+  renewalPriceDzd: money,
+  renewalPeriodMonths: months,
+  renewalWarningDays: z.coerce.number().int().min(1).max(180),
   deliveryFees: z
     .array(
       z.object({
